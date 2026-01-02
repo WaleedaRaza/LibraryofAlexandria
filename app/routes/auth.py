@@ -104,6 +104,33 @@ def set_auth_cookies(response: Response, session) -> Response:
     return response
 
 
+def ensure_user_record(user_id: str, email: str, display_name: str = None):
+    """
+    Ensure a user record exists in our users table.
+    Supabase Auth stores users separately - we need a record
+    in our table for foreign keys (highlights, saved_books, etc.)
+    """
+    try:
+        from ..db.database import get_supabase
+        client = get_supabase()
+        
+        # Check if user exists
+        result = client.table("users").select("id").eq("id", user_id).execute()
+        
+        if not result.data:
+            # Create user record
+            client.table("users").insert({
+                "id": user_id,
+                "email": email,
+                "password_hash": "supabase_auth",  # Placeholder - auth handled by Supabase
+                "display_name": display_name or email.split("@")[0],
+                "role": "user"
+            }).execute()
+            logger.info(f"Created user record for {email}")
+    except Exception as e:
+        logger.error(f"Failed to ensure user record: {e}")
+
+
 def clear_auth_cookies(response: Response) -> Response:
     """Clear Supabase auth cookies."""
     response.delete_cookie("sb-access-token")
@@ -141,6 +168,14 @@ async def login(
                 "auth/login.html",
                 {"request": request, "error": "Invalid email or password"}
             )
+        
+        # Ensure user record exists in our table (for foreign keys)
+        user = auth_response.user
+        ensure_user_record(
+            user_id=user.id,
+            email=user.email,
+            display_name=user.user_metadata.get("display_name")
+        )
         
         # Success - set cookies and redirect
         response = RedirectResponse(url="/", status_code=303)
@@ -201,6 +236,14 @@ async def register(
         
         if auth_response.user and auth_response.session:
             # User created and logged in (email confirmation disabled)
+            # Ensure user record exists in our table
+            user = auth_response.user
+            ensure_user_record(
+                user_id=user.id,
+                email=user.email,
+                display_name=display_name
+            )
+            
             response = RedirectResponse(url="/", status_code=303)
             set_auth_cookies(response, auth_response.session)
             return response
@@ -262,6 +305,7 @@ async def resend_confirmation(
 async def set_session(request: Request):
     """
     Set session cookies from tokens (called by JS after email confirmation).
+    Also ensures user record exists in our table.
     """
     try:
         data = await request.json()
@@ -270,6 +314,21 @@ async def set_session(request: Request):
         
         if not access_token or not refresh_token:
             return JSONResponse({"error": "Missing tokens"}, status_code=400)
+        
+        # Get user info from the token to ensure user record
+        try:
+            client = get_supabase_auth_client()
+            client.auth.set_session(access_token, refresh_token)
+            user_response = client.auth.get_user()
+            if user_response and user_response.user:
+                user = user_response.user
+                ensure_user_record(
+                    user_id=user.id,
+                    email=user.email,
+                    display_name=user.user_metadata.get("display_name")
+                )
+        except Exception as e:
+            logger.warning(f"Could not ensure user record: {e}")
         
         response = JSONResponse({"success": True})
         
