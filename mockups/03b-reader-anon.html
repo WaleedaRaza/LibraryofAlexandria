@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Prince — Chapter XVII | Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .main { padding: 0; max-width: none; }
+
+        /* Reader Layout - Two Column (no annotations for anon) */
+        .reader-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: calc(100vh - 60px);
+        }
+
+        .reader-sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+        }
+
+        .reader-book-link {
+            display: block;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .reader-book-cover {
+            width: 80px;
+            aspect-ratio: 2/3;
+            background: linear-gradient(145deg, #2d132c 0%, #801336 100%);
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .reader-book-cover::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .reader-book-title {
+            font-family: var(--font-reading);
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .reader-book-author {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .reader-chapters-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .reader-chapter-list { list-style: none; }
+        .reader-chapter-item { margin-bottom: 0.25rem; }
+        .reader-chapter-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .reader-chapter-link:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+        .reader-chapter-item--active .reader-chapter-link {
+            color: var(--accent-primary);
+            background: rgba(201, 169, 98, 0.1);
+        }
+
+        /* Main Reading Pane */
+        .reader-main {
+            padding: 2rem 3rem;
+            max-width: 100%;
+            overflow-x: hidden;
+            background: var(--bg-primary);
+        }
+
+        .reader-context {
+            max-width: var(--reading-width);
+            margin: 0 auto 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent-primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .reader-context-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .reader-context-text {
+            font-family: var(--font-reading);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .reader-header {
+            max-width: var(--reading-width);
+            margin: 0 auto 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .reader-chapter-heading {
+            font-family: var(--font-reading);
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--text-primary);
+        }
+
+        .reader-chapter-number {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-right: 0.5rem;
+        }
+
+        .reader-content {
+            max-width: var(--reading-width);
+            margin: 0 auto;
+            font-family: var(--font-reading);
+            font-size: 1.2rem;
+            line-height: 1.9;
+            color: var(--text-primary);
+        }
+
+        .reader-content p {
+            margin-bottom: 1.75em;
+            text-indent: 1.5em;
+        }
+
+        .reader-content p:first-of-type {
+            text-indent: 0;
+        }
+
+        .reader-content p:first-of-type::first-letter {
+            font-size: 3.5em;
+            float: left;
+            line-height: 0.8;
+            margin-right: 0.1em;
+            color: var(--accent-primary);
+        }
+
+        .reader-content h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin: 3rem 0 1.5rem;
+            color: var(--text-primary);
+            text-indent: 0;
+        }
+
+        .reader-nav {
+            max-width: var(--reading-width);
+            margin: 3rem auto 0;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .reader-nav-link {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Sign in prompt for anonymous users */
+        .reader-auth-prompt {
+            max-width: var(--reading-width);
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px dashed var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .reader-auth-prompt-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .reader-auth-prompt-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="07-wishlist.html" class="nav-link">Wishlist</a>
+                <a href="08-login.html" class="nav-link">Sign in</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="reader-container">
+        <!-- LEFT: Chapter Navigation -->
+        <aside class="reader-sidebar">
+            <a href="05-book-detail.html" class="reader-book-link">
+                <div class="reader-book-cover"></div>
+                <h2 class="reader-book-title">The Prince</h2>
+                <p class="reader-book-author">Niccolò Machiavelli</p>
+            </a>
+
+            <h3 class="reader-chapters-title">Chapters</h3>
+            <ol class="reader-chapter-list">
+                <li class="reader-chapter-item">
+                    <a href="#" class="reader-chapter-link">I. Types of Principalities</a>
+                </li>
+                <li class="reader-chapter-item">
+                    <a href="#" class="reader-chapter-link">II. Hereditary Principalities</a>
+                </li>
+                <li class="reader-chapter-item">
+                    <a href="#" class="reader-chapter-link">III. Mixed Principalities</a>
+                </li>
+                <li class="reader-chapter-item">
+                    <a href="#" class="reader-chapter-link">...</a>
+                </li>
+                <li class="reader-chapter-item reader-chapter-item--active">
+                    <a href="#" class="reader-chapter-link">XVII. Cruelty and Clemency</a>
+                </li>
+                <li class="reader-chapter-item">
+                    <a href="#" class="reader-chapter-link">XVIII. How Princes Should Keep Faith</a>
+                </li>
+            </ol>
+        </aside>
+
+        <!-- CENTER: Main Reading Pane -->
+        <main class="reader-main">
+            <div class="reader-context">
+                <p class="reader-context-label">You were directed here because</p>
+                <p class="reader-context-text">
+                    This chapter addresses why authority figures often choose fear as a governing strategy.
+                </p>
+            </div>
+
+            <header class="reader-header">
+                <h1 class="reader-chapter-heading">
+                    <span class="reader-chapter-number">XVII.</span>
+                    Concerning Cruelty and Clemency
+                </h1>
+            </header>
+
+            <!-- Auth prompt for anonymous users -->
+            <div class="reader-auth-prompt">
+                <p class="reader-auth-prompt-text">
+                    Sign in to highlight text, add notes, and ask questions about passages.
+                </p>
+                <div class="reader-auth-prompt-actions">
+                    <a href="08-login.html" class="btn btn--primary">Sign in</a>
+                    <a href="08b-register.html" class="btn btn--secondary">Create account</a>
+                </div>
+            </div>
+
+            <article class="reader-content">
+                <p>Coming now to the other qualities mentioned above, I say that every prince ought to desire to be considered clement and not cruel. Nevertheless he ought to take care not to misuse this clemency. Cesare Borgia was considered cruel; notwithstanding, his cruelty reconciled the Romagna, unified it, and restored it to peace and loyalty.</p>
+
+                <p>Therefore a prince, so long as he keeps his subjects united and loyal, ought not to mind the reproach of cruelty; because with a few examples he will be more merciful than those who, through too much mercy, allow disorders to arise, from which follow murders or robberies.</p>
+
+                <h2>Whether It Is Better To Be Loved or Feared</h2>
+
+                <p>Upon this a question arises: whether it be better to be loved than feared or feared than loved? It may be answered that one should wish to be both, but, because it is difficult to unite them in one person, it is much safer to be feared than loved, when, of the two, either must be dispensed with.</p>
+
+                <p>Because this is to be asserted in general of men, that they are ungrateful, fickle, false, cowardly, covetous, and as long as you succeed they are yours entirely; they will offer you their blood, property, life, and children, as is said above, when the need is far distant; but when it approaches they turn against you.</p>
+            </article>
+
+            <nav class="reader-nav">
+                <a href="#" class="reader-nav-link">← XVI. Liberality and Parsimony</a>
+                <a href="#" class="reader-nav-link">XVIII. How Princes Should Keep Faith →</a>
+            </nav>
+        </main>
+    </div>
+
+    <div class="mockup-indicator">
+        MOCKUP — Anonymous Reader — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

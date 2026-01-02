@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where to read — Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .routing-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .routing-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        /* Your Question */
+        .routing-question-section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .routing-question {
+            font-family: var(--font-reading);
+            font-size: 2rem;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        /* Reading Paths */
+        .routing-paths {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        .routing-path {
+            padding-left: 1rem;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .routing-path-angle {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .routing-path-angle::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            margin-left: -1.35rem;
+        }
+
+        /* Book Cards with Covers */
+        .routing-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .routing-card {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.2s;
+        }
+
+        .routing-card:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .routing-card-cover {
+            aspect-ratio: 2/3;
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .routing-card-cover::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .routing-card-cover-title {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0.5rem;
+            right: 0.5rem;
+            font-family: var(--font-reading);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .routing-card-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .routing-card-header {
+            margin-bottom: 0.75rem;
+        }
+
+        .routing-card-title {
+            font-family: var(--font-reading);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .routing-card-author {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .routing-card-chapter {
+            font-size: 0.8rem;
+            font-style: italic;
+            color: var(--accent-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .routing-card-rationale {
+            font-family: var(--font-reading);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .routing-card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .routing-card-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-family: var(--font-ui);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--bg-primary);
+            background: var(--accent-primary);
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .routing-card-btn:hover {
+            background: #d4b76d;
+            color: var(--bg-primary);
+            transform: translateX(2px);
+        }
+
+        .routing-card-save {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .routing-card-save:hover {
+            border-color: var(--accent-secondary);
+            color: var(--accent-secondary);
+        }
+
+        .routing-card-source {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .routing-footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .routing-back {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .routing-back:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="07-wishlist.html" class="nav-link">Wishlist</a>
+                <a href="06-my-library.html" class="nav-link">My Library</a>
+                <span class="nav-link">reader@example.com</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="routing-container">
+            <!-- Your Question -->
+            <section class="routing-question-section">
+                <p class="routing-label">Your question</p>
+                <h1 class="routing-question">"Why does my boss act like that?"</h1>
+            </section>
+
+            <!-- Reading Paths -->
+            <section>
+                <p class="routing-label">Here are different ways thinkers have approached this</p>
+                
+                <div class="routing-paths">
+                    <!-- Path 1: Power Dynamics -->
+                    <div class="routing-path">
+                        <h2 class="routing-path-angle">Power & hierarchy</h2>
+                        
+                        <div class="routing-cards">
+                            <article class="routing-card">
+                                <div class="routing-card-cover" style="background: linear-gradient(145deg, #2d132c 0%, #801336 100%);">
+                                    <span class="routing-card-cover-title">The Prince</span>
+                                </div>
+                                <div class="routing-card-content">
+                                    <div class="routing-card-header">
+                                        <h3 class="routing-card-title">The Prince</h3>
+                                        <p class="routing-card-author">Niccolò Machiavelli</p>
+                                    </div>
+                                    <p class="routing-card-chapter">Chapter XVII — Concerning Cruelty</p>
+                                    <p class="routing-card-rationale">
+                                        Machiavelli argues that those in power often choose fear over love as a governing strategy. This section examines why authority figures behave in ways that seem harsh.
+                                    </p>
+                                    <div class="routing-card-actions">
+                                        <a href="03-reader.html" class="routing-card-btn">
+                                            Read this section →
+                                        </a>
+                                        <button class="routing-card-save">+ Save book</button>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Path 2: Structural Analysis -->
+                    <div class="routing-path">
+                        <h2 class="routing-path-angle">Structural forces</h2>
+                        
+                        <div class="routing-cards">
+                            <article class="routing-card">
+                                <div class="routing-card-cover" style="background: linear-gradient(145deg, #1a1a1a 0%, #3d0000 100%);">
+                                    <span class="routing-card-cover-title">The Communist Manifesto</span>
+                                </div>
+                                <div class="routing-card-content">
+                                    <div class="routing-card-header">
+                                        <h3 class="routing-card-title">The Communist Manifesto</h3>
+                                        <p class="routing-card-author">Karl Marx & Friedrich Engels</p>
+                                    </div>
+                                    <p class="routing-card-chapter">Chapter I — Bourgeois and Proletarians</p>
+                                    <p class="routing-card-rationale">
+                                        Frames workplace conflict as structural rather than personal. Your boss may be acting out economic pressures, not individual malice.
+                                    </p>
+                                    <div class="routing-card-actions">
+                                        <a href="03-reader.html" class="routing-card-btn">
+                                            Read this section →
+                                        </a>
+                                        <button class="routing-card-save">+ Save book</button>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Path 3: Psychology -->
+                    <div class="routing-path">
+                        <h2 class="routing-path-angle">Psychology of authority</h2>
+                        
+                        <div class="routing-cards">
+                            <article class="routing-card">
+                                <div class="routing-card-cover" style="background: linear-gradient(145deg, #1f1f3d 0%, #3d1f5c 100%);">
+                                    <span class="routing-card-cover-title">Thinking, Fast and Slow</span>
+                                </div>
+                                <div class="routing-card-content">
+                                    <div class="routing-card-header">
+                                        <h3 class="routing-card-title">Thinking, Fast and Slow</h3>
+                                        <p class="routing-card-author">Daniel Kahneman</p>
+                                    </div>
+                                    <p class="routing-card-chapter">Part III — Overconfidence</p>
+                                    <p class="routing-card-rationale">
+                                        Explores how people in positions of authority often exhibit overconfidence and resist admitting uncertainty, creating friction with subordinates.
+                                    </p>
+                                    <div class="routing-card-actions">
+                                        <a href="03-reader.html" class="routing-card-btn">
+                                            Read this section →
+                                        </a>
+                                        <button class="routing-card-save">+ Save book</button>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="routing-footer">
+                <a href="01-homepage.html" class="routing-back">← Ask something else</a>
+            </footer>
+        </div>
+    </main>
+
+    <div class="mockup-indicator">
+        MOCKUP — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

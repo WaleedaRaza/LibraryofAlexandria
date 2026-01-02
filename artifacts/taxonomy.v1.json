@@ -1,0 +1,649 @@
+{
+  "version": 1,
+  "created_at": "2026-01-01T00:00:00Z",
+  "description": "Comprehensive knowledge taxonomy for Alexandria Library - 18 domains",
+  "domains": {
+    "philosophy": {
+      "id": "philosophy",
+      "name": "Philosophy",
+      "description": "Meaning, ethics, virtue, existence, truth, wisdom",
+      "subdomains": {
+        "stoicism": {
+          "id": "stoicism",
+          "name": "Stoicism",
+          "description": "Control, virtue, acceptance, tranquility",
+          "concepts": ["control_dichotomy", "virtue_ethics", "acceptance", "memento_mori", "amor_fati", "tranquility"]
+        },
+        "ethics": {
+          "id": "ethics",
+          "name": "Ethics",
+          "description": "Moral philosophy, right and wrong, duty",
+          "concepts": ["moral_philosophy", "virtue", "duty", "consequences", "deontology", "utilitarianism"]
+        },
+        "existentialism": {
+          "id": "existentialism",
+          "name": "Existentialism",
+          "description": "Meaning, freedom, anxiety, authenticity",
+          "concepts": ["meaning", "freedom", "anxiety", "authenticity", "absurd", "death"]
+        },
+        "epistemology": {
+          "id": "epistemology",
+          "name": "Epistemology",
+          "description": "Knowledge, truth, belief, justification",
+          "concepts": ["knowledge", "truth", "belief", "justification", "skepticism", "certainty"]
+        },
+        "metaphysics": {
+          "id": "metaphysics",
+          "name": "Metaphysics",
+          "description": "Reality, being, time, causation",
+          "concepts": ["reality", "being", "time", "causation", "free_will", "determinism"]
+        },
+        "eastern": {
+          "id": "eastern",
+          "name": "Eastern Philosophy",
+          "description": "Buddhism, Taoism, Confucianism, Zen",
+          "concepts": ["enlightenment", "detachment", "harmony", "balance", "emptiness", "compassion"]
+        },
+        "political_philosophy": {
+          "id": "political_philosophy",
+          "name": "Political Philosophy",
+          "description": "Justice, rights, social contract, liberty",
+          "concepts": ["justice", "rights", "social_contract", "liberty", "equality", "authority"]
+        }
+      }
+    },
+    "strategy": {
+      "id": "strategy",
+      "name": "Strategy",
+      "description": "Conflict, power, influence, tactics, positioning",
+      "subdomains": {
+        "military": {
+          "id": "military",
+          "name": "Military Strategy",
+          "description": "War, conflict, tactics, positioning",
+          "concepts": ["positioning", "timing", "deception", "terrain", "force_concentration", "logistics"]
+        },
+        "power": {
+          "id": "power",
+          "name": "Power Dynamics",
+          "description": "Influence, manipulation, hierarchy, authority",
+          "concepts": ["social_power", "influence", "reputation", "manipulation", "authority", "hierarchy", "status"]
+        },
+        "negotiation": {
+          "id": "negotiation",
+          "name": "Negotiation",
+          "description": "Bargaining, persuasion, conflict resolution",
+          "concepts": ["bargaining", "persuasion", "leverage", "framing", "BATNA", "anchoring"]
+        },
+        "game_theory": {
+          "id": "game_theory",
+          "name": "Game Theory",
+          "description": "Strategic interaction, Nash equilibrium, incentives",
+          "concepts": ["nash_equilibrium", "prisoners_dilemma", "zero_sum", "cooperation", "defection"]
+        },
+        "geopolitics": {
+          "id": "geopolitics",
+          "name": "Geopolitics",
+          "description": "International power, territory, resources",
+          "concepts": ["spheres_of_influence", "balance_of_power", "resources", "territory", "alliances"]
+        }
+      }
+    },
+    "psychology": {
+      "id": "psychology",
+      "name": "Psychology",
+      "description": "Mind, behavior, cognition, emotion, development",
+      "subdomains": {
+        "cognitive": {
+          "id": "cognitive",
+          "name": "Cognitive Science",
+          "description": "Thinking, bias, decision making, mental models",
+          "concepts": ["cognitive_bias", "heuristics", "decision_making", "mental_models", "system1_system2"]
+        },
+        "social": {
+          "id": "social",
+          "name": "Social Psychology",
+          "description": "Group behavior, conformity, influence",
+          "concepts": ["conformity", "obedience", "group_dynamics", "social_proof", "tribalism", "identity"]
+        },
+        "behavioral": {
+          "id": "behavioral",
+          "name": "Behavioral Economics",
+          "description": "Irrational behavior, bias in economic decisions",
+          "concepts": ["loss_aversion", "anchoring", "mental_accounting", "bounded_rationality", "nudge"]
+        },
+        "organizational": {
+          "id": "organizational",
+          "name": "Organizational Psychology",
+          "description": "Workplace behavior, teams, motivation",
+          "concepts": ["motivation", "team_dynamics", "culture", "leadership", "burnout", "engagement"]
+        },
+        "developmental": {
+          "id": "developmental",
+          "name": "Developmental Psychology",
+          "description": "Human development across lifespan",
+          "concepts": ["stages", "attachment", "identity", "aging", "learning", "maturation"]
+        },
+        "evolutionary": {
+          "id": "evolutionary",
+          "name": "Evolutionary Psychology",
+          "description": "Evolved psychological mechanisms",
+          "concepts": ["adaptation", "mating", "cooperation", "aggression", "kin_selection", "reciprocity"]
+        },
+        "neuroscience": {
+          "id": "neuroscience",
+          "name": "Neuroscience",
+          "description": "Brain, neurons, consciousness",
+          "concepts": ["neurons", "plasticity", "consciousness", "memory", "perception", "emotion"]
+        }
+      }
+    },
+    "economics": {
+      "id": "economics",
+      "name": "Economics",
+      "description": "Markets, money, trade, incentives, policy",
+      "subdomains": {
+        "micro": {
+          "id": "micro",
+          "name": "Microeconomics",
+          "description": "Individual actors, supply/demand, pricing",
+          "concepts": ["supply_demand", "pricing", "incentives", "marginal_utility", "elasticity"]
+        },
+        "macro": {
+          "id": "macro",
+          "name": "Macroeconomics",
+          "description": "Aggregate systems, policy, growth",
+          "concepts": ["gdp", "inflation", "monetary_policy", "business_cycles", "unemployment"]
+        },
+        "political_economy": {
+          "id": "political_economy",
+          "name": "Political Economy",
+          "description": "Intersection of politics and economics",
+          "concepts": ["institutions", "rent_seeking", "public_choice", "regulation", "redistribution"]
+        },
+        "finance": {
+          "id": "finance",
+          "name": "Finance",
+          "description": "Capital markets, investment, risk",
+          "concepts": ["valuation", "risk", "return", "diversification", "markets", "derivatives"]
+        },
+        "development": {
+          "id": "development",
+          "name": "Development Economics",
+          "description": "Economic growth, poverty, inequality",
+          "concepts": ["growth", "poverty", "inequality", "institutions", "trade", "aid"]
+        }
+      }
+    },
+    "business": {
+      "id": "business",
+      "name": "Business",
+      "description": "Management, leadership, organizations, startups",
+      "subdomains": {
+        "management": {
+          "id": "management",
+          "name": "Management",
+          "description": "Running organizations, teams, operations",
+          "concepts": ["delegation", "accountability", "performance", "meetings", "execution", "hiring"]
+        },
+        "leadership": {
+          "id": "leadership",
+          "name": "Leadership",
+          "description": "Inspiring and guiding others",
+          "concepts": ["vision", "influence", "trust", "culture", "decision_making", "communication"]
+        },
+        "entrepreneurship": {
+          "id": "entrepreneurship",
+          "name": "Entrepreneurship",
+          "description": "Startups, innovation, risk, growth",
+          "concepts": ["startup_strategy", "product_market_fit", "scaling", "fundraising", "pivot"]
+        },
+        "marketing": {
+          "id": "marketing",
+          "name": "Marketing",
+          "description": "Positioning, branding, customer acquisition",
+          "concepts": ["positioning", "branding", "segmentation", "messaging", "channels", "growth"]
+        },
+        "innovation": {
+          "id": "innovation",
+          "name": "Innovation",
+          "description": "Creating new value, disruption",
+          "concepts": ["disruption", "creativity", "iteration", "experimentation", "adoption"]
+        }
+      }
+    },
+    "technology": {
+      "id": "technology",
+      "name": "Technology",
+      "description": "Systems, software, engineering, architecture",
+      "subdomains": {
+        "software": {
+          "id": "software",
+          "name": "Software Engineering",
+          "description": "Code, architecture, patterns, practices",
+          "concepts": ["modularity", "abstraction", "coupling", "testing", "refactoring", "clean_code"]
+        },
+        "systems": {
+          "id": "systems",
+          "name": "Systems Design",
+          "description": "Distributed systems, scalability, reliability",
+          "concepts": ["scalability", "reliability", "consistency", "partitioning", "caching", "load_balancing"]
+        },
+        "security": {
+          "id": "security",
+          "name": "Security",
+          "description": "Cryptography, threats, vulnerabilities",
+          "concepts": ["cryptography", "threat_modeling", "vulnerabilities", "defense_in_depth", "authentication"]
+        },
+        "databases": {
+          "id": "databases",
+          "name": "Databases",
+          "description": "Data storage, querying, modeling",
+          "concepts": ["normalization", "indexing", "transactions", "replication", "sharding"]
+        },
+        "ai": {
+          "id": "ai",
+          "name": "Artificial Intelligence",
+          "description": "Machine learning, neural networks, automation",
+          "concepts": ["machine_learning", "neural_networks", "training", "inference", "bias", "generalization"]
+        },
+        "architecture": {
+          "id": "architecture",
+          "name": "Architecture",
+          "description": "System design, patterns, trade-offs",
+          "concepts": ["patterns", "trade_offs", "microservices", "monolith", "event_driven", "layers"]
+        }
+      }
+    },
+    "history": {
+      "id": "history",
+      "name": "History",
+      "description": "Past events, civilizations, patterns, causes",
+      "subdomains": {
+        "ancient": {
+          "id": "ancient",
+          "name": "Ancient History",
+          "description": "Greece, Rome, Egypt, early civilizations",
+          "concepts": ["greece", "rome", "egypt", "mesopotamia", "philosophy", "democracy"]
+        },
+        "medieval": {
+          "id": "medieval",
+          "name": "Medieval History",
+          "description": "Middle Ages, feudalism, church",
+          "concepts": ["feudalism", "church", "crusades", "plague", "trade", "kingdoms"]
+        },
+        "modern": {
+          "id": "modern",
+          "name": "Modern History",
+          "description": "Enlightenment to present",
+          "concepts": ["enlightenment", "revolutions", "industrialization", "nationalism", "world_wars"]
+        },
+        "military_history": {
+          "id": "military_history",
+          "name": "Military History",
+          "description": "Battles, commanders, tactics through time",
+          "concepts": ["battles", "commanders", "campaigns", "weapons", "logistics", "strategy"]
+        },
+        "economic_history": {
+          "id": "economic_history",
+          "name": "Economic History",
+          "description": "Trade, money, crises through time",
+          "concepts": ["trade_routes", "currencies", "crises", "industrialization", "globalization"]
+        }
+      }
+    },
+    "politics": {
+      "id": "politics",
+      "name": "Politics",
+      "description": "Government, power, ideology, policy",
+      "subdomains": {
+        "political_theory": {
+          "id": "political_theory",
+          "name": "Political Theory",
+          "description": "Foundational ideas about governance",
+          "concepts": ["liberalism", "conservatism", "socialism", "anarchism", "republicanism"]
+        },
+        "governance": {
+          "id": "governance",
+          "name": "Governance",
+          "description": "Institutions, administration, bureaucracy",
+          "concepts": ["institutions", "bureaucracy", "checks_balances", "federalism", "separation_of_powers"]
+        },
+        "international": {
+          "id": "international",
+          "name": "International Relations",
+          "description": "Relations between states, diplomacy",
+          "concepts": ["diplomacy", "treaties", "alliances", "conflict", "cooperation", "sovereignty"]
+        },
+        "democracy": {
+          "id": "democracy",
+          "name": "Democracy",
+          "description": "Democratic theory and practice",
+          "concepts": ["voting", "representation", "participation", "accountability", "legitimacy"]
+        },
+        "revolutions": {
+          "id": "revolutions",
+          "name": "Revolutions",
+          "description": "Political upheaval and transformation",
+          "concepts": ["causes", "dynamics", "outcomes", "violence", "reform", "counter_revolution"]
+        }
+      }
+    },
+    "religion": {
+      "id": "religion",
+      "name": "Religion",
+      "description": "Faith, spirituality, theology, sacred texts",
+      "subdomains": {
+        "theology": {
+          "id": "theology",
+          "name": "Theology",
+          "description": "Systematic study of the divine",
+          "concepts": ["god", "creation", "salvation", "evil", "afterlife", "revelation"]
+        },
+        "spirituality": {
+          "id": "spirituality",
+          "name": "Spirituality",
+          "description": "Personal experience of the transcendent",
+          "concepts": ["transcendence", "meaning", "practices", "meditation", "prayer", "awakening"]
+        },
+        "comparative": {
+          "id": "comparative",
+          "name": "Comparative Religion",
+          "description": "Study across traditions",
+          "concepts": ["traditions", "commonalities", "differences", "syncretism", "dialogue"]
+        },
+        "mysticism": {
+          "id": "mysticism",
+          "name": "Mysticism",
+          "description": "Direct experience of the divine",
+          "concepts": ["union", "experience", "contemplation", "ecstasy", "enlightenment"]
+        }
+      }
+    },
+    "sociology": {
+      "id": "sociology",
+      "name": "Sociology",
+      "description": "Society, culture, institutions, identity",
+      "subdomains": {
+        "social_theory": {
+          "id": "social_theory",
+          "name": "Social Theory",
+          "description": "Foundational theories of society",
+          "concepts": ["structure", "agency", "functionalism", "conflict", "symbolic_interactionism"]
+        },
+        "culture": {
+          "id": "culture",
+          "name": "Culture",
+          "description": "Shared meanings, practices, values",
+          "concepts": ["norms", "values", "symbols", "rituals", "identity", "subcultures"]
+        },
+        "institutions": {
+          "id": "institutions",
+          "name": "Institutions",
+          "description": "Social structures that organize life",
+          "concepts": ["family", "education", "religion", "economy", "state", "media"]
+        },
+        "movements": {
+          "id": "movements",
+          "name": "Social Movements",
+          "description": "Collective action for change",
+          "concepts": ["mobilization", "framing", "identity", "tactics", "outcomes", "counter_movements"]
+        }
+      }
+    },
+    "science": {
+      "id": "science",
+      "name": "Science",
+      "description": "Physics, biology, chemistry, complexity",
+      "subdomains": {
+        "physics": {
+          "id": "physics",
+          "name": "Physics",
+          "description": "Matter, energy, forces, universe",
+          "concepts": ["mechanics", "thermodynamics", "electromagnetism", "quantum", "relativity"]
+        },
+        "biology": {
+          "id": "biology",
+          "name": "Biology",
+          "description": "Life, organisms, evolution",
+          "concepts": ["cells", "genetics", "evolution", "ecology", "organisms", "metabolism"]
+        },
+        "complexity": {
+          "id": "complexity",
+          "name": "Complexity",
+          "description": "Emergent systems, chaos, networks",
+          "concepts": ["emergence", "feedback", "adaptation", "networks", "chaos", "self_organization"]
+        },
+        "evolution": {
+          "id": "evolution",
+          "name": "Evolution",
+          "description": "Natural selection, adaptation, speciation",
+          "concepts": ["natural_selection", "adaptation", "speciation", "fitness", "variation", "heredity"]
+        },
+        "method": {
+          "id": "method",
+          "name": "Scientific Method",
+          "description": "How science works",
+          "concepts": ["hypothesis", "experiment", "evidence", "peer_review", "falsification", "paradigms"]
+        }
+      }
+    },
+    "literature": {
+      "id": "literature",
+      "name": "Literature",
+      "description": "Narrative, fiction, poetry, classics",
+      "subdomains": {
+        "fiction": {
+          "id": "fiction",
+          "name": "Fiction",
+          "description": "Novels, short stories, narrative",
+          "concepts": ["narrative", "character", "plot", "theme", "setting", "point_of_view"]
+        },
+        "poetry": {
+          "id": "poetry",
+          "name": "Poetry",
+          "description": "Verse, meter, imagery",
+          "concepts": ["meter", "rhyme", "imagery", "metaphor", "form", "voice"]
+        },
+        "classics": {
+          "id": "classics",
+          "name": "Classics",
+          "description": "Foundational works of Western literature",
+          "concepts": ["homer", "dante", "shakespeare", "canon", "interpretation"]
+        },
+        "mythology": {
+          "id": "mythology",
+          "name": "Mythology",
+          "description": "Myths, legends, archetypes",
+          "concepts": ["archetypes", "heroes", "gods", "creation", "transformation", "journey"]
+        },
+        "rhetoric": {
+          "id": "rhetoric",
+          "name": "Rhetoric",
+          "description": "Art of persuasive speech and writing",
+          "concepts": ["ethos", "pathos", "logos", "argument", "style", "audience"]
+        }
+      }
+    },
+    "law": {
+      "id": "law",
+      "name": "Law",
+      "description": "Justice, rights, legal theory, regulation",
+      "subdomains": {
+        "legal_theory": {
+          "id": "legal_theory",
+          "name": "Legal Theory",
+          "description": "Philosophy of law",
+          "concepts": ["natural_law", "positivism", "interpretation", "precedent", "reasoning"]
+        },
+        "constitutional": {
+          "id": "constitutional",
+          "name": "Constitutional Law",
+          "description": "Foundational legal frameworks",
+          "concepts": ["rights", "separation_of_powers", "federalism", "judicial_review", "amendments"]
+        },
+        "international_law": {
+          "id": "international_law",
+          "name": "International Law",
+          "description": "Law between nations",
+          "concepts": ["treaties", "sovereignty", "human_rights", "war_crimes", "jurisdiction"]
+        },
+        "justice": {
+          "id": "justice",
+          "name": "Justice",
+          "description": "Theories of justice and fairness",
+          "concepts": ["fairness", "equality", "punishment", "restoration", "distribution"]
+        }
+      }
+    },
+    "art": {
+      "id": "art",
+      "name": "Art",
+      "description": "Aesthetics, beauty, creativity, design",
+      "subdomains": {
+        "aesthetics": {
+          "id": "aesthetics",
+          "name": "Aesthetics",
+          "description": "Philosophy of beauty and taste",
+          "concepts": ["beauty", "sublime", "taste", "judgment", "form", "expression"]
+        },
+        "art_history": {
+          "id": "art_history",
+          "name": "Art History",
+          "description": "Development of visual arts",
+          "concepts": ["movements", "periods", "styles", "artists", "techniques", "context"]
+        },
+        "design": {
+          "id": "design",
+          "name": "Design",
+          "description": "Creating with intention",
+          "concepts": ["form", "function", "user", "iteration", "constraints", "solutions"]
+        },
+        "creativity": {
+          "id": "creativity",
+          "name": "Creativity",
+          "description": "The creative process",
+          "concepts": ["inspiration", "process", "craft", "originality", "constraints", "flow"]
+        }
+      }
+    },
+    "mathematics": {
+      "id": "mathematics",
+      "name": "Mathematics",
+      "description": "Logic, statistics, probability, reasoning",
+      "subdomains": {
+        "logic": {
+          "id": "logic",
+          "name": "Logic",
+          "description": "Formal reasoning",
+          "concepts": ["deduction", "induction", "validity", "soundness", "fallacies", "proof"]
+        },
+        "statistics": {
+          "id": "statistics",
+          "name": "Statistics",
+          "description": "Data analysis, inference",
+          "concepts": ["distributions", "sampling", "hypothesis_testing", "regression", "bayesian"]
+        },
+        "probability": {
+          "id": "probability",
+          "name": "Probability",
+          "description": "Quantifying uncertainty",
+          "concepts": ["distributions", "independence", "conditional", "bayes", "expected_value"]
+        },
+        "applied": {
+          "id": "applied",
+          "name": "Applied Mathematics",
+          "description": "Math in the real world",
+          "concepts": ["modeling", "optimization", "simulation", "algorithms", "computation"]
+        }
+      }
+    },
+    "communication": {
+      "id": "communication",
+      "name": "Communication",
+      "description": "Rhetoric, persuasion, media, writing",
+      "subdomains": {
+        "persuasion": {
+          "id": "persuasion",
+          "name": "Persuasion",
+          "description": "Influencing beliefs and behavior",
+          "concepts": ["influence", "framing", "messaging", "storytelling", "credibility"]
+        },
+        "media": {
+          "id": "media",
+          "name": "Media",
+          "description": "Mass communication, technology",
+          "concepts": ["broadcast", "digital", "social_media", "gatekeeping", "virality"]
+        },
+        "writing": {
+          "id": "writing",
+          "name": "Writing",
+          "description": "Craft of written communication",
+          "concepts": ["clarity", "structure", "style", "editing", "audience", "purpose"]
+        },
+        "speaking": {
+          "id": "speaking",
+          "name": "Public Speaking",
+          "description": "Oral communication",
+          "concepts": ["delivery", "preparation", "audience", "presence", "storytelling"]
+        }
+      }
+    },
+    "medicine": {
+      "id": "medicine",
+      "name": "Medicine",
+      "description": "Health, body, disease, longevity",
+      "subdomains": {
+        "public_health": {
+          "id": "public_health",
+          "name": "Public Health",
+          "description": "Population health, prevention",
+          "concepts": ["epidemiology", "prevention", "policy", "interventions", "disparities"]
+        },
+        "nutrition": {
+          "id": "nutrition",
+          "name": "Nutrition",
+          "description": "Diet, metabolism, health",
+          "concepts": ["diet", "metabolism", "nutrients", "fasting", "supplementation"]
+        },
+        "mental_health": {
+          "id": "mental_health",
+          "name": "Mental Health",
+          "description": "Psychological wellbeing",
+          "concepts": ["disorders", "therapy", "resilience", "stress", "wellbeing"]
+        },
+        "longevity": {
+          "id": "longevity",
+          "name": "Longevity",
+          "description": "Aging, lifespan, healthspan",
+          "concepts": ["aging", "lifespan", "healthspan", "interventions", "biomarkers"]
+        }
+      }
+    },
+    "education": {
+      "id": "education",
+      "name": "Education",
+      "description": "Learning, teaching, knowledge transmission",
+      "subdomains": {
+        "pedagogy": {
+          "id": "pedagogy",
+          "name": "Pedagogy",
+          "description": "Art and science of teaching",
+          "concepts": ["instruction", "curriculum", "assessment", "motivation", "differentiation"]
+        },
+        "learning": {
+          "id": "learning",
+          "name": "Learning Theory",
+          "description": "How humans learn",
+          "concepts": ["memory", "retrieval", "spacing", "interleaving", "mastery", "transfer"]
+        },
+        "self_education": {
+          "id": "self_education",
+          "name": "Self-Education",
+          "description": "Learning independently",
+          "concepts": ["autodidact", "resources", "motivation", "practice", "feedback", "mastery"]
+        }
+      }
+    }
+  }
+}

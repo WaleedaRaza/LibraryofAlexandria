@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}My Library — Alexandria{% endblock %}
+
+{% block content %}
+<div class="my-library-container">
+    <header class="my-library-header">
+        <h1 class="my-library-title">My Library</h1>
+        <p class="my-library-subtitle">Your thinking shelf — {{ books|length }} book{{ 's' if books|length != 1 else '' }} saved</p>
+    </header>
+    
+    {% if books %}
+        <!-- Stats -->
+        <div class="my-library-stats">
+            <div class="stat">
+                <div class="stat-value">{{ books|length }}</div>
+                <div class="stat-label">Books saved</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">{{ total_annotations|default(0) }}</div>
+                <div class="stat-label">Annotations</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">{{ total_highlights|default(0) }}</div>
+                <div class="stat-label">Highlights</div>
+            </div>
+        </div>
+        
+        <!-- Book Grid -->
+        <div class="my-library-grid">
+            {% for book in books %}
+                <article class="book-card">
+                    <a href="/library/book/{{ book.id }}" class="book-card-link">
+                        <div class="book-cover book-cover--{{ book.domain|lower|default('philosophy') }}">
+                            <span class="book-cover-title">{{ book.title }}</span>
+                        </div>
+                        <h3 class="book-card-title">{{ book.title }}</h3>
+                        <p class="book-card-author">{{ book.author }}</p>
+                        
+                        {% if book.progress is defined %}
+                            <div class="book-card-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-bar-fill" style="width: {{ book.progress }}%;"></div>
+                                </div>
+                                <span class="progress-text">
+                                    {% if book.progress == 100 %}Done{% elif book.progress == 0 %}Not started{% else %}{{ book.progress }}%{% endif %}
+                                </span>
+                            </div>
+                            {% if book.last_chapter %}
+                                <p class="book-card-last-read">Last: Ch. {{ book.last_chapter }}</p>
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                    
+                    {% if book.progress is defined and book.progress > 0 and book.progress < 100 %}
+                        <div class="book-card-resume">
+                            <a href="/read/{{ book.id }}{% if book.last_chapter %}?chapter={{ book.last_chapter }}{% endif %}">Resume reading →</a>
+                        </div>
+                    {% elif book.progress == 0 %}
+                        <div class="book-card-resume">
+                            <a href="/read/{{ book.id }}">Start reading →</a>
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <h2 class="empty-title">Your shelf is empty</h2>
+            <p class="empty-message">
+                Save books as you read to build your personal library. 
+                Your highlights and annotations will live here.
+            </p>
+            <div class="empty-actions">
+                <a href="/" class="btn btn--primary">Ask a question</a>
+                <a href="/library" class="btn btn--secondary">Browse the library</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

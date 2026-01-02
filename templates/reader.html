@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} — Chapter {{ current_chapter.number }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/reader.css?v=3">
+{% endblock %}
+
+{% block content %}
+<div class="reader-container">
+    <!-- LEFT: Chapter Navigation Sidebar -->
+    <aside class="reader-sidebar">
+        <div class="reader-sidebar-header">
+            <a href="/library/book/{{ book.id }}" class="reader-book-link">
+                <div class="reader-book-cover book-cover--{{ book.domain|lower|default('philosophy') }}"></div>
+                <span class="reader-book-title">{{ book.title }}</span>
+                <span class="reader-book-author">{{ book.author }}</span>
+            </a>
+        </div>
+        
+        <nav class="reader-chapters">
+            <h3 class="reader-chapters-title">Chapters</h3>
+            <ol class="reader-chapter-list">
+                {% for chapter in chapters %}
+                    <li class="reader-chapter-item {% if chapter.number == current_chapter.number %}reader-chapter-item--active{% endif %}">
+                        <a href="/read/{{ book.id }}?chapter={{ chapter.number }}" class="reader-chapter-link">
+                            {{ chapter.number }}. {{ chapter.title }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ol>
+        </nav>
+    </aside>
+    
+    <!-- CENTER: Main Reading Pane -->
+    <main class="reader-main">
+        <!-- Context Header: Why You're Here -->
+        {% if routing_context %}
+            <div class="reader-context">
+                <p class="reader-context-label">You were directed here because</p>
+                <p class="reader-context-text">{{ routing_context }}</p>
+            </div>
+        {% endif %}
+        
+        <header class="reader-header">
+            <h1 class="reader-chapter-heading">
+                <span class="reader-chapter-number">{{ current_chapter.number }}.</span>
+                {{ current_chapter.title }}
+            </h1>
+        </header>
+        
+        <article class="reader-content" id="reader-content" data-chapter-id="{{ current_chapter.id }}">
+            {{ chapter_text | safe }}
+        </article>
+        
+        <!-- Chapter Navigation -->
+        <nav class="reader-nav">
+            {% if current_chapter.number > 1 %}
+                <a href="/read/{{ book.id }}?chapter={{ current_chapter.number - 1 }}" class="reader-nav-link reader-nav-link--prev">
+                    ← Previous
+                </a>
+            {% else %}
+                <span class="reader-nav-link reader-nav-link--disabled">← Previous</span>
+            {% endif %}
+            
+            {% if current_chapter.number < chapters|length %}
+                <a href="/read/{{ book.id }}?chapter={{ current_chapter.number + 1 }}" class="reader-nav-link reader-nav-link--next">
+                    Next →
+                </a>
+            {% else %}
+                <span class="reader-nav-link reader-nav-link--disabled">Next →</span>
+            {% endif %}
+        </nav>
+    </main>
+    
+    <!-- RIGHT: Annotations Rail -->
+    <aside class="reader-annotations" id="annotations-panel">
+        <div class="annotations-header">
+            <h3 class="annotations-title">Annotations</h3>
+            {% if annotations %}
+                <span class="annotations-count">{{ annotations|length }} notes</span>
+            {% endif %}
+        </div>
+        
+        <div class="annotations-list">
+            {% if annotations %}
+                {% for ann in annotations %}
+                    <div class="annotation-card" data-highlight-id="{{ ann.id }}" style="border-left: 3px solid {{ 'gold' if ann.color == 'yellow' else ann.color }};">
+                        <div class="annotation-meta">
+                            <span class="annotation-type annotation-type--user">🖍️ Highlight</span>
+                            <span class="annotation-time">{{ ann.created_at|default('Just now') }}</span>
+                        </div>
+                        {% if ann.quoted_text %}
+                            <p class="annotation-quote">"{{ ann.quoted_text }}"</p>
+                        {% endif %}
+                        {% if ann.text %}
+                            <p class="annotation-text">{{ ann.text }}</p>
+                        {% endif %}
+                        <div class="annotation-actions">
+                            {% if not ann.text %}
+                                <button class="annotation-action annotation-action--add-note" data-highlight-id="{{ ann.id }}">+ Add note</button>
+                            {% endif %}
+                            <form action="/read/{{ book.id }}/highlight/{{ ann.id }}" method="POST" style="display: inline;" onsubmit="return confirm('Delete this highlight?');">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="annotation-action annotation-action--delete">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="annotations-empty">
+                    <div class="annotations-empty-icon">📝</div>
+                    <p class="annotations-empty-text">
+                        No highlights yet.<br>
+                        Select text and press H to highlight.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="annotations-ask">
+            <p class="annotations-ask-label">Select text to ask about it</p>
+            <button class="annotations-ask-btn" id="ask-section-btn">💬 Ask about this chapter</button>
+        </div>
+        
+        <div class="annotations-hints">
+            <kbd>H</kbd> highlight · <kbd>N</kbd> note · <kbd>A</kbd> ask AI
+        </div>
+        
+        <p class="annotations-constraint">
+            I only explain the selected text. No advice, no modern applications.
+        </p>
+    </aside>
+    
+    <!-- Chat Panel (hidden by default, shown when text selected) -->
+    <aside class="reader-chat" id="chat-panel">
+        <div class="chat-header">
+            <h3 class="chat-title">Ask about this passage</h3>
+            <button class="chat-close" id="chat-close">×</button>
+        </div>
+        
+        <div class="chat-selected" id="chat-selected">
+            <p class="chat-selected-label">Selected text</p>
+            <blockquote class="chat-selected-text" id="selected-text-display"></blockquote>
+        </div>
+        
+        <form action="/read/{{ book.id }}/chat" method="POST" class="chat-form" id="chat-form">
+            <input type="hidden" name="chapter_id" value="{{ current_chapter.id }}">
+            <input type="hidden" name="start_offset" id="start-offset-input">
+            <input type="hidden" name="end_offset" id="end-offset-input">
+            <input type="hidden" name="selected_text" id="selected-text-input">
+            
+            <textarea 
+                name="question" 
+                class="chat-input" 
+                placeholder="What does this mean?"
+                rows="2"
+            ></textarea>
+            
+            <button type="submit" class="chat-submit">Ask</button>
+        </form>
+        
+        <div class="chat-response" id="chat-response"></div>
+        
+        <p class="chat-constraint">
+            I only explain the selected text. No advice, no modern applications.
+        </p>
+    </aside>
+</div>
+
+<!-- Highlight Menu (appears on text selection) -->
+<div class="highlight-menu" id="highlight-menu" hidden>
+    <button class="highlight-action" id="highlight-btn" title="Highlight">
+        🖍️
+    </button>
+    <button class="highlight-action" id="note-btn" title="Add note">
+        📝
+    </button>
+    <button class="highlight-action" id="ask-btn" title="Ask about this">
+        💬
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/reader.js?v=3"></script>
+{% endblock %}

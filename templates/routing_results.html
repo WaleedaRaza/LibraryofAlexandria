@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Where to read — Alexandria{% endblock %}
+
+{% block content %}
+<div class="routing-container">
+    
+    <!-- Your Question -->
+    <section class="routing-question-section">
+        <p class="routing-label">Your question</p>
+        <h1 class="routing-question">"{{ question }}"</h1>
+        
+        {% if results.intent and results.intent.matches %}
+        <div class="routing-domains">
+            <span class="routing-domains-label">This question touches:</span>
+            {% for match in results.intent.matches %}
+                <span class="routing-domain-tag routing-domain-tag--{{ match.domain|lower }}">
+                    {{ match.domain }}{% if match.subdomain %} / {{ match.subdomain }}{% endif %}
+                </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+    
+    {% if results.paths %}
+        <!-- Parallel Reading Paths -->
+        <section>
+            <p class="routing-label">Here are different ways thinkers have approached this</p>
+            
+            <div class="routing-paths">
+                {% for path in results.paths %}
+                    <div class="routing-path">
+                        {% if results.paths|length > 1 %}
+                            <h2 class="routing-path-angle">{{ path.angle }}</h2>
+                        {% endif %}
+                        
+                        <div class="routing-cards">
+                            {% for rec in path.recommendations %}
+                                <article class="routing-card">
+                                    <div class="routing-card-cover book-cover--{{ rec.domain|lower|default('philosophy') }}">
+                                        <span class="routing-card-cover-title">{{ rec.book_title }}</span>
+                                    </div>
+                                    <div class="routing-card-content">
+                                        <div class="routing-card-header">
+                                            <h3 class="routing-card-title">{{ rec.book_title }}</h3>
+                                            <p class="routing-card-author">{{ rec.book_author }}</p>
+                                        </div>
+                                        
+                                        <p class="routing-card-chapter">{{ rec.chapter_title }}</p>
+                                        
+                                        <p class="routing-card-rationale">{{ rec.rationale }}</p>
+                                        
+                                        <div class="routing-card-actions">
+                                            <a href="/read/{{ rec.book_id }}?chapter={{ rec.chapter_number }}&context={{ rec.rationale | urlencode }}" class="routing-card-btn">
+                                                Read this section →
+                                            </a>
+                                            {% if user %}
+                                                <form action="/library/save/{{ rec.book_id }}" method="POST" style="display: inline;">
+                                                    <button type="submit" class="routing-card-save">+ Save book</button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% elif results.recommendations %}
+        <!-- Fallback: Flat recommendations (backward compat) -->
+        <section>
+            <p class="routing-label">Where to read</p>
+            
+            <div class="routing-cards">
+                {% for rec in results.recommendations[:5] %}
+                    <article class="routing-card">
+                        <div class="routing-card-cover book-cover--philosophy">
+                            <span class="routing-card-cover-title">{{ rec.book_title }}</span>
+                        </div>
+                        <div class="routing-card-content">
+                            <div class="routing-card-header">
+                                <h3 class="routing-card-title">{{ rec.book_title }}</h3>
+                                <p class="routing-card-author">{{ rec.book_author }}</p>
+                            </div>
+                            
+                            <p class="routing-card-chapter">{{ rec.chapter_title }}</p>
+                            <p class="routing-card-rationale">{{ rec.rationale }}</p>
+                            
+                            <div class="routing-card-actions">
+                                <a href="/read/{{ rec.book_id }}?chapter={{ rec.chapter_number }}&context={{ rec.rationale | urlencode }}" class="routing-card-btn">
+                                    Read this section →
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    {% else %}
+        <!-- No Results -->
+        <section class="routing-empty">
+            <div class="routing-empty-icon">📚</div>
+            <h2 class="routing-empty-title">No readings found for this question</h2>
+            <p class="routing-empty-message">{{ results.message or "Our library focuses on foundational texts. We might not have sources on this specific topic yet." }}</p>
+            <div class="routing-empty-actions">
+                <a href="/library" class="btn btn--secondary">Browse the library</a>
+                <a href="/wishlist" class="btn btn--primary">Request a book</a>
+            </div>
+        </section>
+    {% endif %}
+    
+    <footer class="routing-footer">
+        <a href="/" class="routing-back">← Ask something else</a>
+    </footer>
+    
+</div>
+{% endblock %}

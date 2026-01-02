@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Library — Alexandria{% endblock %}
+
+{% block content %}
+<div class="library-container">
+    <header class="library-header">
+        <h1 class="library-title">The Library</h1>
+        <p class="library-subtitle">{{ books|length }} texts in the canon. No summaries. No takes. Just the books.</p>
+    </header>
+    
+    <!-- Filters -->
+    <div class="library-filters">
+        <form action="/library" method="GET" class="library-search">
+            <input 
+                type="text" 
+                name="search" 
+                placeholder="Search title or author..."
+                value="{{ search or '' }}"
+                class="library-search-input"
+            >
+            <button type="submit" class="library-search-btn">Search</button>
+        </form>
+        
+        <div class="library-domains">
+            <a href="/library" class="library-domain {% if not current_domain %}library-domain--active{% endif %}">
+                All
+            </a>
+            {% for domain in domains %}
+                <a href="/library?domain={{ domain }}" 
+                   class="library-domain {% if current_domain == domain %}library-domain--active{% endif %}">
+                    {{ domain }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Book Grid with Covers -->
+    {% if books %}
+        <div class="library-grid">
+            {% for book in books %}
+                <article class="book-card">
+                    <a href="/library/book/{{ book.id }}" class="book-card-link">
+                        <div class="book-cover book-cover--{{ book.domain|lower|default('philosophy') }}">
+                            <span class="book-cover-title">{{ book.title }}</span>
+                            {% if user and book.id in saved_book_ids %}
+                                <span class="book-cover-saved">✓</span>
+                            {% endif %}
+                        </div>
+                        <h2 class="book-card-title">{{ book.title }}</h2>
+                        <p class="book-card-author">{{ book.author }}</p>
+                        {% if book.domain %}
+                            <span class="book-card-domain">{{ book.domain }}</span>
+                        {% endif %}
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="library-empty">
+            <p>No books found.</p>
+            {% if search %}
+                <a href="/library" class="btn btn--secondary">Clear search</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

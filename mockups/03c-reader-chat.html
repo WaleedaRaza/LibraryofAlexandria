@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Prince — Chapter XVII | Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .main { padding: 0; max-width: none; }
+
+        .reader-container {
+            display: grid;
+            grid-template-columns: 260px 1fr 360px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* Left sidebar - same as main reader */
+        .reader-sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+        }
+
+        .reader-book-link {
+            display: block;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .reader-book-cover {
+            width: 80px;
+            aspect-ratio: 2/3;
+            background: linear-gradient(145deg, #2d132c 0%, #801336 100%);
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .reader-book-cover::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .reader-book-title {
+            font-family: var(--font-reading);
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .reader-book-author {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .reader-chapters-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .reader-chapter-list { list-style: none; }
+        .reader-chapter-item { margin-bottom: 0.25rem; }
+        .reader-chapter-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border-radius: 4px;
+        }
+        .reader-chapter-item--active .reader-chapter-link {
+            color: var(--accent-primary);
+            background: rgba(201, 169, 98, 0.1);
+        }
+
+        /* Main reading pane */
+        .reader-main {
+            padding: 2rem 3rem;
+            background: var(--bg-primary);
+        }
+
+        .reader-header {
+            max-width: var(--reading-width);
+            margin: 0 auto 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .reader-chapter-heading {
+            font-family: var(--font-reading);
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--text-primary);
+        }
+
+        .reader-chapter-number {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-right: 0.5rem;
+        }
+
+        .reader-content {
+            max-width: var(--reading-width);
+            margin: 0 auto;
+            font-family: var(--font-reading);
+            font-size: 1.2rem;
+            line-height: 1.9;
+            color: var(--text-primary);
+        }
+
+        .reader-content p {
+            margin-bottom: 1.75em;
+            text-indent: 1.5em;
+        }
+
+        .reader-content p:first-of-type {
+            text-indent: 0;
+        }
+
+        .reader-content p:first-of-type::first-letter {
+            font-size: 3.5em;
+            float: left;
+            line-height: 0.8;
+            margin-right: 0.1em;
+            color: var(--accent-primary);
+        }
+
+        /* Selected text highlight */
+        .selected-text {
+            background: rgba(201, 169, 98, 0.3);
+            padding: 2px 0;
+        }
+
+        /* =============================================
+           CHAT PANEL - Right Side
+           ============================================= */
+        .reader-chat {
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chat-title {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .chat-close {
+            width: 28px;
+            height: 28px;
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .chat-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* Selected text display */
+        .chat-selected {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        .chat-selected-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-selected-text {
+            font-family: var(--font-reading);
+            font-size: 0.9rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            border-left: 2px solid var(--accent-primary);
+            padding-left: 0.75rem;
+            margin: 0;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        /* Chat form */
+        .chat-form {
+            margin-bottom: 1.5rem;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 0.75rem;
+            font-family: var(--font-ui);
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            resize: none;
+            margin-bottom: 0.75rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .chat-submit {
+            width: 100%;
+            padding: 0.75rem;
+            font-family: var(--font-ui);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--bg-primary);
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .chat-submit:hover {
+            background: #d4b76d;
+        }
+
+        /* Chat response */
+        .chat-response {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .chat-response-content {
+            font-family: var(--font-reading);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .chat-response-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-family: var(--font-ui);
+            font-size: 0.75rem;
+            color: var(--accent-secondary);
+            background: rgba(125, 157, 114, 0.1);
+            border: 1px solid rgba(125, 157, 114, 0.3);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .chat-response-save:hover {
+            background: rgba(125, 157, 114, 0.2);
+        }
+
+        /* Constraint footer */
+        .chat-constraint {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-style: italic;
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="06-my-library.html" class="nav-link">My Library</a>
+                <span class="nav-link">reader@example.com</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="reader-container">
+        <!-- LEFT: Chapter Navigation -->
+        <aside class="reader-sidebar">
+            <a href="05-book-detail.html" class="reader-book-link">
+                <div class="reader-book-cover"></div>
+                <h2 class="reader-book-title">The Prince</h2>
+                <p class="reader-book-author">Niccolò Machiavelli</p>
+            </a>
+
+            <h3 class="reader-chapters-title">Chapters</h3>
+            <ol class="reader-chapter-list">
+                <li class="reader-chapter-item">
+                    <a href="#" class="reader-chapter-link">I. Types of Principalities</a>
+                </li>
+                <li class="reader-chapter-item reader-chapter-item--active">
+                    <a href="#" class="reader-chapter-link">XVII. Cruelty and Clemency</a>
+                </li>
+                <li class="reader-chapter-item">
+                    <a href="#" class="reader-chapter-link">XVIII. How Princes Should Keep Faith</a>
+                </li>
+            </ol>
+        </aside>
+
+        <!-- CENTER: Main Reading Pane -->
+        <main class="reader-main">
+            <header class="reader-header">
+                <h1 class="reader-chapter-heading">
+                    <span class="reader-chapter-number">XVII.</span>
+                    Concerning Cruelty and Clemency
+                </h1>
+            </header>
+
+            <article class="reader-content">
+                <p>Coming now to the other qualities mentioned above, I say that every prince ought to desire to be considered clement and not cruel. Nevertheless he ought to take care not to misuse this clemency.</p>
+
+                <p>Upon this a question arises: whether it be better to be loved than feared or feared than loved? It may be answered that one should wish to be both, but, because it is difficult to unite them in one person, <span class="selected-text">it is much safer to be feared than loved, when, of the two, either must be dispensed with</span>.</p>
+
+                <p>Because this is to be asserted in general of men, that they are ungrateful, fickle, false, cowardly, covetous, and as long as you succeed they are yours entirely.</p>
+            </article>
+        </main>
+
+        <!-- RIGHT: Chat Panel -->
+        <aside class="reader-chat">
+            <div class="chat-header">
+                <h3 class="chat-title">Ask about this passage</h3>
+                <button class="chat-close">×</button>
+            </div>
+
+            <div class="chat-selected">
+                <p class="chat-selected-label">Selected text</p>
+                <blockquote class="chat-selected-text">
+                    "it is much safer to be feared than loved, when, of the two, either must be dispensed with"
+                </blockquote>
+            </div>
+
+            <form class="chat-form">
+                <textarea class="chat-input" rows="2" placeholder="What does this mean?">Why does Machiavelli say fear is "safer" than love?</textarea>
+                <button type="submit" class="chat-submit">Ask</button>
+            </form>
+
+            <div class="chat-response">
+                <p class="chat-response-content">
+                    Machiavelli uses "safer" in a strategic sense. He's observing that fear produces <em>reliable</em> behavior — people avoid punishment consistently — while love produces <em>conditional</em> loyalty that evaporates when circumstances change.
+                </p>
+                <p class="chat-response-content">
+                    He's not making a moral argument that fear is "good." He's making a practical observation: if a ruler must choose between being loved or feared (and can't be both), fear creates more predictable outcomes.
+                </p>
+                <button class="chat-response-save">
+                    📝 Save as annotation
+                </button>
+            </div>
+
+            <p class="chat-constraint">
+                I only explain the selected text. No advice, no modern applications.
+            </p>
+        </aside>
+    </div>
+
+    <div class="mockup-indicator">
+        MOCKUP — Chat Open — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

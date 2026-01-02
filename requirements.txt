@@ -1,0 +1,26 @@
+# Alexandria Library - Dependencies
+# Production-ready, minimal set
+
+# Web framework
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
+
+# Templates
+jinja2==3.1.3
+
+# Database - Supabase REST API (no more psycopg2 connection issues!)
+supabase>=2.27.0
+
+# LLM
+openai==1.12.0
+
+# Security
+python-multipart==0.0.9  # For form data
+bcrypt==5.0.0  # Password hashing
+
+# PDF Processing (for ingestion)
+pypdf==4.0.1
+
+# Development
+python-dotenv==1.0.1
+

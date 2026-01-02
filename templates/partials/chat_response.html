@@ -1,0 +1,16 @@
+{% if response.is_valid %}
+    <div class="chat-response-content">
+        <p>{{ response.explanation }}</p>
+    </div>
+{% else %}
+    <div class="chat-response-refusal">
+        <p>{{ response.refusal_reason }}</p>
+        {% if response.suggested_chapter %}
+            <p class="chat-suggestion">
+                You might find what you're looking for in: 
+                <strong>{{ response.suggested_chapter }}</strong>
+            </p>
+        {% endif %}
+    </div>
+{% endif %}
+

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} — Alexandria{% endblock %}
+
+{% block content %}
+<div class="book-detail-container">
+    <a href="/library" class="book-detail-back">← Back to Library</a>
+    
+    <!-- Book Header with Cover -->
+    <header class="book-detail-header">
+        <div class="book-detail-cover book-cover--{{ book.domain|lower|default('philosophy') }}">
+            <span class="book-detail-cover-title">{{ book.title }}</span>
+        </div>
+        <div class="book-detail-info">
+            <h1 class="book-detail-title">{{ book.title }}</h1>
+            <p class="book-detail-author">by {{ book.author }}</p>
+            
+            {% if book.domain %}
+                <span class="book-detail-domain">{{ book.domain }}</span>
+            {% endif %}
+            
+            <div class="book-detail-actions">
+                <a href="/read/{{ book.id }}" class="btn btn--primary btn--large">
+                    Open Reader →
+                </a>
+                
+                {% if user %}
+                    {% if is_saved %}
+                        <form action="/library/unsave/{{ book.id }}" method="POST">
+                            <button type="submit" class="btn btn--secondary btn--large">
+                                ✓ Saved
+                            </button>
+                        </form>
+                    {% else %}
+                        <form action="/library/save/{{ book.id }}" method="POST">
+                            <button type="submit" class="btn btn--secondary btn--large">
+                                + Save to Library
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <p class="book-detail-auth-hint">
+                        <a href="/auth/login">Sign in</a> to save books
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+    
+    <!-- Reading Progress (if user has saved and read this book) -->
+    {% if user and last_chapter %}
+        <div class="book-detail-progress">
+            <p class="book-detail-progress-label">Your progress</p>
+            <p class="book-detail-progress-text">Last read: {{ last_chapter.title }}</p>
+            <div class="book-detail-progress-resume">
+                <a href="/read/{{ book.id }}?chapter={{ last_chapter.number }}" class="btn btn--primary">Resume reading →</a>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Chapters -->
+    {% if chapters %}
+        <section class="book-detail-chapters">
+            <h2 class="book-detail-section-title">Chapters</h2>
+            <ol class="chapter-list">
+                {% for chapter in chapters %}
+                    <li class="chapter-list-item">
+                        <a href="/read/{{ book.id }}?chapter={{ chapter.number }}" class="chapter-link">
+                            <span class="chapter-number">{{ chapter.number }}</span>
+                            <span class="chapter-title">{{ chapter.title }}</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ol>
+        </section>
+    {% endif %}
+</div>
+{% endblock %}

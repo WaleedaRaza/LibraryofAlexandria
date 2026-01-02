@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}{{ req.title }} — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <a href="/admin/requests" class="admin-back">← Back to requests</a>
+    
+    <header class="admin-header">
+        <h1 class="admin-title">{{ req.title }}</h1>
+        <span class="status-badge status-badge--{{ req.status|lower }}">{{ req.status }}</span>
+    </header>
+    
+    <div class="request-details">
+        <div class="detail-row">
+            <span class="detail-label">Author</span>
+            <span class="detail-value">{{ req.author or 'Not specified' }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Requested by</span>
+            <span class="detail-value">{{ req.user_id }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Submitted</span>
+            <span class="detail-value">{{ req.created_at }}</span>
+        </div>
+        {% if req.resolved_at %}
+        <div class="detail-row">
+            <span class="detail-label">Resolved</span>
+            <span class="detail-value">{{ req.resolved_at }}</span>
+        </div>
+        {% endif %}
+        {% if req.reason %}
+        <div class="detail-row">
+            <span class="detail-label">Reason</span>
+            <span class="detail-value">{{ req.reason }}</span>
+        </div>
+        {% endif %}
+        {% if req.admin_notes %}
+        <div class="detail-row">
+            <span class="detail-label">Admin Notes</span>
+            <span class="detail-value">{{ req.admin_notes }}</span>
+        </div>
+        {% endif %}
+    </div>
+    
+    {% if req.status == 'PENDING' %}
+    <div class="admin-actions">
+        <form action="/admin/requests/{{ req.id }}/approve" method="POST" class="action-form">
+            <textarea name="admin_notes" placeholder="Optional note..." rows="2"></textarea>
+            <button type="submit" class="btn btn--success">Approve</button>
+        </form>
+        
+        <form action="/admin/requests/{{ req.id }}/reject" method="POST" class="action-form">
+            <textarea name="admin_notes" placeholder="Reason for rejection (required)" rows="2" required></textarea>
+            <button type="submit" class="btn btn--danger">Reject</button>
+        </form>
+    </div>
+    {% elif req.status == 'APPROVED' %}
+    <div class="admin-actions">
+        <form action="/admin/requests/{{ req.id }}/mark-added" method="POST" class="action-form">
+            <button type="submit" class="btn btn--primary">Mark as Added</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.admin-container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+.admin-back { color: #666; text-decoration: none; display: inline-block; margin-bottom: 1rem; }
+.admin-back:hover { color: #333; }
+.admin-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+.admin-title { font-size: 1.5rem; margin: 0; }
+.request-details { background: #f9f9f9; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; }
+.detail-row { display: flex; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { width: 140px; font-weight: 600; color: #666; }
+.detail-value { flex: 1; }
+.admin-actions { display: flex; gap: 2rem; }
+.action-form { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+.action-form textarea { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; resize: vertical; }
+.btn--success { background: #28a745; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; }
+.btn--danger { background: #dc3545; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; }
+.btn--primary { background: #007bff; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; }
+.status-badge { padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.75rem; font-weight: 600; }
+.status-badge--pending { background: #fff3cd; color: #856404; }
+.status-badge--approved { background: #cce5ff; color: #004085; }
+.status-badge--rejected { background: #f8d7da; color: #721c24; }
+.status-badge--added { background: #d4edda; color: #155724; }
+</style>
+{% endblock %}

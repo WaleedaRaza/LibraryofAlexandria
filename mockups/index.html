@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alexandria Mockups — All Views</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'JetBrains Mono', 'SF Mono', monospace;
+            background: #0d0d0f;
+            color: #e8e6e3;
+            padding: 4rem 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #c9a962;
+        }
+        .subtitle {
+            color: #a09d98;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+        .section {
+            margin-bottom: 3rem;
+        }
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #6b6965;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #2a2a30;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .card {
+            background: #141418;
+            border: 1px solid #2a2a30;
+            border-radius: 4px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            border-color: #c9a962;
+            transform: translateY(-2px);
+        }
+        .card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card-title {
+            font-size: 1rem;
+            color: #e8e6e3;
+            margin-bottom: 0.5rem;
+        }
+        .card-desc {
+            font-size: 0.8rem;
+            color: #6b6965;
+            margin-bottom: 1rem;
+        }
+        .card-states {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .state-tag {
+            font-size: 0.65rem;
+            padding: 0.25rem 0.5rem;
+            background: #1a1a1f;
+            border-radius: 3px;
+            color: #a09d98;
+        }
+        .state-tag--user {
+            background: rgba(125, 157, 114, 0.2);
+            color: #7d9d72;
+        }
+        .state-tag--anon {
+            background: rgba(201, 169, 98, 0.2);
+            color: #c9a962;
+        }
+        .state-tag--empty {
+            background: rgba(179, 86, 86, 0.2);
+            color: #b35656;
+        }
+        .legend {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            font-size: 0.75rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Alexandria — Visual Mockups</h1>
+        <p class="subtitle">All pages, all states, all user types. Open these to validate UX before code.</p>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <span class="state-tag state-tag--anon">anonymous</span>
+                <span>Not logged in</span>
+            </div>
+            <div class="legend-item">
+                <span class="state-tag state-tag--user">logged in</span>
+                <span>Authenticated user</span>
+            </div>
+            <div class="legend-item">
+                <span class="state-tag state-tag--empty">empty</span>
+                <span>No data state</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Core User Journey</h2>
+            <div class="grid">
+                <div class="card">
+                    <a href="01-homepage.html">
+                        <h3 class="card-title">Homepage</h3>
+                        <p class="card-desc">Question input, library preview, example queries</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--anon">anonymous</span>
+                            <span class="state-tag state-tag--user">logged in</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="02-routing-results.html">
+                        <h3 class="card-title">Routing Results</h3>
+                        <p class="card-desc">Parallel reading paths with book covers</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--anon">anonymous</span>
+                            <span class="state-tag state-tag--user">logged in</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="02b-routing-empty.html">
+                        <h3 class="card-title">Routing — No Results</h3>
+                        <p class="card-desc">When no books match the question</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--empty">empty</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">The Reader (Core Experience)</h2>
+            <div class="grid">
+                <div class="card">
+                    <a href="03-reader.html">
+                        <h3 class="card-title">Reader — Full Experience</h3>
+                        <p class="card-desc">Context header, formatted text, annotation sidebar</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--user">logged in</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="03b-reader-anon.html">
+                        <h3 class="card-title">Reader — Anonymous</h3>
+                        <p class="card-desc">Reading without highlighting</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--anon">anonymous</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="03c-reader-chat.html">
+                        <h3 class="card-title">Reader — Chat Open</h3>
+                        <p class="card-desc">Text selected, asking about passage</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--user">logged in</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="03d-reader-annotation.html">
+                        <h3 class="card-title">Reader — With Annotations</h3>
+                        <p class="card-desc">AI notes + user notes in margins</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--user">logged in</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Library & Books</h2>
+            <div class="grid">
+                <div class="card">
+                    <a href="04-library.html">
+                        <h3 class="card-title">Library — Browse</h3>
+                        <p class="card-desc">Book grid with covers and domain filters</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--anon">anonymous</span>
+                            <span class="state-tag state-tag--user">logged in</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="05-book-detail.html">
+                        <h3 class="card-title">Book Detail</h3>
+                        <p class="card-desc">Cover, chapters, save button</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--anon">anonymous</span>
+                            <span class="state-tag state-tag--user">logged in</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="06-my-library.html">
+                        <h3 class="card-title">My Library</h3>
+                        <p class="card-desc">Saved books with reading progress</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--user">logged in</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="06b-my-library-empty.html">
+                        <h3 class="card-title">My Library — Empty</h3>
+                        <p class="card-desc">No saved books yet</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--empty">empty</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Wishlist & Requests</h2>
+            <div class="grid">
+                <div class="card">
+                    <a href="07-wishlist.html">
+                        <h3 class="card-title">Wishlist</h3>
+                        <p class="card-desc">Request books, view status</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--user">logged in</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Auth</h2>
+            <div class="grid">
+                <div class="card">
+                    <a href="08-login.html">
+                        <h3 class="card-title">Login</h3>
+                        <p class="card-desc">Sign in form</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--anon">anonymous</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="08b-register.html">
+                        <h3 class="card-title">Register</h3>
+                        <p class="card-desc">Create account form</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--anon">anonymous</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Error States</h2>
+            <div class="grid">
+                <div class="card">
+                    <a href="09-404.html">
+                        <h3 class="card-title">404 — Not Found</h3>
+                        <p class="card-desc">Page or book doesn't exist</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--empty">error</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <a href="09b-500.html">
+                        <h3 class="card-title">500 — Server Error</h3>
+                        <p class="card-desc">Something went wrong</p>
+                        <div class="card-states">
+                            <span class="state-tag state-tag--empty">error</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

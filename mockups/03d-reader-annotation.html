@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Prince — Chapter XVII | Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .main { padding: 0; max-width: none; }
+
+        .reader-container {
+            display: grid;
+            grid-template-columns: 260px 1fr 340px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* Left sidebar */
+        .reader-sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+        }
+
+        .reader-book-link {
+            display: block;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .reader-book-cover {
+            width: 80px;
+            aspect-ratio: 2/3;
+            background: linear-gradient(145deg, #2d132c 0%, #801336 100%);
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+        }
+
+        .reader-book-title {
+            font-family: var(--font-reading);
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .reader-book-author {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .reader-chapters-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .reader-chapter-list { list-style: none; }
+        .reader-chapter-item { margin-bottom: 0.25rem; }
+        .reader-chapter-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border-radius: 4px;
+        }
+        .reader-chapter-item--active .reader-chapter-link {
+            color: var(--accent-primary);
+            background: rgba(201, 169, 98, 0.1);
+        }
+
+        /* Main reading pane */
+        .reader-main {
+            padding: 2rem 3rem;
+            background: var(--bg-primary);
+        }
+
+        .reader-header {
+            max-width: var(--reading-width);
+            margin: 0 auto 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .reader-chapter-heading {
+            font-family: var(--font-reading);
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--text-primary);
+        }
+
+        .reader-chapter-number {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-right: 0.5rem;
+        }
+
+        .reader-content {
+            max-width: var(--reading-width);
+            margin: 0 auto;
+            font-family: var(--font-reading);
+            font-size: 1.2rem;
+            line-height: 1.9;
+            color: var(--text-primary);
+        }
+
+        .reader-content p {
+            margin-bottom: 1.75em;
+            text-indent: 1.5em;
+        }
+
+        .reader-content p:first-of-type {
+            text-indent: 0;
+        }
+
+        .reader-content p:first-of-type::first-letter {
+            font-size: 3.5em;
+            float: left;
+            line-height: 0.8;
+            margin-right: 0.1em;
+            color: var(--accent-primary);
+        }
+
+        /* Highlighted passages with annotation markers */
+        .highlight {
+            padding: 2px 0;
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .highlight--yellow { background: rgba(255, 235, 59, 0.25); }
+        .highlight--green { background: rgba(139, 195, 74, 0.25); }
+        .highlight--blue { background: rgba(100, 181, 246, 0.25); }
+
+        .highlight--active {
+            background: rgba(201, 169, 98, 0.35);
+        }
+
+        /* Annotation dot marker */
+        .annotation-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-left: 2px;
+            vertical-align: super;
+        }
+
+        .annotation-dot--ai { background: var(--accent-secondary); }
+        .annotation-dot--user { background: var(--accent-primary); }
+
+        /* =============================================
+           ANNOTATIONS RAIL - Genius.com style
+           ============================================= */
+        .reader-annotations {
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+        }
+
+        .annotations-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .annotations-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .annotations-count {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        /* Annotation cards */
+        .annotation-card {
+            margin-bottom: 1.25rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            border-left: 3px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .annotation-card:hover {
+            border-left-color: var(--accent-primary);
+        }
+
+        .annotation-card--active {
+            border-left-color: var(--accent-primary);
+            background: rgba(201, 169, 98, 0.08);
+        }
+
+        .annotation-card--ai {
+            border-left-color: var(--accent-secondary);
+        }
+
+        .annotation-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .annotation-type {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+
+        .annotation-type--ai {
+            background: rgba(125, 157, 114, 0.15);
+            color: var(--accent-secondary);
+        }
+
+        .annotation-type--user {
+            background: rgba(201, 169, 98, 0.15);
+            color: var(--accent-primary);
+        }
+
+        .annotation-time {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+
+        .annotation-quote {
+            font-family: var(--font-reading);
+            font-size: 0.8rem;
+            font-style: italic;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .annotation-text {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .annotation-actions {
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .annotation-action {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .annotation-action:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Add annotation prompt */
+        .annotations-add {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border: 1px dashed var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .annotations-add-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .annotations-add-hint {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .annotations-add-hint kbd {
+            background: var(--bg-tertiary);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-family: var(--font-ui);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="06-my-library.html" class="nav-link">My Library</a>
+                <span class="nav-link">reader@example.com</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="reader-container">
+        <!-- LEFT: Chapter Navigation -->
+        <aside class="reader-sidebar">
+            <a href="05-book-detail.html" class="reader-book-link">
+                <div class="reader-book-cover"></div>
+                <h2 class="reader-book-title">The Prince</h2>
+                <p class="reader-book-author">Niccolò Machiavelli</p>
+            </a>
+
+            <h3 class="reader-chapters-title">Chapters</h3>
+            <ol class="reader-chapter-list">
+                <li class="reader-chapter-item reader-chapter-item--active">
+                    <a href="#" class="reader-chapter-link">XVII. Cruelty and Clemency</a>
+                </li>
+                <li class="reader-chapter-item">
+                    <a href="#" class="reader-chapter-link">XVIII. How Princes Should Keep Faith</a>
+                </li>
+            </ol>
+        </aside>
+
+        <!-- CENTER: Main Reading Pane with annotated text -->
+        <main class="reader-main">
+            <header class="reader-header">
+                <h1 class="reader-chapter-heading">
+                    <span class="reader-chapter-number">XVII.</span>
+                    Concerning Cruelty and Clemency
+                </h1>
+            </header>
+
+            <article class="reader-content">
+                <p>Coming now to the other qualities mentioned above, I say that every prince ought to desire to be considered clement and not cruel. Nevertheless he ought to take care not to misuse this clemency. Cesare Borgia was considered cruel; notwithstanding, his cruelty reconciled the Romagna, unified it, and restored it to peace and loyalty.</p>
+
+                <p>Therefore a prince, so long as he keeps his subjects united and loyal, ought not to mind the reproach of cruelty; because <span class="highlight highlight--yellow">with a few examples he will be more merciful than those who, through too much mercy, allow disorders to arise<span class="annotation-dot annotation-dot--user"></span></span>, from which follow murders or robberies.</p>
+
+                <p>Upon this a question arises: whether it be better to be loved than feared or feared than loved? It may be answered that one should wish to be both, but, because it is difficult to unite them in one person, <span class="highlight highlight--green highlight--active">it is much safer to be feared than loved, when, of the two, either must be dispensed with<span class="annotation-dot annotation-dot--ai"></span></span>.</p>
+
+                <p>Because this is to be asserted in general of men, that <span class="highlight highlight--blue">they are ungrateful, fickle, false, cowardly, covetous<span class="annotation-dot annotation-dot--user"></span></span>, and as long as you succeed they are yours entirely; they will offer you their blood, property, life, and children, when the need is far distant; but when it approaches they turn against you.</p>
+            </article>
+        </main>
+
+        <!-- RIGHT: Annotations Rail (Genius.com style) -->
+        <aside class="reader-annotations">
+            <div class="annotations-header">
+                <h3 class="annotations-title">Annotations</h3>
+                <span class="annotations-count">3 notes</span>
+            </div>
+
+            <!-- Active annotation (linked to highlighted text) -->
+            <div class="annotation-card annotation-card--ai annotation-card--active">
+                <div class="annotation-meta">
+                    <span class="annotation-type annotation-type--ai">✨ AI</span>
+                    <span class="annotation-time">Just now</span>
+                </div>
+                <p class="annotation-quote">"it is much safer to be feared than loved"</p>
+                <p class="annotation-text">
+                    Machiavelli uses "safer" strategically. Fear produces <em>reliable</em> behavior — people consistently avoid punishment — while love produces <em>conditional</em> loyalty that evaporates when circumstances change. This is observation, not moral prescription.
+                </p>
+            </div>
+
+            <!-- User annotation -->
+            <div class="annotation-card">
+                <div class="annotation-meta">
+                    <span class="annotation-type annotation-type--user">📝 You</span>
+                    <span class="annotation-time">2 min ago</span>
+                </div>
+                <p class="annotation-quote">"with a few examples he will be more merciful"</p>
+                <p class="annotation-text">
+                    This explains why my manager is strict about deadlines. Letting things slide would create more chaos for everyone. The "cruel" enforcement is actually more merciful.
+                </p>
+                <div class="annotation-actions">
+                    <button class="annotation-action">Edit</button>
+                    <button class="annotation-action">Delete</button>
+                </div>
+            </div>
+
+            <!-- Another user annotation -->
+            <div class="annotation-card">
+                <div class="annotation-meta">
+                    <span class="annotation-type annotation-type--user">📝 You</span>
+                    <span class="annotation-time">5 min ago</span>
+                </div>
+                <p class="annotation-quote">"ungrateful, fickle, false, cowardly, covetous"</p>
+                <p class="annotation-text">
+                    Harsh but rings true. People are loyal when it costs them nothing.
+                </p>
+                <div class="annotation-actions">
+                    <button class="annotation-action">Edit</button>
+                    <button class="annotation-action">Delete</button>
+                </div>
+            </div>
+
+            <!-- Add annotation hint -->
+            <div class="annotations-add">
+                <p class="annotations-add-text">Select text to add a note</p>
+                <p class="annotations-add-hint">
+                    <kbd>H</kbd> highlight · <kbd>N</kbd> note · <kbd>A</kbd> ask AI
+                </p>
+            </div>
+        </aside>
+    </div>
+
+    <div class="mockup-indicator">
+        MOCKUP — With Annotations — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

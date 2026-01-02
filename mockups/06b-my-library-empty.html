@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Library — Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .my-library-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .my-library-header {
+            margin-bottom: 3rem;
+        }
+
+        .my-library-title {
+            font-family: var(--font-reading);
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .my-library-subtitle {
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .my-library-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-secondary);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-family: var(--font-reading);
+            font-size: 1.75rem;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-message {
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .empty-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Suggested books */
+        .suggestions {
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .suggestions-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .book-card-link {
+            display: block;
+            text-decoration: none;
+        }
+
+        .book-cover {
+            aspect-ratio: 2/3;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            position: relative;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .book-card-link:hover .book-cover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+        }
+
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .book-cover-title {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0.5rem;
+            right: 0.5rem;
+            font-family: var(--font-reading);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .book-card-title {
+            font-family: var(--font-reading);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .book-card-author {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="07-wishlist.html" class="nav-link">Wishlist</a>
+                <a href="06-my-library.html" class="nav-link" style="color: var(--accent-primary);">My Library</a>
+                <span class="nav-link">reader@example.com</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="my-library-container">
+            <header class="my-library-header">
+                <h1 class="my-library-title">My Library</h1>
+                <p class="my-library-subtitle">Your thinking shelf</p>
+            </header>
+
+            <!-- Empty State -->
+            <div class="my-library-empty">
+                <div class="empty-icon">📚</div>
+                <h2 class="empty-title">Your shelf is empty</h2>
+                <p class="empty-message">
+                    Save books as you read to build your personal library. 
+                    Your highlights and annotations will live here.
+                </p>
+                <div class="empty-actions">
+                    <a href="01-homepage.html" class="btn btn--primary">Ask a question</a>
+                    <a href="04-library.html" class="btn btn--secondary">Browse the library</a>
+                </div>
+            </div>
+
+            <!-- Suggested Starting Points -->
+            <div class="suggestions">
+                <h3 class="suggestions-title">Popular starting points</h3>
+                <div class="suggestions-grid">
+                    <a href="05-book-detail.html" class="book-card-link">
+                        <div class="book-cover" style="background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);">
+                            <span class="book-cover-title">Meditations</span>
+                        </div>
+                        <h4 class="book-card-title">Meditations</h4>
+                        <p class="book-card-author">Marcus Aurelius</p>
+                    </a>
+
+                    <a href="05-book-detail.html" class="book-card-link">
+                        <div class="book-cover" style="background: linear-gradient(145deg, #2d132c 0%, #801336 100%);">
+                            <span class="book-cover-title">The Prince</span>
+                        </div>
+                        <h4 class="book-card-title">The Prince</h4>
+                        <p class="book-card-author">Machiavelli</p>
+                    </a>
+
+                    <a href="05-book-detail.html" class="book-card-link">
+                        <div class="book-cover" style="background: linear-gradient(145deg, #1a3c34 0%, #0d2818 100%);">
+                            <span class="book-cover-title">The Art of War</span>
+                        </div>
+                        <h4 class="book-card-title">The Art of War</h4>
+                        <p class="book-card-author">Sun Tzu</p>
+                    </a>
+
+                    <a href="05-book-detail.html" class="book-card-link">
+                        <div class="book-cover" style="background: linear-gradient(145deg, #1f1f3d 0%, #3d1f5c 100%);">
+                            <span class="book-cover-title">Thinking, Fast and Slow</span>
+                        </div>
+                        <h4 class="book-card-title">Thinking, Fast and Slow</h4>
+                        <p class="book-card-author">Kahneman</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="mockup-indicator">
+        MOCKUP — Empty State — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

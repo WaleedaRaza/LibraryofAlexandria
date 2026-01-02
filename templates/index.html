@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Alexandria — Form your own answers{% endblock %}
+
+{% block content %}
+<!-- Loading overlay - shows during form submission -->
+<div class="loading-overlay" id="loadingOverlay">
+    <p class="loading-text">Finding where this is discussed…</p>
+</div>
+
+<div class="home-container">
+    <!-- Hero Section -->
+    <div class="home-hero">
+        <h1 class="home-title">Looking for answers?</h1>
+        <p class="home-subtitle">We point you to the book. You form your own.</p>
+        <p class="home-tagline">Everyone has a take. We have the sources they're summarizing.</p>
+    </div>
+    
+    <!-- Ask Form -->
+    <div class="home-ask">
+        <form action="/ask/" method="POST" class="ask-form" id="askForm">
+            <div class="ask-input-wrapper">
+                <textarea 
+                    name="question" 
+                    class="ask-input" 
+                    placeholder="Frustrated at work? Confused about money? Wondering why people believe what they believe? What brought you here?"
+                    rows="3"
+                    required
+                    autofocus
+                ></textarea>
+            </div>
+            <button type="submit" class="ask-submit">
+                Find the reading →
+            </button>
+        </form>
+    </div>
+    
+    <!-- Book Preview Section with Covers -->
+    {% if books %}
+        <div class="home-library">
+            <div class="home-library-header">
+                <div>
+                    <h2 class="home-library-title">The Library</h2>
+                    <span class="home-library-subtitle">{{ total_books }} primary sources. No summaries. No takes.</span>
+                </div>
+                <a href="/library" class="home-library-link">Browse all →</a>
+            </div>
+            
+            <div class="book-grid">
+                {% for book in books[:12] %}
+                    <article class="book-card">
+                        <a href="/library/book/{{ book.id }}" class="book-card-link">
+                            <div class="book-cover book-cover--{{ book.domain|lower|default('philosophy') }}">
+                                <span class="book-cover-title">{{ book.title }}</span>
+                                {% if user and book.id in saved_book_ids %}
+                                    <span class="book-cover-saved">✓</span>
+                                {% endif %}
+                            </div>
+                            <h3 class="book-card-title">{{ book.title }}</h3>
+                            <p class="book-card-author">{{ book.author }}</p>
+                            {% if book.domain %}
+                                <span class="book-card-domain">{{ book.domain }}</span>
+                            {% endif %}
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Quick Examples -->
+    <div class="home-examples">
+        <p class="home-examples-label">Real questions deserve real sources:</p>
+        <div class="home-examples-list">
+            <button type="button" class="home-example" data-question="Why does my boss act like that?">
+                Why does my boss act like that?
+            </button>
+            <button type="button" class="home-example" data-question="How do I stop caring what people think?">
+                How do I stop caring what people think?
+            </button>
+            <button type="button" class="home-example" data-question="Why do smart people believe stupid things?">
+                Why do smart people believe stupid things?
+            </button>
+            <button type="button" class="home-example" data-question="Why do power dynamics ruin relationships?">
+                Why do power dynamics ruin relationships?
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Example questions populate the textarea
+document.querySelectorAll('.home-example').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelector('.ask-input').value = btn.dataset.question;
+        document.querySelector('.ask-input').focus();
+    });
+});
+
+// Show loading overlay on form submit
+document.getElementById('askForm').addEventListener('submit', () => {
+    document.getElementById('loadingOverlay').classList.add('loading-overlay--visible');
+});
+</script>
+{% endblock %}

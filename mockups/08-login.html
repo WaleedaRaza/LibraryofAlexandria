@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 4rem 0;
+        }
+
+        .auth-card {
+            padding: 2.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .auth-title {
+            font-family: var(--font-reading);
+            font-size: 1.75rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 0.875rem;
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--bg-primary);
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .auth-submit:hover {
+            background: #d4b76d;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-switch a {
+            color: var(--accent-primary);
+        }
+
+        /* Error state */
+        .auth-error {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--accent-danger);
+            background: rgba(179, 86, 86, 0.1);
+            border: 1px solid rgba(179, 86, 86, 0.3);
+            border-radius: 4px;
+        }
+
+        .auth-error[hidden] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="08-login.html" class="nav-link" style="color: var(--accent-primary);">Sign in</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h1 class="auth-title">Welcome back</h1>
+                <p class="auth-subtitle">Sign in to access your library and notes</p>
+
+                <!-- Error message (hidden by default) -->
+                <div class="auth-error" hidden>
+                    Invalid email or password. Please try again.
+                </div>
+
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" placeholder="reader@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="auth-submit">Sign in</button>
+                </form>
+
+                <p class="auth-switch">
+                    Don't have an account? <a href="08b-register.html">Create one</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <div class="mockup-indicator">
+        MOCKUP — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

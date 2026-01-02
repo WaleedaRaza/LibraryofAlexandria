@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Something Went Wrong — Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .error-container {
+            text-align: center;
+            padding: 6rem 2rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 400;
+            color: var(--accent-danger);
+            line-height: 1;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .error-title {
+            font-family: var(--font-reading);
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .error-technical {
+            margin-top: 3rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: left;
+        }
+
+        .error-technical-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .error-technical-content {
+            font-family: var(--font-ui);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="08-login.html" class="nav-link">Sign in</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="error-container">
+            <div class="error-code">500</div>
+            <h1 class="error-title">Something went wrong</h1>
+            <p class="error-message">
+                We encountered an unexpected error. This has been logged and we'll look into it. 
+                Please try again in a moment.
+            </p>
+            <div class="error-actions">
+                <a href="01-homepage.html" class="btn btn--primary">Go home</a>
+                <button class="btn btn--secondary" onclick="location.reload()">Try again</button>
+            </div>
+
+            <div class="error-technical">
+                <p class="error-technical-label">Technical details</p>
+                <p class="error-technical-content">
+                    Error ID: err_2024-12-26_abc123<br>
+                    Timestamp: 2024-12-26T14:32:01Z
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <div class="mockup-indicator">
+        MOCKUP — 500 Error — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

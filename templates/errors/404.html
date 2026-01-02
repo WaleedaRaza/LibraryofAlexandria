@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found — Alexandria{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-code">404</div>
+    <h1 class="error-title">This page doesn't exist</h1>
+    <p class="error-message">
+        The page you're looking for may have been moved, deleted, or never existed in the first place.
+    </p>
+    <div class="error-actions">
+        <a href="/" class="btn btn--primary">Go home</a>
+        <a href="/library" class="btn btn--secondary">Browse the library</a>
+    </div>
+</div>
+{% endblock %}

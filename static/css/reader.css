@@ -1,0 +1,783 @@
+/* ==========================================================================
+   ALEXANDRIA LIBRARY — Reader Stylesheet
+   
+   The reading experience. Text is the hero.
+   ========================================================================== */
+
+/* Override main layout for reader */
+.reader-container {
+    display: grid;
+    grid-template-columns: 260px 1fr 320px;
+    gap: 0;
+    min-height: calc(100vh - 120px);
+    margin: calc(-1 * var(--space-xl)) calc(-1 * var(--space-lg));
+}
+
+/* --------------------------------------------------------------------------
+   Left Sidebar - Chapter Navigation
+   -------------------------------------------------------------------------- */
+.reader-sidebar {
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    padding: var(--space-lg);
+    overflow-y: auto;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+}
+
+.reader-sidebar-header {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.reader-book-link {
+    display: block;
+}
+
+.reader-book-cover {
+    width: 80px;
+    aspect-ratio: 2/3;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+    position: relative;
+}
+
+.reader-book-cover::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+}
+
+.reader-book-title {
+    display: block;
+    font-family: var(--font-reading);
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.reader-book-author {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.reader-chapters-title {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-md);
+}
+
+.reader-chapter-list {
+    list-style: none;
+}
+
+.reader-chapter-item {
+    margin-bottom: var(--space-xs);
+}
+
+.reader-chapter-link {
+    display: block;
+    padding: var(--space-sm) 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.reader-chapter-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+}
+
+.reader-chapter-item--active .reader-chapter-link {
+    color: var(--accent-primary);
+    background: rgba(201, 169, 98, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Main Reading Pane
+   -------------------------------------------------------------------------- */
+.reader-main {
+    padding: var(--space-xl) var(--space-xl);
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Context Header - "Why you're here" */
+.reader-context {
+    max-width: var(--reading-width);
+    margin: 0 auto var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--accent-primary);
+    border-radius: 0 4px 4px 0;
+}
+
+.reader-context-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+}
+
+.reader-context-text {
+    font-family: var(--font-reading);
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Chapter Header */
+.reader-header {
+    max-width: var(--reading-width);
+    margin: 0 auto var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.reader-chapter-heading {
+    font-family: var(--font-reading);
+    font-size: 2rem;
+    font-weight: 400;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+}
+
+.reader-chapter-number {
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+/* The text itself - this is the hero */
+.reader-content {
+    font-family: var(--font-reading);
+    font-size: 1.2rem;
+    line-height: 1.9;
+    color: var(--text-primary);
+    max-width: var(--reading-width);
+    margin: 0 auto;
+}
+
+.reader-content p {
+    margin-bottom: 1.75em;
+    text-indent: 1.5em;
+}
+
+.reader-content p:first-of-type {
+    text-indent: 0;
+}
+
+/* Drop cap for first paragraph */
+.reader-content p:first-of-type::first-letter {
+    font-size: 3.5em;
+    float: left;
+    line-height: 0.8;
+    margin-right: 0.1em;
+    color: var(--accent-primary);
+}
+
+.reader-content h1,
+.reader-content h2,
+.reader-content h3 {
+    margin-top: 2em;
+    margin-bottom: 1em;
+    font-weight: 500;
+    text-indent: 0;
+}
+
+.reader-content h2 {
+    font-size: 1.5rem;
+}
+
+/* Highlighted text */
+.reader-content .highlight {
+    padding: 2px 0;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.reader-content .highlight--yellow {
+    background: rgba(255, 235, 59, 0.25);
+}
+
+.reader-content .highlight--green {
+    background: rgba(139, 195, 74, 0.25);
+}
+
+.reader-content .highlight--blue {
+    background: rgba(100, 181, 246, 0.25);
+}
+
+.reader-content .highlight--pink {
+    background: rgba(240, 98, 146, 0.25);
+}
+
+.reader-content .highlight--orange {
+    background: rgba(255, 167, 38, 0.25);
+}
+
+/* Active highlight (being viewed in annotations) */
+.reader-content .highlight--active {
+    background: rgba(201, 169, 98, 0.35);
+}
+
+/* Annotation dot marker */
+.annotation-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-left: 2px;
+    vertical-align: super;
+}
+
+.annotation-dot--ai { background: var(--accent-secondary); }
+.annotation-dot--user { background: var(--accent-primary); }
+
+/* Chapter navigation */
+.reader-nav {
+    display: flex;
+    justify-content: space-between;
+    max-width: var(--reading-width);
+    margin: var(--space-xl) auto 0;
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.reader-nav-link {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.reader-nav-link:hover {
+    color: var(--accent-primary);
+}
+
+.reader-nav-link--disabled {
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   Right Sidebar - Annotations Rail
+   -------------------------------------------------------------------------- */
+.reader-annotations {
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-color);
+    padding: var(--space-lg);
+    overflow-y: auto;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+}
+
+.reader-annotations.hidden {
+    display: none;
+}
+
+.annotations-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.annotations-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.annotations-count {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+}
+
+.annotations-toggle {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Annotation cards */
+.annotations-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.annotation-card {
+    margin-bottom: var(--space-md);
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    border-left: 3px solid var(--border-color);
+    transition: all 0.2s;
+}
+
+.annotation-card:hover {
+    border-left-color: var(--accent-primary);
+}
+
+.annotation-card--active {
+    border-left-color: var(--accent-primary);
+    background: rgba(201, 169, 98, 0.08);
+}
+
+.annotation-card--ai {
+    border-left-color: var(--accent-secondary);
+}
+
+.annotation-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.annotation-type {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+}
+
+.annotation-type--ai {
+    background: rgba(125, 157, 114, 0.15);
+    color: var(--accent-secondary);
+}
+
+.annotation-type--user {
+    background: rgba(201, 169, 98, 0.15);
+    color: var(--accent-primary);
+}
+
+.annotation-time {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+}
+
+.annotation-quote {
+    font-family: var(--font-reading);
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+    padding-left: var(--space-sm);
+    border-left: 2px solid var(--border-color);
+}
+
+.annotation-text {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.annotation-actions {
+    margin-top: var(--space-sm);
+    display: flex;
+    gap: 0.75rem;
+}
+
+.annotation-action {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.annotation-action:hover {
+    color: var(--accent-primary);
+}
+
+/* Empty annotations state */
+.annotations-empty {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    color: var(--text-muted);
+}
+
+.annotations-empty-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.5;
+}
+
+.annotations-empty-text {
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+/* Ask about section */
+.annotations-ask {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.annotations-ask-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+}
+
+.annotations-ask-btn {
+    width: 100%;
+    padding: 0.75rem;
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.annotations-ask-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+/* Keyboard hints */
+.annotations-hints {
+    margin-top: var(--space-md);
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.annotations-hints kbd {
+    background: var(--bg-primary);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-family: var(--font-ui);
+}
+
+/* Constraint footer */
+.annotations-constraint {
+    margin-top: auto;
+    padding-top: var(--space-md);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+}
+
+/* --------------------------------------------------------------------------
+   Chat Panel (Section Chat) - Replaces annotations when open
+   -------------------------------------------------------------------------- */
+.reader-chat {
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-color);
+    padding: var(--space-lg);
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    display: none;
+    flex-direction: column;
+}
+
+.reader-chat.active {
+    display: flex;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chat-title {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.chat-close {
+    width: 28px;
+    height: 28px;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.chat-close:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.chat-selected {
+    margin-bottom: var(--space-lg);
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.chat-selected-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+}
+
+.chat-selected-text {
+    font-family: var(--font-reading);
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text-secondary);
+    border-left: 2px solid var(--accent-primary);
+    padding-left: var(--space-md);
+    margin: 0;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.chat-form {
+    margin-bottom: var(--space-lg);
+}
+
+.chat-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    resize: vertical;
+    margin-bottom: var(--space-sm);
+}
+
+.chat-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.chat-submit {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--bg-primary);
+    background: var(--accent-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.chat-submit:hover {
+    background: #d4b76d;
+}
+
+.chat-response {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: var(--space-md);
+}
+
+.chat-response-content {
+    font-family: var(--font-reading);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.chat-response-refusal {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    padding: var(--space-md);
+    background: rgba(179, 86, 86, 0.1);
+    border-radius: 4px;
+}
+
+.chat-response-loading {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    padding: var(--space-md);
+    text-align: center;
+    font-style: italic;
+}
+
+.chat-response-loading::after {
+    content: '';
+    animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+.chat-response-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    color: var(--accent-secondary);
+    background: rgba(125, 157, 114, 0.1);
+    border: 1px solid rgba(125, 157, 114, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.chat-response-save:hover {
+    background: rgba(125, 157, 114, 0.2);
+}
+
+.chat-suggestion {
+    margin-top: var(--space-sm);
+    font-size: 0.8125rem;
+}
+
+.chat-constraint {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-style: italic;
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--space-md);
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Highlight Menu (appears on text selection)
+   -------------------------------------------------------------------------- */
+.highlight-menu {
+    position: fixed;
+    display: flex;
+    gap: var(--space-xs);
+    padding: var(--space-sm);
+    background: var(--bg-elevated, #2a2a2a);
+    border: 1px solid var(--border-light, #444);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.05);
+    z-index: 10000;
+    animation: highlight-menu-appear 0.15s ease-out;
+}
+
+@keyframes highlight-menu-appear {
+    from {
+        opacity: 0;
+        transform: translateY(5px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.highlight-menu[hidden] {
+    display: none !important;
+}
+
+.highlight-action {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.highlight-action:hover {
+    background: var(--bg-tertiary, #3a3a3a);
+    transform: scale(1.1);
+}
+
+.highlight-action:active {
+    transform: scale(0.95);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 1200px) {
+    .reader-container {
+        grid-template-columns: 250px 1fr;
+    }
+    
+    .reader-annotations,
+    .reader-chat {
+        position: fixed;
+        right: 0;
+        top: 60px;
+        width: 320px;
+        z-index: 50;
+        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
+        display: none;
+    }
+    
+    .reader-annotations.visible,
+    .reader-chat.active {
+        display: flex;
+    }
+}
+
+@media (max-width: 768px) {
+    .reader-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .reader-sidebar {
+        display: none; /* Mobile chapter drawer - future */
+    }
+    
+    .reader-main {
+        padding: var(--space-lg);
+    }
+    
+    .reader-content {
+        font-size: 1.0625rem;
+    }
+    
+    .reader-annotations,
+    .reader-chat {
+        width: 100%;
+        left: 0;
+    }
+}

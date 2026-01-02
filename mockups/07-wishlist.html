@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist — Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .wishlist-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .wishlist-header {
+            margin-bottom: 2rem;
+        }
+
+        .wishlist-title {
+            font-family: var(--font-reading);
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .wishlist-subtitle {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Request Form */
+        .wishlist-form-container {
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 3rem;
+        }
+
+        .wishlist-form-title {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .wishlist-form-submit {
+            margin-top: 0.5rem;
+        }
+
+        /* Your Requests */
+        .wishlist-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .requests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .request-card {
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .request-main {
+            min-width: 0;
+        }
+
+        .request-title {
+            font-family: var(--font-reading);
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .request-author {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .request-reason {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .request-meta {
+            text-align: right;
+        }
+
+        .request-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .request-status--pending {
+            background: rgba(201, 169, 98, 0.15);
+            color: var(--accent-primary);
+        }
+
+        .request-status--approved {
+            background: rgba(125, 157, 114, 0.15);
+            color: var(--accent-secondary);
+        }
+
+        .request-status--added {
+            background: rgba(125, 157, 114, 0.25);
+            color: var(--accent-secondary);
+        }
+
+        .request-status--rejected {
+            background: rgba(179, 86, 86, 0.15);
+            color: var(--accent-danger);
+        }
+
+        .request-date {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .request-action {
+            margin-top: 0.5rem;
+        }
+
+        .request-action a {
+            font-size: 0.75rem;
+        }
+
+        /* Admin note */
+        .request-admin-note {
+            grid-column: 1 / -1;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .request-admin-note-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="07-wishlist.html" class="nav-link" style="color: var(--accent-primary);">Wishlist</a>
+                <a href="06-my-library.html" class="nav-link">My Library</a>
+                <span class="nav-link">reader@example.com</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="wishlist-container">
+            <header class="wishlist-header">
+                <h1 class="wishlist-title">Request a Book</h1>
+                <p class="wishlist-subtitle">
+                    Can't find what you're looking for? Request a book and we'll consider adding it to the library. 
+                    We curate deliberately — not every request will be approved.
+                </p>
+            </header>
+
+            <!-- Request Form -->
+            <div class="wishlist-form-container">
+                <h2 class="wishlist-form-title">Submit a request</h2>
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Book title *</label>
+                            <input type="text" class="form-input" placeholder="e.g. The Discourses">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Author</label>
+                            <input type="text" class="form-input" placeholder="e.g. Niccolò Machiavelli">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Why do you want this book?</label>
+                        <textarea class="form-input form-textarea" placeholder="What question are you trying to answer? Why do you think this book belongs in the library?"></textarea>
+                        <p class="form-hint">Helps us prioritize. Books that address common questions get added first.</p>
+                    </div>
+                    <div class="wishlist-form-submit">
+                        <button type="submit" class="btn btn--primary">Submit request</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Your Requests -->
+            <section>
+                <h2 class="wishlist-section-title">Your requests</h2>
+                <div class="requests-list">
+                    <!-- Pending request -->
+                    <div class="request-card">
+                        <div class="request-main">
+                            <h3 class="request-title">The Discourses</h3>
+                            <p class="request-author">Niccolò Machiavelli</p>
+                            <p class="request-reason">"Wanted to read his thoughts on republics after finishing The Prince"</p>
+                        </div>
+                        <div class="request-meta">
+                            <span class="request-status request-status--pending">Pending</span>
+                            <p class="request-date">Requested Dec 20</p>
+                        </div>
+                    </div>
+
+                    <!-- Approved and added -->
+                    <div class="request-card">
+                        <div class="request-main">
+                            <h3 class="request-title">Letters from a Stoic</h3>
+                            <p class="request-author">Seneca</p>
+                            <p class="request-reason">"Looking for more practical Stoic guidance"</p>
+                        </div>
+                        <div class="request-meta">
+                            <span class="request-status request-status--added">Added</span>
+                            <p class="request-date">Added Dec 15</p>
+                            <div class="request-action">
+                                <a href="05-book-detail.html">Read now →</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rejected -->
+                    <div class="request-card">
+                        <div class="request-main">
+                            <h3 class="request-title">Atomic Habits</h3>
+                            <p class="request-author">James Clear</p>
+                            <p class="request-reason">"Want to build better routines"</p>
+                        </div>
+                        <div class="request-meta">
+                            <span class="request-status request-status--rejected">Not added</span>
+                            <p class="request-date">Reviewed Dec 10</p>
+                        </div>
+                        <div class="request-admin-note">
+                            <p class="request-admin-note-label">Admin note</p>
+                            <p>We focus on foundational texts rather than contemporary self-help. Consider Seneca's Letters or Marcus Aurelius for similar themes from primary sources.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="mockup-indicator">
+        MOCKUP — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

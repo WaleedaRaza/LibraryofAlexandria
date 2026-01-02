@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: alexandria
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: USE_MOCK_AGENTS
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: alexandria-db
+          property: connectionString
+    healthCheckPath: /health
+
+databases:
+  - name: alexandria-db
+    plan: free

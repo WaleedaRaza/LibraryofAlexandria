@@ -1,0 +1,2145 @@
+{
+  "version": 1,
+  "taxonomy_version": 1,
+  "generated_at": "2025-12-27T03:12:19.023015Z",
+  "total_books": 193,
+  "books": [
+    {
+      "book_id": "book_0786d7b7cefc",
+      "title": "A Course in Game Theory",
+      "author": "Martin J. Osborne & Ariel Rubinstein",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:48"
+    },
+    {
+      "book_id": "book_1732c4700b2a",
+      "title": "A Course in Game Theory",
+      "author": "Martin J. Osborne & Ariel Rubinstein (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:07"
+    },
+    {
+      "book_id": "book_3157f7da54b8",
+      "title": "A Course in Game Theory",
+      "author": "Martin J. Osborne & Ariel Rubinstein (2)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:23"
+    },
+    {
+      "book_id": "book_e501831d9fc7",
+      "title": "A Course in Game Theory",
+      "author": "Martin J. Osborne & Ariel Rubinstein (3)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:17"
+    },
+    {
+      "book_id": "book_6a85cd0056d9",
+      "title": "A Mind at Play- How Claude Shannon Invented the Information Age",
+      "author": "Jimmy Soni & Rob Goodman (6)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:50"
+    },
+    {
+      "book_id": "book_5ab0451b8f75",
+      "title": "A Mind at Play- How Claude Shannon Invented the Information Age",
+      "author": "Jimmy Soni & Rob Goodman (7)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:43"
+    },
+    {
+      "book_id": "book_184b0d9e207a",
+      "title": "A Mind at Play- How Claude Shannon Invented the Information Age",
+      "author": "Jimmy Soni & Rob Goodman",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:48"
+    },
+    {
+      "book_id": "book_9b56255b5219",
+      "title": "A Mind at Play- How Claude Shannon Invented the Information Age",
+      "author": "Jimmy Soni & Rob Goodman (1)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:55"
+    },
+    {
+      "book_id": "book_71021dae81fc",
+      "title": "A Mind at Play- How Claude Shannon Invented the Information Age",
+      "author": "Jimmy Soni & Rob Goodman (2)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:13"
+    },
+    {
+      "book_id": "book_083c63b82664",
+      "title": "A Mind at Play- How Claude Shannon Invented the Information Age",
+      "author": "Jimmy Soni & Rob Goodman (3)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:56"
+    },
+    {
+      "book_id": "book_25fc7bfba2b1",
+      "title": "A Mind at Play- How Claude Shannon Invented the Information Age",
+      "author": "Jimmy Soni & Rob Goodman (4)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:18"
+    },
+    {
+      "book_id": "book_5d11dddb63e0",
+      "title": "A Mind at Play- How Claude Shannon Invented the Information Age",
+      "author": "Jimmy Soni & Rob Goodman (5)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:27"
+    },
+    {
+      "book_id": "book_42b2b2532007",
+      "title": "Amusing Ourselves to Death",
+      "author": "Neil Postman",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:14"
+    },
+    {
+      "book_id": "book_e4828ff1c228",
+      "title": "Applied Cryptography",
+      "author": "Bruce Schneier",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:06"
+    },
+    {
+      "book_id": "book_5e4ea604e8c8",
+      "title": "Applied Cryptography",
+      "author": "Bruce Schneier (1)",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:47"
+    },
+    {
+      "book_id": "book_9f73a9f5b73e",
+      "title": "Applied Cryptography nd ed",
+      "author": "B. Schneier",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:32"
+    },
+    {
+      "book_id": "book_d23e06f3c855",
+      "title": "Atomic Habits",
+      "author": "James Clear",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:54"
+    },
+    {
+      "book_id": "book_7ab13c41b79e",
+      "title": "Axelrod Evol of",
+      "author": "Coop excerpts",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:54"
+    },
+    {
+      "book_id": "book_1dd535fd9536",
+      "title": "Bad Blood",
+      "author": "John Carreyrou",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:06"
+    },
+    {
+      "book_id": "book_524b3b743329",
+      "title": "Basic Economics",
+      "author": "Thomas Sowell",
+      "domain_ids": [
+        "economics"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:27"
+    },
+    {
+      "book_id": "book_6ea07901eba3",
+      "title": "Behave",
+      "author": "Robert Sapolsky",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:18"
+    },
+    {
+      "book_id": "book_0ba40ba24da1",
+      "title": "Behave",
+      "author": "Robert Sapolsky (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:26"
+    },
+    {
+      "book_id": "book_6652bb0cc0a7",
+      "title": "Beyond Software Architecture",
+      "author": "Luke Hohmann",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:57"
+    },
+    {
+      "book_id": "book_b6b6da729bbb",
+      "title": "Black Hat Python",
+      "author": "Justin Seitz",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:55"
+    },
+    {
+      "book_id": "book_8ac3af414530",
+      "title": "Boyd- The Fighter Pilot Who Changed the Art of War",
+      "author": "Robert Coram",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:51"
+    },
+    {
+      "book_id": "book_0de96d9dfdb6",
+      "title": "Building Event-Driven Microservices",
+      "author": "Adam Bellemare",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:13"
+    },
+    {
+      "book_id": "book_74cc7c0e8210",
+      "title": "Building Microservices",
+      "author": "Sam Newman",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:54"
+    },
+    {
+      "book_id": "book_d0ba23aa2c4e",
+      "title": "Capital (Vol. 1)",
+      "author": "Karl Marx (4)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:57"
+    },
+    {
+      "book_id": "book_b050c0965ab7",
+      "title": "Capital (Vol. 1)",
+      "author": "Karl Marx (5)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:41"
+    },
+    {
+      "book_id": "book_c91f354555ed",
+      "title": "Capital (Vol. 1)",
+      "author": "Karl Marx (2)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:48"
+    },
+    {
+      "book_id": "book_ab6346e34c27",
+      "title": "Capital (Vol. 1)",
+      "author": "Karl Marx",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:55"
+    },
+    {
+      "book_id": "book_487704cb3431",
+      "title": "Capital (Vol. 1)",
+      "author": "Karl Marx (3)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:16"
+    },
+    {
+      "book_id": "book_65aaff2a1f38",
+      "title": "Capital (Vol. 1)",
+      "author": "Karl Marx (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:05"
+    },
+    {
+      "book_id": "book_9cce08cdc7d2",
+      "title": "Capital (Vol. 1)",
+      "author": "Karl Marx (6)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:09"
+    },
+    {
+      "book_id": "book_9bee2db9327c",
+      "title": "Capitalism and Freedom",
+      "author": "Milton Friedman",
+      "domain_ids": [
+        "economics"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:43"
+    },
+    {
+      "book_id": "book_8b23dbc240bb",
+      "title": "Capitalism, Socialism and Democracy",
+      "author": "Joseph Schumpeter (1)",
+      "domain_ids": [
+        "economics"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:48"
+    },
+    {
+      "book_id": "book_b79b2c65f388",
+      "title": "Capitalism, Socialism and Democracy",
+      "author": "Joseph Schumpeter",
+      "domain_ids": [
+        "economics"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:56"
+    },
+    {
+      "book_id": "book_d0db35ad4294",
+      "title": "Chaos Engineering",
+      "author": "Casey Rosenthal & Nora Jones",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:05"
+    },
+    {
+      "book_id": "book_d1d04bad24ac",
+      "title": "Clean Code",
+      "author": "Robert C. Martin (2)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:42"
+    },
+    {
+      "book_id": "book_e4052ec419c6",
+      "title": "Clean Code",
+      "author": "Robert C. Martin",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:56"
+    },
+    {
+      "book_id": "book_64abc1897f6e",
+      "title": "Clean Code",
+      "author": "Robert C. Martin (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:18"
+    },
+    {
+      "book_id": "book_34812a36cbc8",
+      "title": "Co-Opetition",
+      "author": "Adam Brandenburger & Barry Nalebuff (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:06"
+    },
+    {
+      "book_id": "book_504a204aa892",
+      "title": "Co-Opetition",
+      "author": "Adam Brandenburger & Barry Nalebuff",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:10"
+    },
+    {
+      "book_id": "book_7cd1d030da67",
+      "title": "Competitive Strategy",
+      "author": "Michael E. Porter",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:52"
+    },
+    {
+      "book_id": "book_7e80c90b39a5",
+      "title": "Continuous Delivery",
+      "author": "Jez Humble & David Farley",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:02"
+    },
+    {
+      "book_id": "book_8af9c99c409e",
+      "title": "Creativity, Inc",
+      "author": "Ed Catmull",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:54"
+    },
+    {
+      "book_id": "book_8c91e938e8be",
+      "title": "Crime and Punishment",
+      "author": "Fyodor Dostoevsky",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:12"
+    },
+    {
+      "book_id": "book_6d504f6f8a18",
+      "title": "Cryptography Engineering",
+      "author": "Niels Ferguson et al",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:18"
+    },
+    {
+      "book_id": "book_b41cf9b0bde8",
+      "title": "Database Internals",
+      "author": "Alex Petrov",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:13"
+    },
+    {
+      "book_id": "book_42c4a2531d93",
+      "title": "Debt The",
+      "author": "First Years",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:39"
+    },
+    {
+      "book_id": "book_d04e64fdad57",
+      "title": "Deep Work",
+      "author": "Cal Newport",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:54"
+    },
+    {
+      "book_id": "book_367ba56e2d36",
+      "title": "Democracy in America (Vol. 1–2)",
+      "author": "Alexis de Tocqueville",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:49"
+    },
+    {
+      "book_id": "book_71483407369e",
+      "title": "Design Patterns",
+      "author": "Erich Gamma et al",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:10"
+    },
+    {
+      "book_id": "book_6e1b16a90341",
+      "title": "Designing Distributed Systems",
+      "author": "Brendan Burns",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:23"
+    },
+    {
+      "book_id": "book_bab202383015",
+      "title": "Dictator's Handbook",
+      "author": "Bruce Bueno de Mesquita & Smith",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:44"
+    },
+    {
+      "book_id": "book_fb01e92f401c",
+      "title": "Discourses",
+      "author": "Epictetus",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:44"
+    },
+    {
+      "book_id": "book_034b78549a61",
+      "title": "Discourses on Livy",
+      "author": "Niccolò Machiavelli",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:36"
+    },
+    {
+      "book_id": "book_e8846c22f2b2",
+      "title": "Distributed Systems",
+      "author": "Tanenbaum & van Steen",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:54"
+    },
+    {
+      "book_id": "book_250d77c62f27",
+      "title": "Distributed Systems Observability",
+      "author": "Cindy Sridharan (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:04"
+    },
+    {
+      "book_id": "book_b1d00c17692e",
+      "title": "Distributed Systems Observability",
+      "author": "Cindy Sridharan",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:57"
+    },
+    {
+      "book_id": "book_81f4e7d1840b",
+      "title": "Domain-Driven Design",
+      "author": "Eric Evans (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:05"
+    },
+    {
+      "book_id": "book_898ad6819a6a",
+      "title": "Domain-Driven Design",
+      "author": "Eric Evans",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:52"
+    },
+    {
+      "book_id": "book_30b18b547959",
+      "title": "Driven",
+      "author": "Robert Herjavec",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:18"
+    },
+    {
+      "book_id": "book_381c4f93f4b9",
+      "title": "Effective Modern C++",
+      "author": "Scott Meyers",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:03"
+    },
+    {
+      "book_id": "book_ce4cf56829ee",
+      "title": "Effective TypeScript",
+      "author": "Dan Vanderkam",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:18"
+    },
+    {
+      "book_id": "book_bc10b77c6917",
+      "title": "Elephant in the Brain",
+      "author": "Kevin Simler & Robin Hanson",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:05"
+    },
+    {
+      "book_id": "book_4336da1c7b6a",
+      "title": "Eloquent JavaScript (3e+)",
+      "author": "Marijn Haverbeke",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:55"
+    },
+    {
+      "book_id": "book_cffb4b5e727d",
+      "title": "Extreme Programming Explained",
+      "author": "Kent Beck",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:13"
+    },
+    {
+      "book_id": "book_a1bb4aaf36ba",
+      "title": "Finite and Infinite Games",
+      "author": "James P. Carse",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:26"
+    },
+    {
+      "book_id": "book_53b28bf8c961",
+      "title": "Fooled by Randomness",
+      "author": "Nassim Nicholas Taleb",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:05"
+    },
+    {
+      "book_id": "book_3f451a80e3f0",
+      "title": "Four Thousand Weeks",
+      "author": "Oliver Burkeman",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:05"
+    },
+    {
+      "book_id": "book_748bffbf8dbd",
+      "title": "Fundamentals of Software Architecture",
+      "author": "Richards & Ford",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:55"
+    },
+    {
+      "book_id": "book_23f68e1bd125",
+      "title": "Game Theory",
+      "author": "Various",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:48"
+    },
+    {
+      "book_id": "book_982fd3070900",
+      "title": "Game-Changer",
+      "author": "David McAdams",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:19"
+    },
+    {
+      "book_id": "book_333501b2f84b",
+      "title": "Games People Play",
+      "author": "Eric Berne",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:18"
+    },
+    {
+      "book_id": "book_c01b4a265e01",
+      "title": "Games and Decisions",
+      "author": "R. Duncan Luce & Howard Raiffa",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:55"
+    },
+    {
+      "book_id": "book_05a0b048acc8",
+      "title": "Getting Things Done",
+      "author": "David Allen",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:07"
+    },
+    {
+      "book_id": "book_1573df6ab98b",
+      "title": "Gray Hat Hacking",
+      "author": "Allen Harper et al (1)",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:49"
+    },
+    {
+      "book_id": "book_3a3a5418cda2",
+      "title": "Gray Hat Hacking",
+      "author": "Allen Harper et al",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:14"
+    },
+    {
+      "book_id": "book_aac7288abbd8",
+      "title": "Hagakure",
+      "author": "Yamamoto Tsunetomo",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:07"
+    },
+    {
+      "book_id": "book_65f35f4536ba",
+      "title": "Hagakure",
+      "author": "Yamamoto Tsunetomo (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:48"
+    },
+    {
+      "book_id": "book_4a120afd0113",
+      "title": "Happiness Hypothesis",
+      "author": "Jonathan Haidt",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:54"
+    },
+    {
+      "book_id": "book_254fcdca4979",
+      "title": "Happiness Hypothesis",
+      "author": "Jonathan Haidt (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:24"
+    },
+    {
+      "book_id": "book_1b8b89d0170b",
+      "title": "High Output Management",
+      "author": "Andrew S. Grove",
+      "domain_ids": [
+        "business"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:48"
+    },
+    {
+      "book_id": "book_79f6fba357ca",
+      "title": "How the Mind Works",
+      "author": "Steven Pinker (1)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:48"
+    },
+    {
+      "book_id": "book_d85c65798b9b",
+      "title": "How the Mind Works",
+      "author": "Steven Pinker",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:47"
+    },
+    {
+      "book_id": "book_0141eaa14054",
+      "title": "Indistractable",
+      "author": "Nir Eyal",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:23"
+    },
+    {
+      "book_id": "book_cc68bef4f3b7",
+      "title": "Influence",
+      "author": "Robert Cialdini (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:51"
+    },
+    {
+      "book_id": "book_2817ab51e1af",
+      "title": "Influence",
+      "author": "Robert Cialdini",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:47"
+    },
+    {
+      "book_id": "book_7d4d78cfd8df",
+      "title": "Internals of PostgreSQL",
+      "author": "Hironobu Suzuki (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:11"
+    },
+    {
+      "book_id": "book_5bf666b6b7b4",
+      "title": "Internals of PostgreSQL",
+      "author": "Hironobu Suzuki",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:33"
+    },
+    {
+      "book_id": "book_86fe3048d7bf",
+      "title": "Just Enough Architecture",
+      "author": "George Fairbanks",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:06"
+    },
+    {
+      "book_id": "book_4e48b6c28f8d",
+      "title": "Life",
+      "author": "Keith Richards",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:10"
+    },
+    {
+      "book_id": "book_7a46a9ec80a4",
+      "title": "Life 3.0",
+      "author": "Max Tegmark",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:54"
+    },
+    {
+      "book_id": "book_77fcf5281a46",
+      "title": "Life 3.0",
+      "author": "Max Tegmark (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:06"
+    },
+    {
+      "book_id": "book_49e741bee7dd",
+      "title": "Machiavelli, Niccolo",
+      "author": "The Prince (EN, 1513, 239 p.)",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:18"
+    },
+    {
+      "book_id": "book_eba8666d5953",
+      "title": "Makers of Modern Strategy",
+      "author": "Peter Paret",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:13"
+    },
+    {
+      "book_id": "book_6e65676b2006",
+      "title": "Mastery",
+      "author": "Robert Greene",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:04"
+    },
+    {
+      "book_id": "book_d9d95145167f",
+      "title": "Meditations",
+      "author": "Marcus Aurelius",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [
+        "stoicism"
+      ],
+      "is_public": true,
+      "created_at": "2025-12-26 06:17:15"
+    },
+    {
+      "book_id": "book_47a17e0a27e3",
+      "title": "Meditations",
+      "author": "Marcus Aurelius",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:22"
+    },
+    {
+      "book_id": "book_7d4b3bb14c1f",
+      "title": "Metasploit- The Penetration Tester's Guide",
+      "author": "David Kennedy et al",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:13"
+    },
+    {
+      "book_id": "book_7dfee6d7b968",
+      "title": "Micromotives and Macrobehavior",
+      "author": "Thomas Schelling",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:13"
+    },
+    {
+      "book_id": "book_aaf47b37c1b4",
+      "title": "Miracle of Mindfulness",
+      "author": "Thich Nhat Hanh (1)",
+      "domain_ids": [
+        "psychology",
+        "philosophy"
+      ],
+      "subdomain_ids": [
+        "mindfulness"
+      ],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:48"
+    },
+    {
+      "book_id": "book_370d77b15d58",
+      "title": "Miracle of Mindfulness",
+      "author": "Thich Nhat Hanh",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:49"
+    },
+    {
+      "book_id": "book_b9f20c7f953b",
+      "title": "MongoDB- The Definitive Guide",
+      "author": "Kristina Chodorow",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:57"
+    },
+    {
+      "book_id": "book_15f84819c24b",
+      "title": "Monolith to Microservices",
+      "author": "Sam Newman",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:24"
+    },
+    {
+      "book_id": "book_329d7d5af07c",
+      "title": "Noise- A Flaw in Human Judgment",
+      "author": "Daniel Kahneman, Olivier Sibony, Cass R. Sunstein",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:50"
+    },
+    {
+      "book_id": "book_49aa7bac4b98",
+      "title": "Notes from Underground",
+      "author": "Fyodor Dostoevsky (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:54"
+    },
+    {
+      "book_id": "book_b241ee4db3ee",
+      "title": "Notes from Underground",
+      "author": "Fyodor Dostoevsky",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:16"
+    },
+    {
+      "book_id": "book_db8c9fe1ba04",
+      "title": "OAuth 2 in Action",
+      "author": "Justin Richer & Antonio Sanso",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:41"
+    },
+    {
+      "book_id": "book_3a36d46132c0",
+      "title": "On War",
+      "author": "Carl von Clausewitz",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:48"
+    },
+    {
+      "book_id": "book_9f38d55ab264",
+      "title": "Patterns of Enterprise Application Architecture",
+      "author": "Martin Fowler (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:04"
+    },
+    {
+      "book_id": "book_062f3750d074",
+      "title": "Patterns of Enterprise Application Architecture",
+      "author": "Martin Fowler",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:24"
+    },
+    {
+      "book_id": "book_0f10d266be13",
+      "title": "Phoenix Project",
+      "author": "Gene Kim et al",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:51"
+    },
+    {
+      "book_id": "book_5748845d1a6d",
+      "title": "PostgreSQL Internals",
+      "author": "Egor Rogov",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:59"
+    },
+    {
+      "book_id": "book_173f93384a88",
+      "title": "Pragmatic Programmer",
+      "author": "Hunt & Thomas",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:49"
+    },
+    {
+      "book_id": "book_2e484a9c6ab5",
+      "title": "Pre-Suasion",
+      "author": "Robert Cialdini",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:57"
+    },
+    {
+      "book_id": "book_c919aed8214e",
+      "title": "Pre-Suasion",
+      "author": "Robert Cialdini (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:16"
+    },
+    {
+      "book_id": "book_09b118629706",
+      "title": "Principles",
+      "author": "Ray Dalio",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:08"
+    },
+    {
+      "book_id": "book_25b806f66d7f",
+      "title": "Programming Pearls",
+      "author": "Jon Bentley",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:49"
+    },
+    {
+      "book_id": "book_9d43bffb5410",
+      "title": "Programming Rust",
+      "author": "Jim Blandy et al (1)",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:58"
+    },
+    {
+      "book_id": "book_8e5ee2c9145e",
+      "title": "Programming Rust",
+      "author": "Jim Blandy et al",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:27"
+    },
+    {
+      "book_id": "book_d91b0894303b",
+      "title": "Programming TypeScript",
+      "author": "Boris Cherny",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:06"
+    },
+    {
+      "book_id": "book_5709d9f8d623",
+      "title": "Propaganda",
+      "author": "Edward Bernays",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:51"
+    },
+    {
+      "book_id": "book_d2d2c5c51796",
+      "title": "Public Opinion",
+      "author": "Walter Lippmann",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:18"
+    },
+    {
+      "book_id": "book_400888edd62b",
+      "title": "Radical Uncertainty",
+      "author": "John Kay & Mervyn King",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:18"
+    },
+    {
+      "book_id": "book_9a93f491439a",
+      "title": "Release It!",
+      "author": "Nygard",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:10"
+    },
+    {
+      "book_id": "book_0176767f84b9",
+      "title": "Rock, Paper, Scissors",
+      "author": "Len Fisher",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:54"
+    },
+    {
+      "book_id": "book_398692b98963",
+      "title": "SQL Performance Explained",
+      "author": "Markus Winand",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:43"
+    },
+    {
+      "book_id": "book_98633b739829",
+      "title": "Scout Mindset",
+      "author": "Julia Galef (1)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:06"
+    },
+    {
+      "book_id": "book_a6d522cb1667",
+      "title": "Scout Mindset",
+      "author": "Julia Galef",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:18"
+    },
+    {
+      "book_id": "book_097d60ca37a8",
+      "title": "Secrets and Lies",
+      "author": "Bruce Schneier",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:57"
+    },
+    {
+      "book_id": "book_190d68599d52",
+      "title": "Secure Coding",
+      "author": "Mark Graff & Kenneth R. van Wyk",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:05"
+    },
+    {
+      "book_id": "book_1cb7670b56ab",
+      "title": "Security Engineering",
+      "author": "Ross Anderson",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:41"
+    },
+    {
+      "book_id": "book_70cf2bd3ffe1",
+      "title": "Serious Cryptography",
+      "author": "Jean-Philippe Aumasson",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:02"
+    },
+    {
+      "book_id": "book_ea1d0a12660d",
+      "title": "Seven Databases in Seven Weeks",
+      "author": "Eric Redmond & Jim R. Wilson",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:56"
+    },
+    {
+      "book_id": "book_52aeb602b00b",
+      "title": "Shoe Dog",
+      "author": "Phil Knight",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:54"
+    },
+    {
+      "book_id": "book_4c4ec7a1dae9",
+      "title": "Signal and the Noise",
+      "author": "Nate Silver (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:55"
+    },
+    {
+      "book_id": "book_6c9785f706cc",
+      "title": "Signal and the Noise",
+      "author": "Nate Silver",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:06"
+    },
+    {
+      "book_id": "book_6c19a519fb02",
+      "title": "Site Reliability Engineering",
+      "author": "Google",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:57"
+    },
+    {
+      "book_id": "book_bd3a3995d0c6",
+      "title": "Site Reliability Workbook",
+      "author": "Google (1)",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:55"
+    },
+    {
+      "book_id": "book_c7092dcf59a7",
+      "title": "Site Reliability Workbook",
+      "author": "Google",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:48"
+    },
+    {
+      "book_id": "book_57d21825c05d",
+      "title": "Skin in the Game",
+      "author": "Nassim Nicholas Taleb",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:26"
+    },
+    {
+      "book_id": "book_4bf1cc07ec91",
+      "title": "Software Security",
+      "author": "Gary McGraw",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:05"
+    },
+    {
+      "book_id": "book_a665708bd2fc",
+      "title": "Software Security",
+      "author": "Gary McGraw (1)",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:30"
+    },
+    {
+      "book_id": "book_6965a84b90d9",
+      "title": "Software Systems Architecture",
+      "author": "Nick Rozanski & Eóin Woods",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:49"
+    },
+    {
+      "book_id": "book_580080e74dba",
+      "title": "Sources of Power",
+      "author": "Gary A. Klein",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:58"
+    },
+    {
+      "book_id": "book_eb8d2594e5df",
+      "title": "Spring Security in Action",
+      "author": "Laurentiu Spilca",
+      "domain_ids": [
+        "technology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:06"
+    },
+    {
+      "book_id": "book_b22b53690338",
+      "title": "Strategy",
+      "author": "B.H. Liddell Hart (2)",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:57"
+    },
+    {
+      "book_id": "book_738d9d5a5aca",
+      "title": "Strategy",
+      "author": "B.H. Liddell Hart (3)",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:04"
+    },
+    {
+      "book_id": "book_92e20fe0ca61",
+      "title": "Strategy",
+      "author": "B.H. Liddell Hart (4)",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:49"
+    },
+    {
+      "book_id": "book_d7e37a557e22",
+      "title": "Strategy",
+      "author": "B.H. Liddell Hart (5)",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:08"
+    },
+    {
+      "book_id": "book_628b33856938",
+      "title": "Strategy",
+      "author": "B.H. Liddell Hart (1)",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:23"
+    },
+    {
+      "book_id": "book_57aa9d6011ef",
+      "title": "Strategy",
+      "author": "B.H. Liddell Hart",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:30"
+    },
+    {
+      "book_id": "book_7d2376e485da",
+      "title": "Strategy of Conflict",
+      "author": "Thomas Schelling",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:17"
+    },
+    {
+      "book_id": "book_d606e65c5950",
+      "title": "Superforecasting",
+      "author": "Philip Tetlock & Dan Gardner",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:48"
+    },
+    {
+      "book_id": "book_34382a1d74e8",
+      "title": "Tangled Web",
+      "author": "Michal Zalewski",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:06"
+    },
+    {
+      "book_id": "book_f45616410c79",
+      "title": "The 33 Strategies of War",
+      "author": "Robert Greene",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:29"
+    },
+    {
+      "book_id": "book_062ae004ce4a",
+      "title": "The 48 Laws of Power",
+      "author": "Robert Greene",
+      "domain_ids": [
+        "strategy",
+        "psychology"
+      ],
+      "subdomain_ids": [
+        "power",
+        "social"
+      ],
+      "is_public": true,
+      "created_at": "2025-12-26 06:17:27"
+    },
+    {
+      "book_id": "book_4d81f1c68800",
+      "title": "The 48 Laws of Power",
+      "author": "Robert Greene",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:09"
+    },
+    {
+      "book_id": "book_cab880233f9f",
+      "title": "The Art of Seduction",
+      "author": "Robert Greene",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:34"
+    },
+    {
+      "book_id": "book_e500fb226315",
+      "title": "The Art of War",
+      "author": "Sun Tzu",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [
+        "military"
+      ],
+      "is_public": true,
+      "created_at": "2025-12-26 06:17:22"
+    },
+    {
+      "book_id": "book_61d4275f4ec0",
+      "title": "The Art of War",
+      "author": "Sun Tzu",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:43"
+    },
+    {
+      "book_id": "book_e47ca25bf3c4",
+      "title": "The Art of Worldly Wisdom",
+      "author": "Baltasar Gracián",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:51"
+    },
+    {
+      "book_id": "book_db169b2170c8",
+      "title": "The Book of Five Rings",
+      "author": "Miyamoto Musashi",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:05"
+    },
+    {
+      "book_id": "book_9b3fce8655fc",
+      "title": "The Communist Manifesto",
+      "author": "Karl Marx & Friedrich Engels",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:07"
+    },
+    {
+      "book_id": "book_d08c016bff5f",
+      "title": "The Crowd- A Study of the Popular Mind",
+      "author": "Gustave Le Bon",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:06"
+    },
+    {
+      "book_id": "book_623d6f1cc97c",
+      "title": "The Effective Executive",
+      "author": "Peter Drucker",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:50"
+    },
+    {
+      "book_id": "book_fd6348306a3b",
+      "title": "The Elephant in The Brain summary",
+      "author": "and worksheet",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:07"
+    },
+    {
+      "book_id": "book_978cda38c7fa",
+      "title": "The Essential Observ",
+      "author": "ebook r",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:05"
+    },
+    {
+      "book_id": "book_24e43b1ffff3",
+      "title": "The Great Transformation",
+      "author": "Karl Polanyi",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:21"
+    },
+    {
+      "book_id": "book_b6fa4c84e9b1",
+      "title": "The Pragmatic Programmer",
+      "author": "Andrew Hunt & David Thomas",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:47"
+    },
+    {
+      "book_id": "book_97a4547e746c",
+      "title": "The Righteous Mind",
+      "author": "Jonathan Haidt",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:41"
+    },
+    {
+      "book_id": "book_5de4cf42a36a",
+      "title": "The Tangled Web",
+      "author": "Michal Zalewski",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:07"
+    },
+    {
+      "book_id": "book_e0372130f13a",
+      "title": "The True Believer",
+      "author": "Eric Hoffer",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:10"
+    },
+    {
+      "book_id": "book_ee5bd6a2af9e",
+      "title": "Theory of Games and Economic Behavior",
+      "author": "John von Neumann & Oskar Morgenstern",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:34"
+    },
+    {
+      "book_id": "book_7391df58542a",
+      "title": "Theory of Games and Economic Behavior",
+      "author": "John von Neumann & Oskar Morgenstern (1)",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:25"
+    },
+    {
+      "book_id": "book_5e3b6dc26640",
+      "title": "Thinking in Systems",
+      "author": "Donella Meadows",
+      "domain_ids": [
+        "technology",
+        "economics"
+      ],
+      "subdomain_ids": [
+        "systems"
+      ],
+      "is_public": true,
+      "created_at": "2025-12-26 06:17:28"
+    },
+    {
+      "book_id": "book_a6bc02923dfd",
+      "title": "Thinking in Systems",
+      "author": "Donella Meadows",
+      "domain_ids": [
+        "psychology"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:58"
+    },
+    {
+      "book_id": "book_8b2244115149",
+      "title": "Threat Modeling",
+      "author": "Adam Shostack",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:55"
+    },
+    {
+      "book_id": "book_edd6782c7a69",
+      "title": "Timeless Way of Building",
+      "author": "Christopher Alexander",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:47:24"
+    },
+    {
+      "book_id": "book_1208812b68e0",
+      "title": "Understanding Distributed Systems",
+      "author": "Roberto Vitillo",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:08"
+    },
+    {
+      "book_id": "book_8e0292a6e08d",
+      "title": "Understanding Distributed Systems by Roberto Vitillo z",
+      "author": "lib org",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:54"
+    },
+    {
+      "book_id": "book_ad7b15da914b",
+      "title": "Web Application Hacker's Handbook",
+      "author": "Dafydd Stuttard & Marcus Pinto",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:56"
+    },
+    {
+      "book_id": "book_b4988dccb38b",
+      "title": "What the Buddha Taught",
+      "author": "Walpola Rahula",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:18"
+    },
+    {
+      "book_id": "book_cb57ba405749",
+      "title": "Why Buddhism is True",
+      "author": "Robert Wright",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:48"
+    },
+    {
+      "book_id": "book_805a6a72c6c3",
+      "title": "Zero Trust Networks",
+      "author": "Evan Gilman & Doug Barth",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:45:29"
+    },
+    {
+      "book_id": "book_f199d0c41847",
+      "title": "ZooKeeper",
+      "author": "Flavio Junqueira & Benjamin Reed",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:52"
+    },
+    {
+      "book_id": "book_8602331c1383",
+      "title": "e bf fa be",
+      "author": "e c",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:42:58"
+    },
+    {
+      "book_id": "book_a3d55f9f5fa3",
+      "title": "e c fde c d",
+      "author": "a a",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:54"
+    },
+    {
+      "book_id": "book_a943f94533cf",
+      "title": "fef f fa bb cba fbc",
+      "author": "e c",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:44:51"
+    },
+    {
+      "book_id": "book_4739984c3736",
+      "title": "the art",
+      "author": "of war",
+      "domain_ids": [
+        "strategy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:46:55"
+    },
+    {
+      "book_id": "book_d681a6c437f1",
+      "title": "xUnit Test Patterns",
+      "author": "Gerard Meszaros",
+      "domain_ids": [
+        "philosophy"
+      ],
+      "subdomain_ids": [],
+      "is_public": true,
+      "created_at": "2025-12-26 06:43:05"
+    }
+  ]
+}

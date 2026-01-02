@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Book Requests — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <header class="admin-header">
+        <h1 class="admin-title">Book Requests</h1>
+        <p class="admin-subtitle">{{ counts.pending }} pending</p>
+    </header>
+    
+    <nav class="admin-tabs">
+        <a href="/admin/requests?status=all" class="admin-tab {% if current_status == 'all' %}admin-tab--active{% endif %}">
+            All ({{ counts.all }})
+        </a>
+        <a href="/admin/requests?status=pending" class="admin-tab {% if current_status == 'pending' %}admin-tab--active{% endif %}">
+            Pending ({{ counts.pending }})
+        </a>
+        <a href="/admin/requests?status=approved" class="admin-tab {% if current_status == 'approved' %}admin-tab--active{% endif %}">
+            Approved ({{ counts.approved }})
+        </a>
+        <a href="/admin/requests?status=rejected" class="admin-tab {% if current_status == 'rejected' %}admin-tab--active{% endif %}">
+            Rejected ({{ counts.rejected }})
+        </a>
+        <a href="/admin/requests?status=added" class="admin-tab {% if current_status == 'added' %}admin-tab--active{% endif %}">
+            Added ({{ counts.added }})
+        </a>
+    </nav>
+    
+    {% if requests %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Requester</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                    <tr>
+                        <td><strong>{{ req.title }}</strong></td>
+                        <td>{{ req.author or '—' }}</td>
+                        <td>{{ req.requester_email }}</td>
+                        <td>
+                            <span class="status-badge status-badge--{{ req.status|lower }}">
+                                {{ req.status }}
+                            </span>
+                        </td>
+                        <td>{{ req.created_at[:10] if req.created_at else '—' }}</td>
+                        <td>
+                            <a href="/admin/requests/{{ req.id }}" class="btn btn--small">View</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="admin-empty">
+            <p>No requests found.</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.admin-container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+.admin-header { margin-bottom: 1.5rem; }
+.admin-title { font-size: 1.75rem; margin: 0; }
+.admin-subtitle { color: #666; margin: 0.25rem 0 0; }
+.admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.admin-tab { padding: 0.5rem 1rem; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; }
+.admin-tab:hover { background: #f5f5f5; }
+.admin-tab--active { background: #333; color: #fff; border-color: #333; }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th, .admin-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #eee; }
+.admin-table th { background: #f9f9f9; font-weight: 600; }
+.status-badge { padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+.status-badge--pending { background: #fff3cd; color: #856404; }
+.status-badge--approved { background: #cce5ff; color: #004085; }
+.status-badge--rejected { background: #f8d7da; color: #721c24; }
+.status-badge--added { background: #d4edda; color: #155724; }
+.admin-empty { padding: 3rem; text-align: center; color: #666; }
+.btn--small { padding: 0.25rem 0.75rem; font-size: 0.875rem; }
+</style>
+{% endblock %}

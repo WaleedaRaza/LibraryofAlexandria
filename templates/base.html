@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alexandria{% endblock %}</title>
+    
+    <!-- Distinctive typography: Crimson Pro for reading, JetBrains Mono for UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/static/css/main.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="/library" class="nav-link">Library</a>
+                {% if user %}
+                    <a href="/library/my" class="nav-link">My Books</a>
+                    <a href="/wishlist" class="nav-link">Wishlist</a>
+                    <form action="/auth/logout" method="POST" class="nav-logout">
+                        <button type="submit" class="nav-link nav-link--button">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="/auth/login" class="nav-link">Sign In</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer class="footer">
+        <p>"Name ten books" — The only answer that matters</p>
+    </footer>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+

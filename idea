@@ -1,0 +1,1471 @@
+Alright, it seems to me that we've built some infrastructure. Now, it's obviously existing in our backend, but I have no real idea until we unmock OpenAI, in my opinion, if it really works or not. This is what I see in my head right now. Firstly, I want to take care of UX, because I think adding components and mocking them is going to kind of bring us a picture of how we want people to feel, and once we know how we want people to feel, we know how to translate our architecture into actual real components that we want to make more backend accommodations for, and then we can route OpenAI. What I'm thinking at the exact moment is, first and foremost, it's annoying, but it kind of has to be book ingestion, and book display has to be a lot better. The app looks very unusable, and it doesn't have to have very nice UI, right? But we kind of need to make more clear through components and through language what's really going on. At the moment, we've got looking for answers. We point you to the book. You form your own. Everyone has a take. We have the sources they're summarizing. Frustrated at work. Confused about money. Wondering why people believe what they believe. What brought you here? Find the reading. You can click that after entering query, right? And you can scroll down and see the library. Now, the reason I bring that up is because you just see the titles on the page, and then when you click them, you see open reader, and when you see open reader, you just see a big blob of text. You don't see it formatted well, right? So I want to see if there's a simple script we can do to format better, as well as pull the covers of these books, right? They're on the PDFs. Maybe they're not the first page, but for each one, we can probably just select the first few pages, and then I can decide, yeah, put this as the cover, right? Now, I also want it to be that once a user enters their book query, they're pointed to the book. When they click open this section, right, they get an AI annotation on the side of the section of the book that they should be pointed to, and then they can chat a little bit about the section, kind of like to the author or just about the book and how it applies to their situation. The main appeal is you form your opinions. This is for the fake leftists. This is for the people who are insecure and destroy their own relationship dynamics, right? For me, people can't fathom how I have these answers, and I tell them it's books, and then they never read.
+
+You’re thinking in the right order again. What you’re feeling now is accurate:
+
+The system is structurally sound, but experientially opaque.
+
+That’s not a backend problem yet. It’s a perception + affordance problem.
+
+Let me ground this and then give you a clear UX-first plan that does not derail architecture, does not prematurely unmock OpenAI, and does not turn into “design bikeshedding.”
+
+1. Diagnosis: What’s Actually Broken Right Now
+
+You said it yourself, and you’re correct:
+
+The app is functionally working
+
+But users cannot tell what’s happening
+
+Books feel like:
+
+titles → click → wall of text
+
+There’s no sense of:
+
+why this book
+
+where to look
+
+how to read it
+
+what role AI is playing
+
+So the problem is not intelligence.
+It’s legibility.
+
+People don’t need prettier UI.
+They need orientation.
+
+2. The Mental Model You Want the User to Have
+
+Let’s be explicit. The user should feel:
+
+“I asked a human question”
+
+“The system didn’t answer me—it gave me paths”
+
+“This book wasn’t dumped on me; I was pointed to a section”
+
+“AI is standing next to the text, not in front of it”
+
+“I am still the one thinking”
+
+Right now, steps 2–4 are not visible enough.
+
+So yes: UX comes before unmocking OpenAI. That instinct is correct.
+
+3. UX First ≠ Pretty UI
+
+It means clear components with clear roles
+
+We’re going to focus on 3 UX upgrades that unlock everything else.
+
+4. UX Upgrade #1 — Book Ingestion & Display (Non-Negotiable)
+
+You’re right: the library cannot be just titles.
+
+What to do (simple, not fancy)
+A. Extract / assign book covers
+
+You do not need perfection.
+
+Pragmatic options:
+
+For each PDF:
+
+Grab page 1 as image
+
+If bad, grab page 2–5
+
+You manually pick the cover once
+
+Store:
+
+books.cover_image_path
+
+This can be a one-time admin script, not user-facing logic.
+
+This is not aesthetics.
+This is recognition.
+
+Humans orient visually. Covers tell them:
+
+“This is a real book”
+
+“This has gravity”
+
+“I’ve seen this before”
+
+B. Change library cards from “title only” → “book object”
+
+Each book card should minimally show:
+
+Cover
+
+Title
+
+Author
+
+Domain tag (small, quiet)
+
+That’s it.
+
+No ratings. No blurbs. No summaries.
+
+5. UX Upgrade #2 — The Reader Must Stop Feeling Like a Text Dump
+
+This is the most important UX change.
+
+Right now:
+
+click → big blob of text → user panic
+
+We need structure, not decoration.
+
+What the reader should visually communicate
+
+When someone opens a section, they should instantly see:
+
+Where they are
+
+Why they’re here
+
+What AI is doing
+
+A. Reader Layout (conceptual, not CSS)
+
+Three zones (even if visually subtle):
+
+[ Chapter Context ]
+--------------------------------
+[ Main Text Column ]    [ AI Sidebar ]
+
+Chapter Context (top, small)
+
+Book title
+
+Chapter title
+
+Quiet line:
+
+“You were directed here because…”
+
+This anchors meaning before reading.
+
+Main Text Column (dominant)
+
+Proper paragraph spacing
+
+Line length constrained
+
+No justified text
+
+Clear chapter breaks
+
+Even basic formatting here is huge:
+
+Paragraph spacing
+
+Indentation
+
+Serif font (please)
+
+You don’t need Medium-level polish. You need readability.
+
+AI Sidebar (secondary, collapsible)
+
+This is crucial for your philosophy.
+
+The AI sidebar should:
+
+Contain:
+
+“Why this section?”
+
+Key sentence pointers (quoted)
+
+Be clearly subordinate to the text
+
+Never overlap or obscure reading
+
+Visually:
+
+Lighter color
+
+Smaller font
+
+Clearly “assistant,” not narrator
+
+6. UX Upgrade #3 — Make “AI Annotation” Feel Like a Guide, Not a Voice
+
+You said something important:
+
+“When they click open this section, they get an AI annotation on the side of the section they should be pointed to.”
+
+That’s exactly right.
+
+This is NOT chat-first.
+
+It’s annotation-first, chat-second.
+
+Flow you want
+
+User opens routed section
+
+They see:
+
+A short AI note:
+
+“This section addresses power dynamics by describing how authority reacts to perceived threat.”
+
+The AI points at text, not conclusions
+
+Only then:
+
+“Ask about this section” → chat opens
+
+This preserves:
+
+Thinking first
+
+AI as scaffolding
+
+User as interpreter
+
+7. About “Chatting With the Author”
+
+Be careful here (this is a philosophical line).
+
+You can allow:
+
+“Ask about this section”
+
+“Clarify this passage”
+
+“What does the author mean here?”
+
+But do not frame it as:
+
+“Talk to Marx”
+
+“Ask the author what to do”
+
+Instead, subtly frame it as:
+
+“Clarify the text”
+
+This keeps you:
+
+Honest
+
+Defensible
+
+Aligned with your thesis
+
+The feeling can still be intimate without being misleading.
+
+8. Why You Should Delay Unmocking OpenAI (for now)
+
+You’re right that eventually:
+
+“We won’t know if it works until we unmock OpenAI.”
+
+But here’s the truth:
+
+If you unmock before the UX makes roles clear:
+
+You’ll mistake UX confusion for model failure
+
+You’ll over-tune prompts to compensate for bad affordances
+
+You’ll give AI too much power too early
+
+Good UX makes weaker AI feel smarter.
+Bad UX makes strong AI feel wrong.
+
+So the order should be:
+
+UX makes the system legible
+
+Then unmock OpenAI
+
+Then evaluate intelligence honestly
+
+9. What I’d Recommend You Do Next (Concrete, UX-First)
+Over the next ~1–2 days:
+
+Add book covers
+
+Simple admin script
+
+Store path in DB
+
+Update library cards
+
+Restructure reader layout
+
+Add chapter context header
+
+Add sidebar container (even if static text for now)
+
+Add AI “Why this section” annotation
+
+Mocked content is fine
+
+Must quote text
+
+Must be visibly secondary
+
+Improve text formatting
+
+Paragraph spacing
+
+Line width
+
+Font choice
+
+Do not:
+
+Touch routing logic
+
+Touch agent intelligence
+
+Touch embeddings
+
+Touch recommendations
+
+10. Final Coach Note (Direct)
+
+What you’re building is not for people who want answers.
+It’s for people who are tired of other people’s answers.
+
+Right now, your system is that—but it doesn’t feel like it yet.
+
+You’re doing the correct thing:
+
+Making the experience teach the philosophy.
+
+If you want, next I can:
+
+Sketch the reader component hierarchy (pure UX, no code)
+
+Help you write the AI annotation copy rules
+
+Design the book ingestion + cover selection script cleanly
+
+Say which one you want to tackle first.
+
+I agree with all of this. Lets now consider that we can parse pdfs fro headers and section that way, rather than chat to atuhor, we can almost have like genius.com music annotations, but ppls annotations based on their convos w ai's. The books fromatting has to have the same spacing chapters etc as the pdfs. Aside from that I think we have a good vision
+
+You’re converging on the right abstraction. What you just described is actually cleaner and more honest than “chat with the author,” and it aligns perfectly with everything you’ve already built.
+
+Let me lock this in clearly and translate it into actionable system decisions, not just vision.
+
+1. Key Shift (and it’s the correct one)
+
+You’re moving from:
+
+“Chat with the author / book”
+
+to:
+
+“Annotated primary text, with AI-assisted marginalia.”
+
+That’s a huge upgrade in intellectual integrity.
+
+This is not a chatbot product.
+This is a living annotated edition of books, personalized per user.
+
+Think:
+
+Genius.com
+
+Academic marginal notes
+
+Personal commonplace books
+
+Powered by AI, but never replaced by it
+
+This resolves a lot of philosophical and UX tension at once.
+
+2. PDF Parsing: What You Should and Should NOT Do
+What you SHOULD do
+
+Use PDFs to extract structure, not meaning.
+
+Specifically:
+
+Headers
+
+Subheaders
+
+Section breaks
+
+Paragraph boundaries
+
+Spacing / indentation patterns
+
+The goal is:
+
+The on-screen text feels like the book, not a scraped blob.
+
+This is about trust and readability, not perfection.
+
+What you should NOT do
+
+Don’t let PDFs define canon semantically
+
+Don’t trust PDF text order blindly
+
+Don’t auto-summarize sections
+
+Don’t normalize everything into flat Markdown
+
+PDFs are layout truth, not interpretation truth.
+
+3. Canonical Formatting Rule (Very Important)
+
+Lock this principle:
+
+Canonical text preserves the book’s visual rhythm.
+
+That means:
+
+Paragraph spacing matters
+
+Section breaks matter
+
+Chapter headers matter
+
+White space matters
+
+If the book is dense, let it be dense.
+If it breathes, let it breathe.
+
+This is why people feel books differently from articles.
+
+4. How to Implement PDF-Derived Structure (Cleanly)
+Step 1: Parsing pipeline (admin-only)
+
+For each PDF:
+
+Extract raw text
+
+Detect:
+
+font size changes
+
+bold / caps patterns
+
+spacing gaps
+
+Infer:
+
+chapter titles
+
+section headers
+
+paragraph boundaries
+
+This does not need to be perfect.
+It needs to be:
+
+deterministic
+
+reviewable
+
+overrideable
+
+Step 2: Store structure explicitly
+
+Instead of just:
+
+start_offset, end_offset
+
+Add:
+
+block_type (chapter_title, section_header, paragraph)
+
+display_style (enum or flags)
+
+This lets your reader render:
+
+Headers as headers
+
+Body text as body
+
+Spacing correctly
+
+You are essentially building a lightweight book layout engine, not a document editor.
+
+5. Annotations: Genius.com, but Serious
+
+This is where your idea really clicks.
+
+The right mental model
+
+The text stays untouched
+
+Annotations live beside it
+
+Annotations are:
+
+contextual
+
+anchored
+
+optional
+
+layered
+
+Types of annotations (broad, not deep)
+
+You don’t need all of these now, but the model should allow them:
+
+AI-guided annotations
+
+“This paragraph introduces X”
+
+“This term refers back to Y”
+
+User annotations
+
+Personal notes
+
+Reactions
+
+Connections
+
+Derived annotations
+
+Generated during chat
+
+Saved as marginal notes
+
+Important rule:
+
+Chat doesn’t produce answers.
+Chat produces annotations.
+
+This keeps everything grounded in the text.
+
+6. UX: How This Feels to the User
+
+When someone reads, they should experience:
+
+The book as it was written
+
+With optional marginal clarity
+
+Without losing ownership of interpretation
+
+Visually:
+
+Main text = dominant
+
+Annotations = subtle markers (icons, dots, highlights)
+
+Clicking an annotation reveals:
+
+AI explanation
+
+User notes
+
+Relevant quotes
+
+No popups yelling at them.
+No overlays hijacking attention.
+
+7. Why This Is Better Than Chat (Philosophically and Practically)
+Philosophically
+
+You’re not pretending to be the author
+
+You’re not inventing intent
+
+You’re not collapsing history into present-day advice
+
+You’re doing what scholars actually do:
+
+Read closely, annotate carefully, argue privately.
+
+Practically
+
+Much cheaper than free-form chat
+
+Easier to rate-limit
+
+Easier to cache
+
+Easier to audit
+
+Easier to explain
+
+And crucially:
+
+The system still works even if AI is dumb.
+
+That’s a huge advantage.
+
+8. How This Fits Your Existing Architecture (Good News)
+
+Nothing you’ve built is wasted.
+
+You already have:
+
+Canonical text
+
+Stable offsets
+
+Highlight primitives
+
+Annotation storage
+
+Text-bound AI contracts
+
+This vision is not a pivot.
+It’s a clarification.
+
+All you’re really doing is:
+
+Reframing chat output as annotations
+
+Improving text structure
+
+Improving reader affordances
+
+9. What I’d Lock In As a Principle (Write This Down)
+
+AI never replaces reading.
+AI only leaves notes in the margins.
+
+That sentence alone can guide every future decision.
+
+10. Recommended Next Concrete Step (Still UX-first)
+
+If you want a clean next move that doesn’t explode scope:
+
+Pick ONE:
+
+Design the annotation UI system (pure UX, no code)
+
+Design the PDF → structured text ingestion pipeline
+
+Define the annotation types and lifecycle (how chat → annotation works)
+
+All three are valid, but don’t do them simultaneously.
+
+If you tell me which one you want next, I’ll go deep on that one and keep everything else frozen.
+
+Great lets now proceduralize everything
+
+Good. What you’re asking for now is the right final move before scale:
+
+Turn the vision into procedures so the system grows predictably, not creatively.
+
+Below is a procedural operating system for the project.
+Think of this as how work flows, not features.
+
+No vibes. No philosophy. Just rules + sequences.
+
+ALEXANDRIA — PROCEDURAL OPERATING SYSTEM
+
+This document answers one question:
+
+“When X happens, what exactly do we do?”
+
+If everyone follows this, the product stays coherent.
+
+PROCEDURE 0 — GOVERNING PRINCIPLES (ALWAYS ON)
+
+These are not steps. These are invariants.
+
+Text is the product
+
+AI only annotates; it never concludes
+
+Users form opinions; the system only points
+
+Canon is immutable
+
+All intelligence is optional and removable
+
+If a proposed change violates any of these → stop.
+
+PROCEDURE 1 — BOOK INGESTION (ADMIN ONLY)
+Trigger
+
+New PDFs available
+
+User requests a book
+
+Internal gap discovered via queries
+
+Steps
+
+Select PDF
+
+Choose best-quality version
+
+Reject duplicates ((1), (2) variants)
+
+Extract raw text
+
+Preserve paragraph breaks
+
+Preserve page order
+
+No summarization
+
+Extract structure
+
+Detect:
+
+Chapter headers
+
+Section headers
+
+Paragraph blocks
+
+Use:
+
+font size
+
+bold/caps
+
+spacing gaps
+
+Generate canonical text
+
+Single book_text.content
+
+Includes line breaks and spacing
+
+No normalization beyond whitespace sanity
+
+Define chapters
+
+Chapters reference:
+
+start_offset
+
+end_offset
+
+Chapters never store text
+
+Manual review (required)
+
+Confirm chapter boundaries
+
+Confirm text reads like the book
+
+Assign cover
+
+Extract page 1–5 as images
+
+Admin selects best
+
+Save cover_image_path
+
+Insert into DB
+
+books
+
+book_text
+
+chapters
+
+Output
+
+Book is readable
+
+Feels like a book
+
+Safe for highlights, annotations, AI
+
+PROCEDURE 2 — QUERY → READING ROUTES
+Trigger
+
+User submits a query
+
+Steps
+
+Intent classification
+
+Map query → domain/subdomain
+
+If confidence < threshold → ask user to rephrase
+
+Candidate book selection
+
+Pull books only from that domain
+
+Hard cap (e.g. 5–8 books)
+
+Routing
+
+For each path:
+
+book
+
+chapter
+
+conceptual angle
+
+short rationale
+
+No ranking language
+
+No “best” path
+
+Return routes
+
+Minimum 2 paths
+
+Maximum 4 paths
+
+Output
+
+User sees parallel intellectual approaches
+
+User chooses where to read
+
+PROCEDURE 3 — READER ENTRY
+Trigger
+
+User clicks “Open this section”
+
+Steps
+
+Load context header
+
+Book title
+
+Chapter title
+
+“You were directed here because…”
+
+Render text
+
+Slice from book_text.content
+
+Use chapter offsets
+
+Apply block styles (headers, paragraphs)
+
+Render annotation markers
+
+AI annotations (if exist)
+
+User highlights
+
+No chat auto-open
+
+Reading is first action
+
+Output
+
+User is oriented
+
+User understands why they’re here
+
+Text is dominant
+
+PROCEDURE 4 — ANNOTATIONS (CORE LOOP)
+Trigger
+
+User selects text
+
+OR AI generates a note
+
+OR user chats about a passage
+
+Steps
+
+Anchor annotation
+
+book_id
+
+chapter_id
+
+start_offset
+
+end_offset
+
+Classify annotation
+
+ai_explanatory
+
+user_note
+
+ai_clarification
+
+Store annotation
+
+Never modify canon
+
+Always reversible
+
+Display marginally
+
+Subtle icon / highlight
+
+Click to expand
+
+Never overlay main text
+
+Output
+
+Text stays clean
+
+Insight accumulates in margins
+
+User thinking is preserved
+
+PROCEDURE 5 — CHAT → ANNOTATION (IMPORTANT)
+
+Chat is not a destination.
+
+Trigger
+
+User clicks “Ask about this section”
+
+Steps
+
+Validate context
+
+Must include text span
+
+Must match canonical text
+
+Else → refuse
+
+LLM response constraints
+
+Must quote or reference text
+
+Must explain, not conclude
+
+Must stay within span
+
+Convert response
+
+Response becomes an annotation
+
+Stored with offsets
+
+Labeled as AI-generated
+
+End chat
+
+No infinite back-and-forth by default
+
+Output
+
+AI leaves a note
+
+User continues reading
+
+Chat does not replace thinking
+
+PROCEDURE 6 — PERSONAL LIBRARY
+Trigger
+
+User saves a book
+
+User opens My Library
+
+Steps
+
+Save book
+
+User-library join table
+
+Timestamp only
+
+Display
+
+Covers
+
+Titles
+
+Progress (optional)
+
+Resume
+
+Last opened chapter
+
+No recommendations
+
+Output
+
+Library feels intentional
+
+No algorithmic pressure
+
+PROCEDURE 7 — WISHLIST / GROWTH LOOP
+Trigger
+
+Book not found
+
+User explicitly requests book
+
+Steps
+
+Create request
+
+Title
+
+Author
+
+User note (optional)
+
+Admin review
+
+Approve / reject
+
+Link to ingestion pipeline
+
+Notify user
+
+Book added
+
+Ready to read
+
+Output
+
+Library grows deliberately
+
+Users feel heard
+
+Canon stays curated
+
+PROCEDURE 8 — WHEN TO UNMOCK OPENAI
+
+You only unmock when all are true:
+
+Reader feels readable
+
+Annotations feel natural
+
+Routing paths feel sensible
+
+Users understand AI’s role
+
+You can remove AI and app still works
+
+Then:
+
+Unmock only one agent at a time
+
+Start with routing, not chat
+
+Measure confusion, not “accuracy”
+
+PROCEDURE 9 — WHAT TO DO WHEN CONFUSED
+
+If you ever ask:
+
+“Should we add X?”
+
+Run this checklist:
+
+Does it reduce reading friction?
+
+Does it clarify where to look?
+
+Does it keep AI in the margins?
+
+Does it preserve canon?
+
+Does it work if AI is removed?
+
+If any answer is “no” → don’t add it.
+
+FINAL LOCK-IN SENTENCE
+
+If you remember nothing else, remember this:
+
+Alexandria is not an AI product.
+It is a reading product that tolerates AI.
+
+You now have:
+
+Architecture
+
+UX direction
+
+Intelligence constraints
+
+Growth procedures
+
+At this point, execution is no longer creative — it’s discipline.
+
+If you want, next I can:
+
+Turn this into a PROCEDURES.md for the repo
+
+Help you define success metrics that don’t corrupt the product
+
+Simulate a year of growth and where this breaks
+
+Say the word.
+
+lets imagine our x and ui flows
+
+Perfect. Now we do this as a lived experience, not boxes and arrows.
+We’ll imagine what the user sees, thinks, and does, screen by screen, with clear UI intent. No backend talk. No code. Just experience.
+
+I’ll do this in three passes:
+
+Core user journey (happy path)
+
+Reader + annotation micro-flows (where the magic lives)
+
+Mental-state alignment (what the UI must make them feel at each step)
+
+This will give you a north star you can keep open while designing components.
+
+1. CORE UX FLOW — “I have a question”
+Entry: Homepage
+
+What the user sees
+
+Calm, serious page
+
+Hero text:
+
+We point you to the book. You form your own.
+
+Subtext:
+
+Everyone has a take. We have the sources they’re summarizing.
+
+Below:
+
+A single input field:
+
+What brought you here?
+
+Examples fade in/out:
+
+“Why does my boss act like that?”
+
+“Why do smart people believe stupid things?”
+
+“Why do power dynamics ruin relationships?”
+
+CTA:
+
+Find the reading
+
+What the user feels
+
+“This isn’t trying to impress me.”
+
+“This expects me to think.”
+
+“I’m allowed to ask a real question.”
+
+Transition: Submit query
+
+No loading spinner drama.
+Just a quiet transition.
+
+Routing Results: “Ways to read this”
+
+Page title
+
+Here are different ways thinkers have approached this problem.
+
+Layout
+Vertical stack of Reading Paths (not cards, not recommendations).
+
+Each path shows:
+
+Path Header
+
+Angle label (small, intentional):
+
+Power & hierarchy
+
+Economic structure
+
+Psychology of authority
+
+Book preview
+
+Cover
+
+Title
+
+Author
+
+Chapter pointer
+
+Chapter 1 — Bourgeois and Proletarians
+
+Rationale (1–2 lines)
+
+Frames workplace conflict as structural rather than personal.
+
+CTA:
+
+Read this section
+
+Secondary:
+
+Save book
+
+View full book
+
+What the user feels
+
+“I’m not being told what to think.”
+
+“I can choose how deep or where to start.”
+
+“This feels like intellectual honesty.”
+
+2. READER UX FLOW — “I am inside the book”
+Reader Entry
+
+Top context bar (quiet, anchoring)
+
+Book title · Author
+
+Chapter title
+
+Small line:
+
+You were directed here because this section addresses power and hierarchy directly.
+
+This line matters. It answers why am I here before reading.
+
+Reader Layout (crucial)
+
+Three-column mental model (even if rendered as two)
+
+|  Main Text (dominant)  |  Margins / Annotations  |
+
+Main text
+
+Proper paragraph spacing
+
+Headers exactly as in the book
+
+White space respected
+
+No UI chrome intruding
+
+It should feel like a book, not a webpage.
+
+Margins / Annotation Rail (right side)
+
+At first, the margin is mostly empty.
+
+You might see:
+
+A small marker next to a paragraph
+
+Hover reveals:
+
+AI note available
+
+Clicking opens a marginal panel:
+
+AI annotation
+This paragraph introduces the idea that authority reacts strongly to perceived threat, not actual harm.
+
+Quoted sentence highlighted lightly in text.
+
+Important
+
+The annotation explains what’s happening in the text
+
+It does not apply it to the user yet
+
+Highlighting flow (user thinking)
+
+User selects text.
+
+A tiny contextual menu appears:
+
+Highlight
+
+Add note
+
+They click Add note.
+
+A small side panel opens:
+
+What does this make you think?
+
+User writes:
+
+“This explains why criticism at work feels personal even when it’s not.”
+
+Saved.
+
+Now:
+
+The margin shows their note
+
+It’s visually distinct from AI annotations
+
+What the user feels
+
+“This is my thought.”
+
+“The book isn’t talking at me. I’m talking to it.”
+
+3. CHAT → ANNOTATION FLOW — “Clarify, don’t replace”
+Trigger
+
+User clicks:
+
+Ask about this section
+
+This is intentionally scoped.
+
+Chat UI (not dominant)
+
+Appears in margin or drawer
+
+Shows pinned quote:
+
+“The ruling ideas of each age have ever been the ideas of its ruling class…”
+
+Below:
+
+Ask about this passage
+
+User asks:
+
+“What does he mean by ‘ruling ideas’ here?”
+
+AI response behavior (UX-visible)
+
+The response:
+
+References the text directly
+
+Quotes a line
+
+Explains phrasing
+
+Example:
+
+Here, Marx is arguing that dominant beliefs don’t emerge neutrally. He’s saying they tend to reflect the interests of those in power, rather than universal truth.
+
+Below the response:
+
+Button: Save as annotation
+
+User clicks it.
+
+Now:
+
+That explanation becomes a marginal note
+
+Chat closes automatically
+
+What the user feels
+
+“The AI helped me understand the text, not escape it.”
+
+“I’m still reading.”
+
+4. BROWSING FLOW — “I want to explore”
+Library page
+
+Layout
+
+Grid of books
+
+Covers prominent
+
+Titles + authors
+
+Domain tag (small)
+
+No:
+
+Sorting by popularity
+
+Ratings
+
+Recommendations
+
+CTA per book:
+
+View book
+
+Save to library
+
+What the user feels
+
+“This is a canon, not a feed.”
+
+“I browse deliberately.”
+
+5. PERSONAL LIBRARY FLOW — “My thinking shelf”
+My Library page
+
+Shows:
+
+Saved books
+
+Progress indicator (subtle)
+
+Last opened chapter
+
+Clicking a book:
+
+Takes you directly back into reading context
+
+What the user feels
+
+“This reflects me.”
+
+“This isn’t content I consumed. It’s content I engaged with.”
+
+6. MENTAL STATE ALIGNMENT (THIS IS KEY)
+
+At each stage, the UI must reinforce a state of mind:
+
+Stage	User Should Feel
+Homepage	Invited to think
+Routing	Respected, not directed
+Reader	Grounded, focused
+Annotation	Ownership
+AI interaction	Assisted, not overridden
+Library	Intentional
+
+If any screen causes:
+
+urgency
+
+excitement
+
+dopamine pull
+
+“keep scrolling” instinct
+
+…it’s wrong.
+
+7. ONE SENTENCE TO GUIDE ALL UI DECISIONS
+
+Write this at the top of your design file:
+
+If the UI makes the user feel smart without reading, it has failed.
+
+If you want, next I can:
+
+Convert this into wireframe-level component specs
+
+Write exact copy rules for AI annotations
+
+Help you decide what to hide by default vs reveal progressively
+
+Just tell me which layer you want to lock next.

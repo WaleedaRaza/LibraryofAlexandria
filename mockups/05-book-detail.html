@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Prince — Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .book-detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .book-detail-back {
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .book-detail-back:hover {
+            color: var(--text-primary);
+        }
+
+        /* Book Header with Cover */
+        .book-detail-header {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .book-detail-cover {
+            aspect-ratio: 2/3;
+            background: linear-gradient(145deg, #2d132c 0%, #801336 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .book-detail-cover::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .book-detail-cover-title {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            font-family: var(--font-reading);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .book-detail-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .book-detail-title {
+            font-family: var(--font-reading);
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .book-detail-author {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .book-detail-domain {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-primary);
+            background: rgba(201, 169, 98, 0.1);
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .book-detail-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Chapter List */
+        .book-detail-chapters {
+            margin-bottom: 3rem;
+        }
+
+        .book-detail-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .chapter-list {
+            list-style: none;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .chapter-list-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chapter-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .chapter-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .chapter-link:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .chapter-number {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            min-width: 2rem;
+        }
+
+        .chapter-title {
+            font-family: var(--font-reading);
+            font-size: 1rem;
+            flex: 1;
+        }
+
+        .chapter-arrow {
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .chapter-link:hover .chapter-arrow {
+            opacity: 1;
+            color: var(--accent-primary);
+        }
+
+        /* Reading Progress (for logged in users with saved book) */
+        .book-detail-progress {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .book-detail-progress-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .book-detail-progress-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .book-detail-progress-resume {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="07-wishlist.html" class="nav-link">Wishlist</a>
+                <a href="06-my-library.html" class="nav-link">My Library</a>
+                <span class="nav-link">reader@example.com</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="book-detail-container">
+            <a href="04-library.html" class="book-detail-back">← Back to Library</a>
+
+            <!-- Book Header -->
+            <header class="book-detail-header">
+                <div class="book-detail-cover">
+                    <span class="book-detail-cover-title">The Prince</span>
+                </div>
+                <div class="book-detail-info">
+                    <h1 class="book-detail-title">The Prince</h1>
+                    <p class="book-detail-author">by Niccolò Machiavelli</p>
+                    <span class="book-detail-domain">Strategy</span>
+                    <div class="book-detail-actions">
+                        <a href="03-reader.html" class="btn btn--primary btn--large">Open Reader →</a>
+                        <button class="btn btn--secondary btn--large">✓ Saved</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Reading Progress (shown if user has read this before) -->
+            <div class="book-detail-progress">
+                <p class="book-detail-progress-label">Your progress</p>
+                <p class="book-detail-progress-text">Last read: Chapter XVII — Concerning Cruelty and Clemency</p>
+                <div class="book-detail-progress-resume">
+                    <a href="03-reader.html" class="btn btn--primary">Resume reading →</a>
+                </div>
+            </div>
+
+            <!-- Chapters -->
+            <section class="book-detail-chapters">
+                <h2 class="book-detail-section-title">Chapters</h2>
+                <ol class="chapter-list">
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">I</span>
+                            <span class="chapter-title">How Many Kinds of Principalities There Are</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">II</span>
+                            <span class="chapter-title">Concerning Hereditary Principalities</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">III</span>
+                            <span class="chapter-title">Concerning Mixed Principalities</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">IV</span>
+                            <span class="chapter-title">Why the Kingdom of Darius Did Not Rebel</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">...</span>
+                            <span class="chapter-title" style="color: var(--text-muted);">12 more chapters</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">XVII</span>
+                            <span class="chapter-title">Concerning Cruelty and Clemency</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">XVIII</span>
+                            <span class="chapter-title">How Princes Should Keep Faith</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">XIX</span>
+                            <span class="chapter-title">Avoiding Contempt and Hatred</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">...</span>
+                            <span class="chapter-title" style="color: var(--text-muted);">7 more chapters</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                    <li class="chapter-list-item">
+                        <a href="03-reader.html" class="chapter-link">
+                            <span class="chapter-number">XXVI</span>
+                            <span class="chapter-title">Exhortation to Liberate Italy</span>
+                            <span class="chapter-arrow">→</span>
+                        </a>
+                    </li>
+                </ol>
+            </section>
+        </div>
+    </main>
+
+    <div class="mockup-indicator">
+        MOCKUP — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Library — Alexandria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_mockup-base.css">
+    <style>
+        .my-library-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .my-library-header {
+            margin-bottom: 2rem;
+        }
+
+        .my-library-title {
+            font-family: var(--font-reading);
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .my-library-subtitle {
+            color: var(--text-secondary);
+        }
+
+        /* Book Grid with Progress */
+        .my-library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .book-card {
+            position: relative;
+        }
+
+        .book-card-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .book-cover {
+            aspect-ratio: 2/3;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .book-card:hover .book-cover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+        }
+
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .book-cover-title {
+            position: absolute;
+            bottom: 0.75rem;
+            left: 0.75rem;
+            right: 0.75rem;
+            font-family: var(--font-reading);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.25;
+        }
+
+        .book-card-title {
+            font-family: var(--font-reading);
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
+        }
+
+        .book-card-author {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Reading Progress */
+        .book-card-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 3px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-secondary);
+            border-radius: 2px;
+        }
+
+        .progress-text {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        /* Last Read Info */
+        .book-card-last-read {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Resume reading button */
+        .book-card-resume {
+            margin-top: 0.75rem;
+        }
+
+        .book-card-resume a {
+            font-size: 0.75rem;
+            color: var(--accent-primary);
+        }
+
+        /* Stats */
+        .my-library-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">ALEXANDRIA</a>
+            <div class="nav-links">
+                <a href="04-library.html" class="nav-link">Library</a>
+                <a href="07-wishlist.html" class="nav-link">Wishlist</a>
+                <a href="06-my-library.html" class="nav-link" style="color: var(--accent-primary);">My Library</a>
+                <span class="nav-link">reader@example.com</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="my-library-container">
+            <header class="my-library-header">
+                <h1 class="my-library-title">My Library</h1>
+                <p class="my-library-subtitle">Your thinking shelf — 5 books saved</p>
+            </header>
+
+            <!-- Stats -->
+            <div class="my-library-stats">
+                <div class="stat">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Books saved</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">Annotations</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">Highlights</div>
+                </div>
+            </div>
+
+            <!-- Book Grid -->
+            <div class="my-library-grid">
+                <!-- Book 1 - Currently reading -->
+                <article class="book-card">
+                    <a href="05-book-detail.html" class="book-card-link">
+                        <div class="book-cover" style="background: linear-gradient(145deg, #2d132c 0%, #801336 100%);">
+                            <span class="book-cover-title">The Prince</span>
+                        </div>
+                        <h3 class="book-card-title">The Prince</h3>
+                        <p class="book-card-author">Niccolò Machiavelli</p>
+                        <div class="book-card-progress">
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 65%;"></div>
+                            </div>
+                            <span class="progress-text">65%</span>
+                        </div>
+                        <p class="book-card-last-read">Last read: Ch. XVII</p>
+                    </a>
+                    <div class="book-card-resume">
+                        <a href="03-reader.html">Resume reading →</a>
+                    </div>
+                </article>
+
+                <!-- Book 2 -->
+                <article class="book-card">
+                    <a href="05-book-detail.html" class="book-card-link">
+                        <div class="book-cover" style="background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);">
+                            <span class="book-cover-title">Meditations</span>
+                        </div>
+                        <h3 class="book-card-title">Meditations</h3>
+                        <p class="book-card-author">Marcus Aurelius</p>
+                        <div class="book-card-progress">
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 100%;"></div>
+                            </div>
+                            <span class="progress-text">Done</span>
+                        </div>
+                        <p class="book-card-last-read">12 annotations</p>
+                    </a>
+                </article>
+
+                <!-- Book 3 -->
+                <article class="book-card">
+                    <a href="05-book-detail.html" class="book-card-link">
+                        <div class="book-cover" style="background: linear-gradient(145deg, #1f1f3d 0%, #3d1f5c 100%);">
+                            <span class="book-cover-title">Thinking, Fast and Slow</span>
+                        </div>
+                        <h3 class="book-card-title">Thinking, Fast and Slow</h3>
+                        <p class="book-card-author">Daniel Kahneman</p>
+                        <div class="book-card-progress">
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 30%;"></div>
+                            </div>
+                            <span class="progress-text">30%</span>
+                        </div>
+                        <p class="book-card-last-read">Last read: Part II</p>
+                    </a>
+                    <div class="book-card-resume">
+                        <a href="03-reader.html">Resume reading →</a>
+                    </div>
+                </article>
+
+                <!-- Book 4 -->
+                <article class="book-card">
+                    <a href="05-book-detail.html" class="book-card-link">
+                        <div class="book-cover" style="background: linear-gradient(145deg, #1a3c34 0%, #0d2818 100%);">
+                            <span class="book-cover-title">The Art of War</span>
+                        </div>
+                        <h3 class="book-card-title">The Art of War</h3>
+                        <p class="book-card-author">Sun Tzu</p>
+                        <div class="book-card-progress">
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 0%;"></div>
+                            </div>
+                            <span class="progress-text">Not started</span>
+                        </div>
+                    </a>
+                    <div class="book-card-resume">
+                        <a href="03-reader.html">Start reading →</a>
+                    </div>
+                </article>
+
+                <!-- Book 5 -->
+                <article class="book-card">
+                    <a href="05-book-detail.html" class="book-card-link">
+                        <div class="book-cover" style="background: linear-gradient(145deg, #1a1a1a 0%, #3d0000 100%);">
+                            <span class="book-cover-title">The Communist Manifesto</span>
+                        </div>
+                        <h3 class="book-card-title">The Communist Manifesto</h3>
+                        <p class="book-card-author">Karl Marx</p>
+                        <div class="book-card-progress">
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 100%;"></div>
+                            </div>
+                            <span class="progress-text">Done</span>
+                        </div>
+                        <p class="book-card-last-read">8 annotations</p>
+                    </a>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <div class="mockup-indicator">
+        MOCKUP — <a href="index.html">Back to all views</a>
+    </div>
+</body>
+</html>
+

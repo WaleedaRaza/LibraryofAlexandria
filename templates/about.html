@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}About — Alexandria{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <article class="about-content">
+        <h1 class="about-title">What is Alexandria?</h1>
+        
+        <p>Alexandria is a constrained, agent-guided reading system.</p>
+        
+        <p>It is <strong>not</strong>:</p>
+        <ul>
+            <li>ChatGPT with citations</li>
+            <li>A PDF reader with AI</li>
+            <li>A knowledge graph</li>
+            <li>A recommendation engine</li>
+            <li>A social reading app</li>
+            <li>A place for "answers"</li>
+        </ul>
+        
+        <h2>How it works</h2>
+        
+        <p>You bring confusion or questions. The system routes you to <strong>primary source texts</strong> — books, chapters, passages. LLMs act only as guides, never as authorities.</p>
+        
+        <p>If you can walk away without reading, the system has failed.</p>
+        
+        <h2>The rules</h2>
+        
+        <ol>
+            <li><strong>Canon is sacred.</strong> Books and text are immutable. Users cannot edit texts. LLMs cannot modify canon.</li>
+            <li><strong>Reading is primary.</strong> No default summaries. No global chat. No answer-first UI. Everything resolves to text.</li>
+            <li><strong>LLMs are tools, not minds.</strong> Stateless. Deterministic. Replaceable. Constrained by contracts.</li>
+        </ol>
+        
+        <h2>The constraint is the product</h2>
+        
+        <p>Modern LLMs hallucinate and abstract. People want to read the source, not interpretations. Intellectual honesty requires constraint.</p>
+        
+        <p>This is intentional.</p>
+    </article>
+</div>
+
+<style>
+.about-container {
+    max-width: var(--reading-width);
+    margin: 0 auto;
+}
+
+.about-content {
+    font-family: var(--font-reading);
+    font-size: 1.125rem;
+    line-height: 1.8;
+}
+
+.about-title {
+    font-size: 2rem;
+    margin-bottom: var(--space-xl);
+}
+
+.about-content h2 {
+    font-size: 1.25rem;
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-md);
+    color: var(--accent-primary);
+}
+
+.about-content p {
+    margin-bottom: 1.5em;
+}
+
+.about-content ul,
+.about-content ol {
+    margin-bottom: 1.5em;
+    padding-left: var(--space-xl);
+}
+
+.about-content li {
+    margin-bottom: var(--space-sm);
+}
+</style>
+{% endblock %}
+

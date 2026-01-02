@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Request a Book — Alexandria{% endblock %}
+
+{% block content %}
+<div class="wishlist-container">
+    <header class="wishlist-header">
+        <h1 class="wishlist-title">Request a Book</h1>
+        <p class="wishlist-subtitle">
+            Can't find what you're looking for? Request a book and we'll consider adding it to the library. 
+            We curate deliberately — not every request will be approved.
+        </p>
+    </header>
+    
+    <!-- Request Form -->
+    <div class="wishlist-form-container">
+        <h2 class="wishlist-form-title">Submit a request</h2>
+        
+        {% if error %}
+            <div class="auth-error">{{ error }}</div>
+        {% endif %}
+        
+        {% if success %}
+            <div style="padding: var(--space-md); margin-bottom: var(--space-md); background: rgba(125, 157, 114, 0.1); border: 1px solid var(--accent-secondary); border-radius: 4px; color: var(--accent-secondary);">
+                {{ success }}
+            </div>
+        {% endif %}
+        
+        <form action="/wishlist/request" method="POST">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-md);">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Book title *</label>
+                    <input type="text" name="title" class="form-input" placeholder="e.g. The Discourses" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Author</label>
+                    <input type="text" name="author" class="form-input" placeholder="e.g. Niccolò Machiavelli">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Why do you want this book?</label>
+                <textarea name="reason" class="form-input form-textarea" placeholder="What question are you trying to answer? Why do you think this book belongs in the library?"></textarea>
+                <p class="form-hint">Helps us prioritize. Books that address common questions get added first.</p>
+            </div>
+            <button type="submit" class="btn btn--primary">Submit request</button>
+        </form>
+    </div>
+    
+    <!-- User's Requests -->
+    {% if requests %}
+        <section>
+            <h2 class="wishlist-section-title">Your requests</h2>
+            <div class="requests-list">
+                {% for req in requests %}
+                    <div class="request-card">
+                        <div class="request-main">
+                            <h3 class="request-title">{{ req.title }}</h3>
+                            {% if req.author %}
+                                <p class="request-author">{{ req.author }}</p>
+                            {% endif %}
+                            {% if req.reason %}
+                                <p class="request-reason">"{{ req.reason }}"</p>
+                            {% endif %}
+                        </div>
+                        <div class="request-meta">
+                            <span class="request-status request-status--{{ req.status|lower }}">
+                                {% if req.status == 'ADDED' %}Added{% elif req.status == 'APPROVED' %}Approved{% elif req.status == 'REJECTED' %}Not added{% else %}Pending{% endif %}
+                            </span>
+                            <p class="request-date">
+                                {% if req.resolved_at %}
+                                    {{ req.status }} {{ req.resolved_at }}
+                                {% else %}
+                                    Requested {{ req.created_at }}
+                                {% endif %}
+                            </p>
+                            {% if req.status == 'ADDED' and req.book_id %}
+                                <div class="request-action">
+                                    <a href="/library/book/{{ req.book_id }}">Read now →</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if req.admin_notes %}
+                            <div class="request-admin-note">
+                                <p class="request-admin-note-label">Admin note</p>
+                                <p>{{ req.admin_notes }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+</div>
+{% endblock %}
