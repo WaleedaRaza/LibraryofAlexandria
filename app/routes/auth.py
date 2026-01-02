@@ -232,6 +232,32 @@ async def register(
         )
 
 
+@router.post("/resend")
+async def resend_confirmation(
+    request: Request,
+    email: str = Form(...)
+):
+    """Resend confirmation email."""
+    try:
+        client = get_supabase_auth_client()
+        base_url = str(request.base_url).rstrip("/")
+        
+        # Resend confirmation email
+        client.auth.resend({
+            "type": "signup",
+            "email": email,
+            "options": {
+                "email_redirect_to": f"{base_url}/auth/confirm"
+            }
+        })
+        
+        return JSONResponse({"success": True})
+        
+    except Exception as e:
+        logger.error(f"Resend error: {e}")
+        return JSONResponse({"success": False, "error": str(e)}, status_code=400)
+
+
 @router.post("/set-session")
 async def set_session(request: Request):
     """

@@ -15,9 +15,86 @@
         You'll be automatically signed in.
     </p>
     
+    <div id="resend-section" style="margin-top: 2rem;">
+        <p class="verify-text" id="countdown-text" style="font-size: 0.85rem; color: var(--text-muted);">
+            Resend available in <span id="countdown">20</span>s
+        </p>
+        
+        <form id="resend-form" action="/auth/resend" method="POST" style="display: none;">
+            <input type="hidden" name="email" value="{{ email }}">
+            <button type="submit" class="btn btn--secondary" id="resend-btn">Resend confirmation email</button>
+        </form>
+        
+        <p id="resend-status" style="display: none; margin-top: 1rem;"></p>
+    </div>
+    
     <p class="verify-text" style="margin-top: 2rem; font-size: 0.85rem; color: var(--text-muted);">
-        Didn't receive the email? Check your spam folder or 
-        <a href="/auth/register">try signing up again</a>.
+        Wrong email? <a href="/auth/register">Try signing up again</a>.
     </p>
 </div>
+
+<script>
+(function() {
+    let seconds = 20;
+    const countdownEl = document.getElementById('countdown');
+    const countdownText = document.getElementById('countdown-text');
+    const resendForm = document.getElementById('resend-form');
+    const resendBtn = document.getElementById('resend-btn');
+    const statusEl = document.getElementById('resend-status');
+    
+    const timer = setInterval(() => {
+        seconds--;
+        countdownEl.textContent = seconds;
+        
+        if (seconds <= 0) {
+            clearInterval(timer);
+            countdownText.style.display = 'none';
+            resendForm.style.display = 'block';
+        }
+    }, 1000);
+    
+    resendForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        resendBtn.disabled = true;
+        resendBtn.textContent = 'Sending...';
+        
+        try {
+            const formData = new FormData(resendForm);
+            const response = await fetch('/auth/resend', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = 'var(--accent-secondary)';
+                statusEl.textContent = '✓ Email sent! Check your inbox.';
+                resendForm.style.display = 'none';
+                
+                // Allow resend again after 60s
+                setTimeout(() => {
+                    resendForm.style.display = 'block';
+                    resendBtn.disabled = false;
+                    resendBtn.textContent = 'Resend confirmation email';
+                    statusEl.style.display = 'none';
+                }, 60000);
+            } else {
+                statusEl.style.display = 'block';
+                statusEl.style.color = 'var(--accent-danger)';
+                statusEl.textContent = result.error || 'Failed to send. Try again.';
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Resend confirmation email';
+            }
+        } catch (err) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = 'var(--accent-danger)';
+            statusEl.textContent = 'Network error. Try again.';
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend confirmation email';
+        }
+    });
+})();
+</script>
 {% endblock %}
