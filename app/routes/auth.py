@@ -1,93 +1,69 @@
 """
 Alexandria Library - Authentication Routes
-Minimal auth: sessions via signed cookies.
-No OAuth in V1. No profiles.
+Uses Supabase Auth (their built-in auth service with email provider)
 """
 
-from fastapi import APIRouter, Request, Depends, Form, HTTPException, Cookie
+from fastapi import APIRouter, Request, Depends, Form, HTTPException, Cookie, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from typing import Optional
-import bcrypt
-import secrets
-import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
+import logging
 
 from .. import templates
 from ..config import settings
-from ..db.database import get_supabase, is_sqlite_mode
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
-def hash_password(password: str) -> str:
-    """Hash password with bcrypt."""
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt(rounds=12)).decode()
-
-
-def verify_password(password: str, password_hash: str) -> bool:
-    """Verify password against bcrypt hash."""
-    # Handle legacy SHA256 hashes during migration
-    if not password_hash.startswith('$2'):
-        import hashlib
-        return hashlib.sha256(password.encode()).hexdigest() == password_hash
-    return bcrypt.checkpw(password.encode(), password_hash.encode())
+def get_supabase_auth_client():
+    """Get Supabase client for auth operations."""
+    from supabase import create_client
+    
+    url = settings.SUPABASE_URL
+    # Use anon key for auth, fall back to service role key
+    key = settings.SUPABASE_ANON_KEY or settings.SUPABASE_SERVICE_ROLE_KEY
+    
+    if not url or not key:
+        raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY (or SERVICE_ROLE_KEY) required")
+    
+    return create_client(url, key)
 
 
 def get_current_user_optional(
     request: Request,
-    session_id: Optional[str] = Cookie(None, alias=settings.SESSION_COOKIE_NAME)
+    access_token: Optional[str] = Cookie(None, alias="sb-access-token"),
+    refresh_token: Optional[str] = Cookie(None, alias="sb-refresh-token")
 ) -> Optional[dict]:
     """
-    Get current user from session cookie.
+    Get current user from Supabase session cookies.
     Returns None if not logged in.
     """
-    if not session_id:
+    if not access_token:
         return None
     
-    if is_sqlite_mode():
-        # SQLite fallback
-        from ..db.database import get_db
-        db = get_db()
-        session = db.execute(
-            """
-            SELECT s.user_id, u.id, u.email, u.display_name, u.role
-            FROM sessions s
-            JOIN users u ON s.user_id = u.id
-            WHERE s.id = ? AND s.expires_at > datetime('now')
-            """,
-            (session_id,)
-        ).fetchone()
-        return dict(session) if session else None
-    
-    # Supabase REST API
-    client = get_supabase()
-    
-    # Get session with user info (using foreign key relationship)
-    result = client.table("sessions").select(
-        "user_id, expires_at, users(id, email, display_name, role)"
-    ).eq("id", session_id).execute()
-    
-    if not result.data:
+    try:
+        client = get_supabase_auth_client()
+        
+        # Set the session from cookies
+        client.auth.set_session(access_token, refresh_token or "")
+        
+        # Get user
+        user_response = client.auth.get_user()
+        
+        if user_response and user_response.user:
+            user = user_response.user
+            return {
+                "id": user.id,
+                "email": user.email,
+                "display_name": user.user_metadata.get("display_name") or user.email.split("@")[0],
+                "role": user.user_metadata.get("role", "user"),
+            }
         return None
-    
-    session = result.data[0]
-    
-    # Check if session is expired
-    expires_at = datetime.fromisoformat(session["expires_at"].replace("Z", "+00:00"))
-    if expires_at < datetime.now(expires_at.tzinfo):
+        
+    except Exception as e:
+        logger.debug(f"Auth check failed: {e}")
         return None
-    
-    user = session.get("users")
-    if not user:
-        return None
-    
-    return {
-        "id": user["id"],
-        "email": user["email"],
-        "display_name": user["display_name"],
-        "role": user["role"],
-        "user_id": user["id"]
-    }
 
 
 def get_current_user_required(
@@ -105,6 +81,36 @@ def get_current_user_required(
     return user
 
 
+def set_auth_cookies(response: Response, session) -> Response:
+    """Set Supabase auth cookies on response."""
+    max_age = 60 * 60 * 24 * 7  # 7 days
+    
+    response.set_cookie(
+        key="sb-access-token",
+        value=session.access_token,
+        max_age=max_age,
+        httponly=True,
+        samesite="lax",
+        secure=settings.is_production
+    )
+    response.set_cookie(
+        key="sb-refresh-token", 
+        value=session.refresh_token,
+        max_age=max_age,
+        httponly=True,
+        samesite="lax",
+        secure=settings.is_production
+    )
+    return response
+
+
+def clear_auth_cookies(response: Response) -> Response:
+    """Clear Supabase auth cookies."""
+    response.delete_cookie("sb-access-token")
+    response.delete_cookie("sb-refresh-token")
+    return response
+
+
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     """Login page."""
@@ -120,75 +126,41 @@ async def login(
     email: str = Form(...),
     password: str = Form(...)
 ):
-    """Process login."""
-    if is_sqlite_mode():
-        # SQLite fallback
-        from ..db.database import get_db
-        db = get_db()
-        user = db.execute(
-            "SELECT id, email, password_hash FROM users WHERE email = ?",
-            (email,)
-        ).fetchone()
+    """Process login with Supabase Auth."""
+    try:
+        client = get_supabase_auth_client()
         
-        if not user or not verify_password(password, user["password_hash"]):
+        # Sign in with Supabase Auth
+        auth_response = client.auth.sign_in_with_password({
+            "email": email,
+            "password": password
+        })
+        
+        if not auth_response.session:
             return templates.TemplateResponse(
                 "auth/login.html",
                 {"request": request, "error": "Invalid email or password"}
             )
         
-        session_id = secrets.token_urlsafe(32)
-        db.execute(
-            """
-            INSERT INTO sessions (id, user_id, expires_at)
-            VALUES (?, ?, datetime('now', '+7 days'))
-            """,
-            (session_id, user["id"])
+        # Success - set cookies and redirect
+        response = RedirectResponse(url="/", status_code=303)
+        set_auth_cookies(response, auth_response.session)
+        return response
+        
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        error_msg = str(e)
+        if "Invalid login credentials" in error_msg:
+            error_msg = "Invalid email or password"
+        elif "Email not confirmed" in error_msg:
+            error_msg = "Please check your email to confirm your account"
+        else:
+            error_msg = "Login failed. Please try again."
+            
+        return templates.TemplateResponse(
+            "auth/login.html",
+            {"request": request, "error": error_msg}
         )
-        db.commit()
-    else:
-        # Supabase REST API
-        client = get_supabase()
-        
-        # Find user
-        result = client.table("users").select(
-            "id, email, password_hash"
-        ).eq("email", email).execute()
-        
-        if not result.data:
-            return templates.TemplateResponse(
-                "auth/login.html",
-                {"request": request, "error": "Invalid email or password"}
-            )
-        
-        user = result.data[0]
-        
-        if not verify_password(password, user["password_hash"]):
-            return templates.TemplateResponse(
-                "auth/login.html",
-                {"request": request, "error": "Invalid email or password"}
-            )
-        
-        # Create session
-        session_id = secrets.token_urlsafe(32)
-        expires_at = datetime.utcnow() + timedelta(days=7)
-        
-        client.table("sessions").insert({
-            "id": session_id,
-            "user_id": user["id"],
-            "expires_at": expires_at.isoformat()
-        }).execute()
-    
-    # Set cookie and redirect
-    response = RedirectResponse(url="/", status_code=303)
-    response.set_cookie(
-        key=settings.SESSION_COOKIE_NAME,
-        value=session_id,
-        max_age=settings.SESSION_MAX_AGE,
-        httponly=True,
-        samesite="lax",
-        secure=settings.is_production
-    )
-    return response
 
 
 @router.get("/register", response_class=HTMLResponse)
@@ -207,103 +179,89 @@ async def register(
     password: str = Form(...),
     display_name: str = Form(None)
 ):
-    """Process registration."""
-    if is_sqlite_mode():
-        # SQLite fallback
-        from ..db.database import get_db
-        db = get_db()
+    """Process registration with Supabase Auth."""
+    try:
+        client = get_supabase_auth_client()
         
-        existing = db.execute(
-            "SELECT id FROM users WHERE email = ?",
-            (email,)
-        ).fetchone()
-        
-        if existing:
-            return templates.TemplateResponse(
-                "auth/register.html",
-                {"request": request, "error": "Email already registered"}
-            )
-        
-        user_id = f"user_{uuid.uuid4().hex[:12]}"
-        db.execute(
-            """
-            INSERT INTO users (id, email, password_hash, display_name, role)
-            VALUES (?, ?, ?, ?, 'user')
-            """,
-            (user_id, email, hash_password(password), display_name)
-        )
-        db.commit()
-        
-        session_id = secrets.token_urlsafe(32)
-        db.execute(
-            """
-            INSERT INTO sessions (id, user_id, expires_at)
-            VALUES (?, ?, datetime('now', '+7 days'))
-            """,
-            (session_id, user_id)
-        )
-        db.commit()
-    else:
-        # Supabase REST API
-        client = get_supabase()
-        
-        # Check if email exists
-        result = client.table("users").select("id").eq("email", email).execute()
-        
-        if result.data:
-            return templates.TemplateResponse(
-                "auth/register.html",
-                {"request": request, "error": "Email already registered"}
-            )
-        
-        # Create user
-        user_id = f"user_{uuid.uuid4().hex[:12]}"
-        client.table("users").insert({
-            "id": user_id,
+        # Sign up with Supabase Auth
+        auth_response = client.auth.sign_up({
             "email": email,
-            "password_hash": hash_password(password),
-            "display_name": display_name,
-            "role": "user"
-        }).execute()
+            "password": password,
+            "options": {
+                "data": {
+                    "display_name": display_name or email.split("@")[0],
+                    "role": "user"
+                }
+            }
+        })
         
-        # Auto-login: create session
-        session_id = secrets.token_urlsafe(32)
-        expires_at = datetime.utcnow() + timedelta(days=7)
-        
-        client.table("sessions").insert({
-            "id": session_id,
-            "user_id": user_id,
-            "expires_at": expires_at.isoformat()
-        }).execute()
-    
-    response = RedirectResponse(url="/", status_code=303)
-    response.set_cookie(
-        key=settings.SESSION_COOKIE_NAME,
-        value=session_id,
-        max_age=settings.SESSION_MAX_AGE,
-        httponly=True,
-        samesite="lax",
-        secure=settings.is_production
-    )
-    return response
+        if auth_response.user and auth_response.session:
+            # User created and logged in (email confirmation disabled)
+            response = RedirectResponse(url="/", status_code=303)
+            set_auth_cookies(response, auth_response.session)
+            return response
+        elif auth_response.user:
+            # User created but needs email confirmation
+            return templates.TemplateResponse(
+                "auth/login.html",
+                {"request": request, "message": "Check your email to confirm your account, then log in."}
+            )
+        else:
+            return templates.TemplateResponse(
+                "auth/register.html",
+                {"request": request, "error": "Registration failed. Please try again."}
+            )
+            
+    except Exception as e:
+        logger.error(f"Registration error: {e}")
+        error_msg = str(e)
+        if "already registered" in error_msg.lower():
+            error_msg = "This email is already registered. Try logging in."
+        elif "password" in error_msg.lower():
+            error_msg = "Password must be at least 6 characters"
+        else:
+            error_msg = "Registration failed. Please try again."
+            
+        return templates.TemplateResponse(
+            "auth/register.html",
+            {"request": request, "error": error_msg}
+        )
 
 
 @router.post("/logout")
-async def logout(
-    request: Request,
-    session_id: Optional[str] = Cookie(None, alias=settings.SESSION_COOKIE_NAME)
-):
+async def logout(request: Request):
     """Log out - clear session."""
-    if session_id:
-        if is_sqlite_mode():
-            from ..db.database import get_db
-            db = get_db()
-            db.execute("DELETE FROM sessions WHERE id = ?", (session_id,))
-            db.commit()
-        else:
-            client = get_supabase()
-            client.table("sessions").delete().eq("id", session_id).execute()
+    try:
+        # Try to sign out from Supabase
+        client = get_supabase_auth_client()
+        client.auth.sign_out()
+    except Exception as e:
+        logger.debug(f"Logout signout error (ok if not logged in): {e}")
     
     response = RedirectResponse(url="/", status_code=303)
-    response.delete_cookie(key=settings.SESSION_COOKIE_NAME)
+    clear_auth_cookies(response)
     return response
+
+
+@router.get("/callback")
+async def auth_callback(
+    request: Request,
+    access_token: str = None,
+    refresh_token: str = None
+):
+    """
+    Handle OAuth callback from Supabase (for future OAuth providers).
+    For email auth, this isn't needed but good to have.
+    """
+    if access_token and refresh_token:
+        response = RedirectResponse(url="/", status_code=303)
+        # Create a simple session object
+        class Session:
+            pass
+        session = Session()
+        session.access_token = access_token
+        session.refresh_token = refresh_token
+        set_auth_cookies(response, session)
+        return response
+    
+    return RedirectResponse(url="/auth/login", status_code=303)

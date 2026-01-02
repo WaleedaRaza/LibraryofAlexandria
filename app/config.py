@@ -35,11 +35,12 @@ class Settings:
     CANON_DIR: Path = BASE_DIR / "canon"  # Where book texts live
     
     # ==========================================================================
-    # SUPABASE (REST API - no psycopg2, no connection issues!)
+    # SUPABASE
     # ==========================================================================
     # Get these from: Supabase Dashboard → Settings → API
     SUPABASE_URL: Optional[str] = os.getenv("SUPABASE_URL")
-    SUPABASE_SERVICE_ROLE_KEY: Optional[str] = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    SUPABASE_ANON_KEY: Optional[str] = os.getenv("SUPABASE_ANON_KEY")  # For auth
+    SUPABASE_SERVICE_ROLE_KEY: Optional[str] = os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # For admin ops
     
     # Legacy - kept for reference but no longer used
     # DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")

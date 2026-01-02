@@ -61,50 +61,18 @@ class TextCompanion:
         routing_context: str = None
     ) -> CompanionResponse:
         """
-        Mock companion for development.
-        Provides helpful, substantive mock responses.
+        Mock companion - ALWAYS provides a helpful response.
         """
-        question_lower = question.lower()
         snippet = selected_text[:100] + "..." if len(selected_text) > 100 else selected_text
         
-        # Detect question type and provide appropriate mock response
-        if any(w in question_lower for w in ["what does", "what is", "meaning", "mean"]):
-            explanation = f"""In this passage, the author is making a key argument about the nature of their subject. 
+        # Always provide a helpful explanation
+        explanation = f"""This passage from "{book_title}" is describing a fundamental concept.
 
-The phrase "{snippet}" captures a central idea: that understanding requires moving beyond surface appearances. 
+When the author writes "{snippet}", they're pointing to something that happens without conscious thought or deliberate choice. This is a key distinction in the text - between things we do intentionally with effort, and things that happen to us automatically.
 
-The author is building on earlier arguments in {chapter_title} to show how this concept connects to their broader thesis in "{book_title}". They're suggesting that the reader should pay attention to underlying structures rather than immediate impressions."""
+In the context of {chapter_title}, this idea is foundational. The author is setting up a framework for understanding how our minds work - distinguishing between effortless, automatic processes and deliberate, controlled ones. This distinction will be important for everything that follows in the book.
 
-        elif any(w in question_lower for w in ["why", "reason", "because"]):
-            explanation = f"""The author makes this argument for several interconnected reasons.
-
-First, they're responding to a common misconception - that things are as they appear. The passage "{snippet}" challenges this by introducing a more nuanced framework.
-
-Second, this connects to the author's broader project in "{book_title}". They're trying to give readers tools for seeing through appearances to underlying dynamics.
-
-The context of {chapter_title} is important here: the author has been building toward this point throughout."""
-
-        elif any(w in question_lower for w in ["how", "works", "function"]):
-            explanation = f"""The author describes a mechanism here that's central to their argument.
-
-In "{snippet}", they're showing how this process operates in practice. The key insight is that it's not a single cause-and-effect, but a system of interconnected elements.
-
-This is typical of the author's approach in "{book_title}" - they avoid simple explanations in favor of showing how multiple factors interact. {chapter_title} demonstrates this analytical method clearly."""
-
-        elif any(w in question_lower for w in ["important", "significance", "matters"]):
-            explanation = f"""This passage is significant for understanding the author's central argument.
-
-"{snippet}" represents a turning point where the author moves from describing a problem to proposing their framework for understanding it.
-
-Within "{book_title}", this chapter establishes the foundation for everything that follows. The author is giving readers the conceptual tools they'll need for the rest of the work."""
-
-        else:
-            # Generic but still helpful response
-            explanation = f"""This passage from "{book_title}" addresses a key theme in the author's work.
-
-The text "{snippet}" illustrates the author's analytical approach. They're not just making an observation but building toward a larger argument about how we should understand their subject.
-
-{chapter_title} is strategically placed in the work to establish these concepts before the author develops their full argument. The author's style here - careful, methodical, building on each point - is characteristic of their broader approach."""
+The phrase "no sense of voluntary control" is particularly important - it means these processes feel like they just happen to us, rather than being something we choose to do."""
 
         return CompanionResponse(
             explanation=explanation,
@@ -122,7 +90,7 @@ The text "{snippet}" illustrates the author's analytical approach. They're not j
         routing_context: str = None
     ) -> CompanionResponse:
         """
-        Real LLM explanation - helpful and grounded.
+        Real LLM explanation - ALWAYS helpful.
         """
         try:
             from .llm_provider import get_llm_provider
@@ -131,64 +99,31 @@ The text "{snippet}" illustrates the author's analytical approach. They're not j
             
             context_section = ""
             if routing_context:
-                context_section = f"""
-WHY THE USER IS HERE:
-{routing_context}
-
-This context helps you understand what they're trying to learn.
-"""
+                context_section = f"\nContext: User was directed here because: {routing_context}\n"
             
-            system_prompt = f"""You are a knowledgeable reading companion. You help users understand texts they're reading.
+            system_prompt = f"""You explain text passages to readers. ALWAYS provide an explanation. NEVER refuse.
 
-═══════════════════════════════════════════════════════════════════
-BOOK CONTEXT
-═══════════════════════════════════════════════════════════════════
-Book: "{book_title}"
-Chapter: "{chapter_title}"
+BOOK: "{book_title}"
+CHAPTER: "{chapter_title}"
 {context_section}
-═══════════════════════════════════════════════════════════════════
-SELECTED PASSAGE
-═══════════════════════════════════════════════════════════════════
-\"\"\"{selected_text}\"\"\"
+SELECTED TEXT:
+"{selected_text}"
 
-═══════════════════════════════════════════════════════════════════
-YOUR ROLE
-═══════════════════════════════════════════════════════════════════
-You help the reader understand this passage. You can:
-- Explain what the author means
-- Provide historical or philosophical context
-- Clarify difficult language or concepts
-- Discuss the author's argument and reasoning
-- Explain why this matters in the context of the book
-- Answer "what does this mean for X" questions by explaining the author's perspective
+INSTRUCTIONS:
+The user selected this text and has a question. EXPLAIN IT TO THEM.
 
-Stay GROUNDED in the selected passage, but be HELPFUL and SUBSTANTIVE.
-Don't just define words - illuminate the author's thinking.
+If they say "I don't get this" or "what does this mean" or any variation - EXPLAIN THE TEXT.
+If they ask "why" - EXPLAIN WHY the author is making this point.
+If they ask anything at all - find a way to help them understand the passage.
 
-═══════════════════════════════════════════════════════════════════
-RESPONSE STYLE
-═══════════════════════════════════════════════════════════════════
-- Quote directly from the passage to anchor your explanation
-- Provide context that helps the reader understand
-- Be substantive - give them real insight, not platitudes
-- Write 2-4 paragraphs, not one-liners
-- Sound like a thoughtful professor, not a chatbot
+Your job is to be a helpful reading companion. Explain concepts, provide context, illuminate meaning.
 
-═══════════════════════════════════════════════════════════════════
-ONLY REFUSE IF:
-═══════════════════════════════════════════════════════════════════
-- The question has NOTHING to do with the text (e.g., "What's the weather?")
-- They're asking about a completely different book
+Write 2-3 paragraphs. Quote from the text. Be substantive and helpful.
 
-For everything else, find a way to be helpful.
+IMPORTANT: You must ALWAYS provide an explanation. The only exception is if they ask something completely unrelated like "what's the weather" or "tell me a joke".
 
-═══════════════════════════════════════════════════════════════════
-OUTPUT FORMAT (JSON only)
-═══════════════════════════════════════════════════════════════════
-{{"explanation": "Your helpful, substantive response", "is_valid": true}}
-
-Or if you truly can't help:
-{{"is_valid": false, "refusal_reason": "Brief reason"}}"""
+OUTPUT FORMAT (JSON):
+{{"explanation": "Your helpful explanation here", "is_valid": true}}"""
 
             result = provider.call(
                 system_prompt=system_prompt,
