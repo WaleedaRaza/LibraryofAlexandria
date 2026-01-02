@@ -12,6 +12,10 @@
             <div class="auth-error">{{ error }}</div>
         {% endif %}
         
+        {% if message %}
+            <div class="auth-message auth-message--info">{{ message }}</div>
+        {% endif %}
+        
         <form action="/auth/login" method="POST" class="auth-form">
             <div class="form-group">
                 <label class="form-label">Email</label>

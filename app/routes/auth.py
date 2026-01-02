@@ -4,7 +4,7 @@ Uses Supabase Auth (their built-in auth service with email provider)
 """
 
 from fastapi import APIRouter, Request, Depends, Form, HTTPException, Cookie, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from typing import Optional
 from datetime import datetime
 import logging
@@ -183,11 +183,15 @@ async def register(
     try:
         client = get_supabase_auth_client()
         
+        # Get the base URL for the confirmation redirect
+        base_url = str(request.base_url).rstrip("/")
+        
         # Sign up with Supabase Auth
         auth_response = client.auth.sign_up({
             "email": email,
             "password": password,
             "options": {
+                "email_redirect_to": f"{base_url}/auth/confirm",
                 "data": {
                     "display_name": display_name or email.split("@")[0],
                     "role": "user"
@@ -201,10 +205,10 @@ async def register(
             set_auth_cookies(response, auth_response.session)
             return response
         elif auth_response.user:
-            # User created but needs email confirmation
+            # User created but needs email confirmation - show verify page
             return templates.TemplateResponse(
-                "auth/login.html",
-                {"request": request, "message": "Check your email to confirm your account, then log in."}
+                "auth/verify_email.html",
+                {"request": request, "email": email}
             )
         else:
             return templates.TemplateResponse(
@@ -215,7 +219,7 @@ async def register(
     except Exception as e:
         logger.error(f"Registration error: {e}")
         error_msg = str(e)
-        if "already registered" in error_msg.lower():
+        if "already registered" in error_msg.lower() or "already been registered" in error_msg.lower():
             error_msg = "This email is already registered. Try logging in."
         elif "password" in error_msg.lower():
             error_msg = "Password must be at least 6 characters"
@@ -226,6 +230,35 @@ async def register(
             "auth/register.html",
             {"request": request, "error": error_msg}
         )
+
+
+@router.post("/set-session")
+async def set_session(request: Request):
+    """
+    Set session cookies from tokens (called by JS after email confirmation).
+    """
+    try:
+        data = await request.json()
+        access_token = data.get("access_token")
+        refresh_token = data.get("refresh_token")
+        
+        if not access_token or not refresh_token:
+            return JSONResponse({"error": "Missing tokens"}, status_code=400)
+        
+        response = JSONResponse({"success": True})
+        
+        class Session:
+            pass
+        session = Session()
+        session.access_token = access_token
+        session.refresh_token = refresh_token
+        set_auth_cookies(response, session)
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Set session error: {e}")
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 
 @router.post("/logout")
@@ -243,6 +276,38 @@ async def logout(request: Request):
     return response
 
 
+@router.get("/confirm")
+async def confirm_email(
+    request: Request,
+    access_token: str = None,
+    refresh_token: str = None,
+    token_hash: str = None,
+    type: str = None
+):
+    """
+    Handle email confirmation callback from Supabase.
+    User clicks link in email → lands here → auto-logged in.
+    """
+    # Supabase sends tokens as fragment (#) but also supports query params
+    if access_token and refresh_token:
+        response = RedirectResponse(url="/", status_code=303)
+        
+        class Session:
+            pass
+        session = Session()
+        session.access_token = access_token
+        session.refresh_token = refresh_token
+        set_auth_cookies(response, session)
+        return response
+    
+    # If tokens in fragment, we need JS to extract them
+    # Render a page that does this
+    return templates.TemplateResponse(
+        "auth/confirm_callback.html",
+        {"request": request}
+    )
+
+
 @router.get("/callback")
 async def auth_callback(
     request: Request,
@@ -250,12 +315,11 @@ async def auth_callback(
     refresh_token: str = None
 ):
     """
-    Handle OAuth callback from Supabase (for future OAuth providers).
-    For email auth, this isn't needed but good to have.
+    Generic auth callback - redirects to confirm handler.
     """
     if access_token and refresh_token:
         response = RedirectResponse(url="/", status_code=303)
-        # Create a simple session object
+        
         class Session:
             pass
         session = Session()

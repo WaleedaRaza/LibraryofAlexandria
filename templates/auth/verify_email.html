@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Check Your Email — Alexandria{% endblock %}
+
+{% block content %}
+<div class="verify-container">
+    <div class="verify-icon">📧</div>
+    <h1 class="verify-title">Check your email</h1>
+    <p class="verify-text">
+        We sent a confirmation link to<br>
+        <span class="verify-email">{{ email }}</span>
+    </p>
+    <p class="verify-text">
+        Click the link in the email to activate your account.<br>
+        You'll be automatically signed in.
+    </p>
+    
+    <div class="verify-actions">
+        <a href="/auth/login" class="btn btn--secondary">Back to login</a>
+        <button class="btn btn--primary" onclick="location.reload()">I've confirmed</button>
+    </div>
+    
+    <p class="verify-text" style="margin-top: 2rem; font-size: 0.85rem;">
+        Didn't receive the email? Check your spam folder or 
+        <a href="/auth/register">try again</a>.
+    </p>
+</div>
+{% endblock %}

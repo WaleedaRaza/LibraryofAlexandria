@@ -22,15 +22,55 @@
                 {% if user %}
                     <a href="/library/my" class="nav-link">My Books</a>
                     <a href="/wishlist" class="nav-link">Wishlist</a>
-                    <form action="/auth/logout" method="POST" class="nav-logout">
-                        <button type="submit" class="nav-link nav-link--button">Logout</button>
-                    </form>
+                    
+                    <!-- User Menu -->
+                    <div class="user-menu">
+                        <button class="user-menu-trigger" id="user-menu-btn" aria-expanded="false">
+                            <span class="user-avatar">{{ user.display_name[:1]|upper }}</span>
+                            <span class="user-name">{{ user.display_name }}</span>
+                            <svg class="user-menu-arrow" width="12" height="12" viewBox="0 0 12 12"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>
+                        </button>
+                        <div class="user-dropdown" id="user-dropdown" hidden>
+                            <div class="user-dropdown-header">
+                                <span class="user-dropdown-email">{{ user.email }}</span>
+                            </div>
+                            <a href="/library/my" class="user-dropdown-item">📚 My Books</a>
+                            <a href="/wishlist" class="user-dropdown-item">✨ Wishlist</a>
+                            <hr class="user-dropdown-divider">
+                            <form action="/auth/logout" method="POST">
+                                <button type="submit" class="user-dropdown-item user-dropdown-item--logout">🚪 Sign out</button>
+                            </form>
+                        </div>
+                    </div>
                 {% else %}
-                    <a href="/auth/login" class="nav-link">Sign In</a>
+                    <a href="/auth/login" class="nav-link nav-link--signin">Sign In</a>
                 {% endif %}
             </div>
         </div>
     </nav>
+    
+    <script>
+    // User dropdown toggle
+    (function() {
+        const btn = document.getElementById('user-menu-btn');
+        const dropdown = document.getElementById('user-dropdown');
+        if (!btn || !dropdown) return;
+        
+        btn.addEventListener('click', () => {
+            const isOpen = !dropdown.hidden;
+            dropdown.hidden = isOpen;
+            btn.setAttribute('aria-expanded', !isOpen);
+        });
+        
+        // Close on click outside
+        document.addEventListener('click', (e) => {
+            if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.hidden = true;
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    })();
+    </script>
     
     <main class="main">
         {% block content %}{% endblock %}
