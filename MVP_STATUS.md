@@ -125,10 +125,12 @@
    - Save book → View in My Books
    - Request book → View in Wishlist
 
-3. **Highlight Persistence for Logged-In Users**
-   - Currently works but uses Supabase Auth user IDs (UUIDs)
-   - Verify highlights persist across sessions
-   - Verify they're scoped to user (can't see others' highlights)
+3. **Highlight Persistence for Logged-In Users** ✅ VERIFIED
+   - Supabase Auth users synced to our users table on login/register
+   - Highlights persist correctly (tested)
+   - Annotations persist correctly (tested)
+   - Saved books persist correctly (tested)
+   - All scoped to user ID
 
 ### Medium Priority (Should Have)
 
