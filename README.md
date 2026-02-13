@@ -2,19 +2,15 @@
 
 > **Wikipedia's lost opportunity for books.**
 
-A constrained, agent-guided reading system that grows with every user request.
+A constrained, agent-guided reading system. Users ask questions → routed to relevant book sections → read, highlight, chat, take notes.
 
 ---
 
-## 🚀 NEW DEVELOPER? → [`START_HERE.md`](./START_HERE.md) ← START HERE
+## New Developer? Start Here
 
-**Full onboarding path:**
-1. [`START_HERE.md`](./START_HERE.md) (1 min) - Welcome
-2. [`QUICK_START.md`](./QUICK_START.md) (5 min) - Overview & local setup
-3. [`ONBOARDING.md`](./ONBOARDING.md) (20 min) - Full context & roadmap
-4. [`PHASE2_CHECKLIST.md`](./PHASE2_CHECKLIST.md) - Your daily checklist
-5. [`ROADMAP_VISUAL.md`](./ROADMAP_VISUAL.md) - Visual roadmap
-6. [`ARCHITECTURE.md`](./ARCHITECTURE.md) - System design deep dive
+1. **[NEW_DEV_PRESENTATION.md](./NEW_DEV_PRESENTATION.md)** — Origin story, vision, codebase guide, path to deployment. **Read first.**
+2. **[docs/README.md](./docs/README.md)** — Documentation index.
+3. **[manifest.md](./manifest.md)** — Full architecture, user flows, sequencing (deep reference).
 
 ---
 
@@ -36,15 +32,6 @@ A constrained, agent-guided reading system that grows with every user request.
 - A place for "answers"
 
 **We route to books. We don't replace them.**
-
-## What this is NOT
-
-- ChatGPT with citations
-- A PDF reader with AI
-- A knowledge graph
-- A recommendation engine
-- A social reading app
-- A place for "answers"
 
 ## Quick Start
 
@@ -99,15 +86,11 @@ All agents are stateless, deterministic, replaceable.
 2. **Reading is primary** — No summaries, no global chat
 3. **LLMs are tools** — Constrained by contracts, not creative
 
-## Deploy to Vercel
+## Deploy
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
+**Render.com** (recommended): See `render.yaml`. Connects to Postgres. Set `DATABASE_URL`, `SESSION_SECRET`, `USE_MOCK_AGENTS`, `OPENAI_API_KEY` in Render dashboard.
 
-# Deploy
-vercel
-```
+**Vercel:** `vercel` (serverless; may need adjustments for SQLite/file-based artifacts).
 
 ## Environment Variables
 

@@ -1,6 +1,6 @@
 """
 Alexandria Library - Reader Route
-The core reading experience. Fetch text + highlights, render reader.
+Text reader for artifact-based books. No PDF. No Supabase.
 """
 
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
@@ -9,80 +9,90 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from .. import templates
 from ..services.canon_service import CanonService
 from ..services.user_service import UserService
-from ..middleware.rate_limit import rate_limit
-from .auth import get_current_user_optional, get_current_user_required
+from ..services.chat_service import ChatService, HIGHLIGHT_COLORS
+from .auth import get_current_user_optional
 
 router = APIRouter()
 
+
+# =============================================================================
+# READER VIEW
+# =============================================================================
 
 @router.get("/{book_id}", response_class=HTMLResponse)
 async def read_book(
     request: Request,
     book_id: str,
     chapter: int = 1,
-    context: str = None,  # Routing context - why user was directed here
+    context: str = None,
     user=Depends(get_current_user_optional)
 ):
-    """
-    Display the reader for a book.
-    This is where reading happens.
-    
-    Args:
-        book_id: The book to read
-        chapter: Chapter number (default 1)
-        context: Optional routing context explaining why user was sent here
-    """
+    """Display the text reader for a book section."""
+    return await read_book_text(request, book_id, chapter=chapter, context=context, user=user)
+
+
+async def read_book_text(
+    request: Request,
+    book_id: str,
+    chapter: int = 1,
+    context: str = None,
+    user=None
+):
+    """Render the text reader with highlights applied."""
     canon = CanonService()
-    
-    # Get book metadata
+
     book = canon.get_book(book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
-    
-    # Get chapters for navigation
+
     chapters = canon.get_chapters(book_id)
     if not chapters:
-        raise HTTPException(status_code=404, detail="No chapters found")
-    
-    # Get current chapter
+        raise HTTPException(status_code=404, detail="No sections found for this book")
+
     current_chapter = canon.get_chapter_by_number(book_id, chapter)
     if not current_chapter:
-        raise HTTPException(status_code=404, detail="Chapter not found")
-    
-    # Get chapter text (extracted from book_text using offsets)
+        raise HTTPException(status_code=404, detail="Section not found")
+
     chapter_text = canon.get_chapter_text(book_id, current_chapter["id"])
-    
-    # Get user's highlights + annotations for this chapter
-    annotations = []
+
+    # Get highlights for this section
     user_service = UserService()
-    
-    # Use logged-in user or anonymous test user
     user_id = user["id"] if user else "anon_test_user"
     raw_highlights = user_service.get_highlights(user_id, current_chapter["id"])
-    
-    # Enrich highlights with text snippets and annotations
+
+    # Build highlights list (rendering happens client-side via JS)
+    import html as html_mod
+    highlights = []
+
     for hl in raw_highlights:
-        start = hl["start_offset"]
-        end = hl["end_offset"]
-        snippet = chapter_text[start:end][:80]  # First 80 chars
-        if len(chapter_text[start:end]) > 80:
-            snippet += "..."
-        
-        # Get annotation for this highlight
+        selected_text = hl.get("selected_text", "")
+        if not selected_text:
+            continue
+
         annotation = user_service.get_annotation(hl["id"])
-        
-        annotations.append({
+        color = hl.get("color", "yellow")
+        color_info = HIGHLIGHT_COLORS.get(color, HIGHLIGHT_COLORS["yellow"])
+
+        snippet = selected_text[:100]
+        if len(selected_text) > 100:
+            snippet += "..."
+
+        highlights.append({
             "id": hl["id"],
-            "type": "user",
-            "quoted_text": snippet,
-            "text": annotation["text"] if annotation else None,
-            "annotation_id": annotation["id"] if annotation else None,
-            "color": hl["color"],
+            "selected_text": selected_text,
+            "snippet": snippet,
+            "note": annotation["text"] if annotation else None,
+            "color": color,
+            "color_label": color_info["label"],
+            "color_hex": color_info["hex"],
             "created_at": hl["created_at"],
-            "start_offset": start,
-            "end_offset": end,
         })
-    
+
+    # Convert text to paragraphs (no highlight spans — JS applies those)
+    escaped_text = html_mod.escape(chapter_text)
+    paragraphs = escaped_text.split('\n\n')
+    formatted_text = ''.join(f'<p>{p.strip()}</p>' for p in paragraphs if p.strip())
+
     return templates.TemplateResponse(
         "reader.html",
         {
@@ -91,44 +101,42 @@ async def read_book(
             "book": book,
             "chapters": chapters,
             "current_chapter": current_chapter,
-            "chapter_text": chapter_text,
-            "annotations": annotations,
-            "routing_context": context,  # Pass to template for display
+            "chapter_text": formatted_text,
+            "highlights": highlights,
+            "highlight_colors": HIGHLIGHT_COLORS,
+            "routing_context": context,
         }
     )
 
+
+# =============================================================================
+# HIGHLIGHTS
+# =============================================================================
 
 @router.post("/{book_id}/highlight", response_class=JSONResponse)
 async def create_highlight(
     request: Request,
     book_id: str,
     chapter_id: str = Form(...),
-    start_offset: int = Form(...),
-    end_offset: int = Form(...),
+    selected_text: str = Form(...),
     color: str = Form("yellow"),
     user=Depends(get_current_user_optional)
 ):
-    """
-    Create a highlight.
-    
-    Offsets are relative to chapter text (not book text).
-    Highlights are private - no sharing, no reactions.
-    
-    NOTE: Auth temporarily optional for testing. Uses anonymous user if not logged in.
-    """
+    """Create a highlight on selected text."""
+    if not selected_text or not selected_text.strip():
+        raise HTTPException(status_code=400, detail="No text selected")
+
     user_service = UserService()
-    
-    # Use anonymous user ID if not logged in (for testing)
     user_id = user["id"] if user else "anon_test_user"
-    
+
     highlight = user_service.create_highlight(
         user_id=user_id,
-        chapter_id=chapter_id,
-        start_offset=start_offset,
-        end_offset=end_offset,
+        book_id=book_id,
+        section_id=chapter_id,
+        selected_text=selected_text.strip(),
         color=color
     )
-    
+
     return {"success": True, "highlight_id": highlight["id"]}
 
 
@@ -139,17 +147,20 @@ async def delete_highlight(
     highlight_id: str,
     user=Depends(get_current_user_optional)
 ):
-    """Delete a highlight. Only owner can delete."""
+    """Delete a highlight."""
     user_service = UserService()
-    
     user_id = user["id"] if user else "anon_test_user"
     deleted = user_service.delete_highlight(highlight_id, user_id)
-    
+
     if not deleted:
         raise HTTPException(status_code=404, detail="Highlight not found or not owned by you")
-    
+
     return {"success": True}
 
+
+# =============================================================================
+# ANNOTATIONS
+# =============================================================================
 
 @router.post("/{book_id}/annotation", response_class=JSONResponse)
 async def create_annotation(
@@ -159,18 +170,9 @@ async def create_annotation(
     text: str = Form(...),
     user=Depends(get_current_user_optional)
 ):
-    """
-    Create or update annotation for a highlight.
-    
-    Annotations are private notes attached to highlights.
-    One annotation per highlight (upsert behavior).
-    
-    NOTE: Auth temporarily optional for testing.
-    """
+    """Create or update annotation for a highlight."""
     user_service = UserService()
-    
     annotation = user_service.create_annotation(highlight_id, text)
-    
     return {"success": True, "annotation_id": annotation["id"]}
 
 
@@ -181,19 +183,122 @@ async def delete_annotation(
     annotation_id: str,
     user=Depends(get_current_user_optional)
 ):
-    """Delete an annotation. NOTE: Auth temporarily optional for testing."""
+    """Delete an annotation."""
     user_service = UserService()
-    
     deleted = user_service.delete_annotation(annotation_id)
-    
     if not deleted:
         raise HTTPException(status_code=404, detail="Annotation not found")
-    
     return {"success": True}
 
 
+# =============================================================================
+# CHAT (Tied to highlights)
+# =============================================================================
+
+@router.get("/{book_id}/highlight/{highlight_id}/chat", response_class=JSONResponse)
+async def get_chat_history(
+    request: Request,
+    book_id: str,
+    highlight_id: str,
+    user=Depends(get_current_user_optional)
+):
+    """Get chat history for a highlight thread."""
+    chat_service = ChatService()
+    messages = chat_service.get_messages(highlight_id)
+    return {"success": True, "messages": messages, "highlight_id": highlight_id}
+
+
+@router.post("/{book_id}/highlight/{highlight_id}/chat", response_class=HTMLResponse)
+async def highlight_chat(
+    request: Request,
+    book_id: str,
+    highlight_id: str,
+    question: str = Form(...),
+    user=Depends(get_current_user_optional)
+):
+    """Chat about a highlighted passage."""
+    from ..services.agent_service import AgentService
+    import logging
+
+    user_service = UserService()
+    chat_service = ChatService()
+    canon = CanonService()
+
+    book = canon.get_book(book_id)
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    user_id = user["id"] if user else "anon_test_user"
+
+    # Find the highlight across all sections
+    chapters = canon.get_chapters(book_id)
+    highlight = None
+    chapter = None
+
+    for ch in chapters:
+        hl_list = user_service.get_highlights(user_id, ch["id"])
+        for hl in hl_list:
+            if hl["id"] == highlight_id:
+                highlight = hl
+                chapter = ch
+                break
+        if highlight:
+            break
+
+    if not highlight:
+        raise HTTPException(status_code=404, detail="Highlight not found")
+
+    selected_text = highlight.get("selected_text", "")
+    if not selected_text:
+        raise HTTPException(status_code=400, detail="Highlight has no text")
+
+    if not question or not question.strip():
+        raise HTTPException(status_code=400, detail="No question provided")
+
+    logging.info(f"Chat: book={book_id}, highlight={highlight_id}, q={question[:50]}...")
+
+    # Save user message
+    chat_service.add_message(highlight_id, "user", question.strip())
+
+    # Build history context
+    history = chat_service.get_messages(highlight_id)
+    history_context = ""
+    if len(history) > 1:
+        prev = history[:-1][-5:]
+        history_context = "\n".join([
+            f"{'User' if m['role'] == 'user' else 'Assistant'}: {m['content']}"
+            for m in prev
+        ])
+
+    # Ask Text Companion
+    agent_service = AgentService()
+    response = agent_service.ask_text_companion(
+        book_title=book["title"],
+        chapter_title=chapter["title"],
+        selected_text=selected_text.strip(),
+        question=question.strip(),
+        routing_context=history_context if history_context else None
+    )
+
+    if response.is_valid and response.explanation:
+        chat_service.add_message(highlight_id, "assistant", response.explanation)
+
+    updated_history = chat_service.get_messages(highlight_id)
+
+    return templates.TemplateResponse(
+        "partials/chat_response.html",
+        {
+            "request": request,
+            "response": response,
+            "book": book,
+            "chapter": chapter,
+            "highlight_id": highlight_id,
+            "chat_history": updated_history,
+        }
+    )
+
+
 @router.post("/{book_id}/chat", response_class=HTMLResponse)
-@rate_limit(requests=30, window=60, endpoint_type="chat")
 async def section_chat(
     request: Request,
     book_id: str,
@@ -202,38 +307,37 @@ async def section_chat(
     end_offset: int = Form(0),
     selected_text: str = Form(...),
     question: str = Form(...),
-    routing_context: str = Form(None),  # Optional context from routing
+    highlight_id: str = Form(None),
+    routing_context: str = Form(None),
     user=Depends(get_current_user_optional)
 ):
-    """
-    Chat about selected text. The Text Companion answers questions
-    about meaning, context, implications - grounded in the passage.
-    """
+    """Chat about selected text (ephemeral or tied to a highlight)."""
     from ..services.agent_service import AgentService
     import logging
-    
+
     agent_service = AgentService()
     canon = CanonService()
-    
-    # Get context
+    chat_service = ChatService()
+
     book = canon.get_book(book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
-    
+
     chapter = canon.get_chapter(chapter_id)
     if not chapter:
-        raise HTTPException(status_code=404, detail="Chapter not found")
-    
-    # Validate we have some text
+        raise HTTPException(status_code=404, detail="Section not found")
+
     if not selected_text or not selected_text.strip():
         raise HTTPException(status_code=400, detail="No text selected")
-    
+
     if not question or not question.strip():
         raise HTTPException(status_code=400, detail="No question provided")
-    
-    logging.info(f"Chat request: book={book_id}, chapter={chapter_id}, question={question[:50]}...")
-    
-    # Ask the Text Companion
+
+    logging.info(f"Section chat: book={book_id}, section={chapter_id}, q={question[:50]}...")
+
+    if highlight_id:
+        chat_service.add_message(highlight_id, "user", question.strip())
+
     response = agent_service.ask_text_companion(
         book_title=book["title"],
         chapter_title=chapter["title"],
@@ -241,9 +345,14 @@ async def section_chat(
         question=question.strip(),
         routing_context=routing_context
     )
-    
-    logging.info(f"Chat response: is_valid={response.is_valid}, explanation_len={len(response.explanation or '')}")
-    
+
+    if highlight_id and response.is_valid and response.explanation:
+        chat_service.add_message(highlight_id, "assistant", response.explanation)
+
+    chat_history = None
+    if highlight_id:
+        chat_history = chat_service.get_messages(highlight_id)
+
     return templates.TemplateResponse(
         "partials/chat_response.html",
         {
@@ -251,6 +360,7 @@ async def section_chat(
             "response": response,
             "book": book,
             "chapter": chapter,
+            "highlight_id": highlight_id,
+            "chat_history": chat_history,
         }
     )
-

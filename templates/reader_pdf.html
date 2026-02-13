@@ -1,0 +1,568 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} — Read{% endblock %}
+
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root {
+    --pdf-bg: #2a2a2a;
+    --sidebar-width: 300px;
+}
+
+.pdf-container {
+    display: flex;
+    height: calc(100vh - 60px);
+    background: var(--pdf-bg);
+}
+
+.pdf-sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.pdf-sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pdf-book-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.pdf-book-author {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.pdf-book-domain {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 8px;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    font-size: 0.7rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pdf-controls {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pdf-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.pdf-nav-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.15s;
+}
+
+.pdf-nav-btn:hover:not(:disabled) {
+    background: var(--bg-primary);
+}
+
+.pdf-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pdf-page-info {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+.pdf-page-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.pdf-page-input-row label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.pdf-page-input {
+    width: 70px;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.pdf-go-btn {
+    padding: 8px 16px;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.pdf-zoom-controls {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pdf-zoom-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.pdf-zoom-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.pdf-zoom-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.pdf-zoom-btn:hover {
+    background: var(--bg-primary);
+}
+
+.pdf-zoom-value {
+    flex: 1;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.pdf-actions {
+    padding: 20px;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+}
+
+.pdf-download-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    text-decoration: none;
+    text-align: center;
+    font-size: 0.9rem;
+    transition: background 0.15s;
+}
+
+.pdf-download-btn:hover {
+    background: var(--bg-primary);
+}
+
+.pdf-back-link {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.pdf-back-link:hover {
+    color: var(--accent-primary);
+}
+
+/* Main viewer area */
+.pdf-viewer {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.pdf-canvas-container {
+    background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    margin-bottom: 20px;
+}
+
+.pdf-canvas {
+    display: block;
+}
+
+/* Loading state */
+.pdf-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-secondary);
+}
+
+.pdf-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.pdf-error {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+}
+
+.pdf-error-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+/* Keyboard shortcuts hint */
+.pdf-shortcuts {
+    padding: 16px 20px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.pdf-shortcuts-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.pdf-shortcut {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.pdf-shortcut kbd {
+    background: var(--bg-tertiary);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pdf-sidebar {
+        position: fixed;
+        left: -100%;
+        top: 60px;
+        height: calc(100vh - 60px);
+        z-index: 100;
+        transition: left 0.3s;
+    }
+    
+    .pdf-sidebar.open {
+        left: 0;
+    }
+    
+    .pdf-mobile-toggle {
+        display: block;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 101;
+        padding: 12px 16px;
+        background: var(--accent-primary);
+        color: var(--bg-primary);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+}
+
+@media (min-width: 769px) {
+    .pdf-mobile-toggle {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pdf-container">
+    <!-- Sidebar -->
+    <aside class="pdf-sidebar" id="pdf-sidebar">
+        <div class="pdf-sidebar-header">
+            <div class="pdf-book-title">{{ book.title }}</div>
+            <div class="pdf-book-author">{{ book.author }}</div>
+            {% if book.domain %}
+                <span class="pdf-book-domain">{{ book.domain }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="pdf-controls">
+            <div class="pdf-nav">
+                <button class="pdf-nav-btn" id="prev-page" disabled>← Prev</button>
+                <button class="pdf-nav-btn" id="next-page" disabled>Next →</button>
+            </div>
+            
+            <div class="pdf-page-info">
+                Page <span id="page-num">-</span> of <span id="page-count">-</span>
+            </div>
+            
+            <div class="pdf-page-input-row">
+                <label>Go to:</label>
+                <input type="number" class="pdf-page-input" id="page-input" min="1" value="1">
+                <button class="pdf-go-btn" id="go-page">Go</button>
+            </div>
+        </div>
+        
+        <div class="pdf-zoom-controls">
+            <span class="pdf-zoom-label">Zoom</span>
+            <div class="pdf-zoom-row">
+                <button class="pdf-zoom-btn" id="zoom-out">−</button>
+                <span class="pdf-zoom-value" id="zoom-value">100%</span>
+                <button class="pdf-zoom-btn" id="zoom-in">+</button>
+            </div>
+        </div>
+        
+        <div class="pdf-shortcuts">
+            <div class="pdf-shortcuts-title">Keyboard Shortcuts</div>
+            <div class="pdf-shortcut"><span>Previous page</span><kbd>←</kbd></div>
+            <div class="pdf-shortcut"><span>Next page</span><kbd>→</kbd></div>
+            <div class="pdf-shortcut"><span>Zoom in</span><kbd>+</kbd></div>
+            <div class="pdf-shortcut"><span>Zoom out</span><kbd>−</kbd></div>
+        </div>
+        
+        <div class="pdf-actions">
+            <a href="/read/{{ book.id }}/download" class="pdf-download-btn">
+                ⬇️ Download PDF
+            </a>
+            <a href="/library" class="pdf-back-link">← Back to Library</a>
+        </div>
+    </aside>
+    
+    <!-- Main viewer -->
+    <main class="pdf-viewer" id="pdf-viewer">
+        <div class="pdf-loading" id="pdf-loading">
+            <div class="pdf-loading-spinner"></div>
+            <div>Loading PDF...</div>
+        </div>
+        
+        <div class="pdf-error" id="pdf-error" style="display: none;">
+            <div class="pdf-error-icon">📄</div>
+            <div>Failed to load PDF</div>
+            <p>The file may be missing or corrupted.</p>
+            <a href="/library" class="btn btn--secondary" style="margin-top: 16px;">← Back to Library</a>
+        </div>
+        
+        <div class="pdf-canvas-container" id="canvas-container" style="display: none;">
+            <canvas id="pdf-canvas" class="pdf-canvas"></canvas>
+        </div>
+    </main>
+</div>
+
+<!-- Mobile toggle -->
+<button class="pdf-mobile-toggle" id="mobile-toggle">☰ Menu</button>
+
+<script>
+// PDF.js setup
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const state = {
+    pdfDoc: null,
+    pageNum: {{ start_page | default(1) }},
+    scale: 1.2,
+    rendering: false
+};
+
+const canvas = document.getElementById('pdf-canvas');
+const ctx = canvas.getContext('2d');
+
+// UI elements
+const prevBtn = document.getElementById('prev-page');
+const nextBtn = document.getElementById('next-page');
+const pageNumSpan = document.getElementById('page-num');
+const pageCountSpan = document.getElementById('page-count');
+const pageInput = document.getElementById('page-input');
+const goPageBtn = document.getElementById('go-page');
+const zoomInBtn = document.getElementById('zoom-in');
+const zoomOutBtn = document.getElementById('zoom-out');
+const zoomValue = document.getElementById('zoom-value');
+const loadingEl = document.getElementById('pdf-loading');
+const errorEl = document.getElementById('pdf-error');
+const canvasContainer = document.getElementById('canvas-container');
+
+async function renderPage(num) {
+    if (state.rendering) return;
+    state.rendering = true;
+    
+    try {
+        const page = await state.pdfDoc.getPage(num);
+        const viewport = page.getViewport({ scale: state.scale });
+        
+        // Set canvas size
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        
+        // Render
+        await page.render({
+            canvasContext: ctx,
+            viewport: viewport
+        }).promise;
+        
+        // Update UI
+        state.pageNum = num;
+        pageNumSpan.textContent = num;
+        pageInput.value = num;
+        
+        // Update button states
+        prevBtn.disabled = num <= 1;
+        nextBtn.disabled = num >= state.pdfDoc.numPages;
+        
+        // Update URL without reload
+        const url = new URL(window.location);
+        url.searchParams.set('page', num);
+        history.replaceState({}, '', url);
+        
+    } catch (err) {
+        console.error('Render error:', err);
+    } finally {
+        state.rendering = false;
+    }
+}
+
+function updateZoom() {
+    zoomValue.textContent = Math.round(state.scale * 100) + '%';
+    renderPage(state.pageNum);
+}
+
+async function loadPDF() {
+    try {
+        state.pdfDoc = await pdfjsLib.getDocument('/read/{{ book.id }}/pdf').promise;
+        
+        // Update UI
+        pageCountSpan.textContent = state.pdfDoc.numPages;
+        pageInput.max = state.pdfDoc.numPages;
+        
+        // Hide loading, show canvas
+        loadingEl.style.display = 'none';
+        canvasContainer.style.display = 'block';
+        
+        // Enable buttons
+        prevBtn.disabled = false;
+        nextBtn.disabled = false;
+        
+        // Render initial page
+        await renderPage(state.pageNum);
+        
+    } catch (err) {
+        console.error('Load error:', err);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+    }
+}
+
+// Event listeners
+prevBtn.onclick = () => {
+    if (state.pageNum > 1) renderPage(state.pageNum - 1);
+};
+
+nextBtn.onclick = () => {
+    if (state.pageNum < state.pdfDoc.numPages) renderPage(state.pageNum + 1);
+};
+
+goPageBtn.onclick = () => {
+    const num = parseInt(pageInput.value);
+    if (num >= 1 && num <= state.pdfDoc.numPages) {
+        renderPage(num);
+    }
+};
+
+pageInput.onkeypress = (e) => {
+    if (e.key === 'Enter') goPageBtn.click();
+};
+
+zoomInBtn.onclick = () => {
+    if (state.scale < 3) {
+        state.scale += 0.2;
+        updateZoom();
+    }
+};
+
+zoomOutBtn.onclick = () => {
+    if (state.scale > 0.5) {
+        state.scale -= 0.2;
+        updateZoom();
+    }
+};
+
+// Keyboard shortcuts
+document.onkeydown = (e) => {
+    // Don't trigger if typing in input
+    if (e.target.tagName === 'INPUT') return;
+    
+    switch(e.key) {
+        case 'ArrowLeft':
+            prevBtn.click();
+            e.preventDefault();
+            break;
+        case 'ArrowRight':
+            nextBtn.click();
+            e.preventDefault();
+            break;
+        case '+':
+        case '=':
+            zoomInBtn.click();
+            e.preventDefault();
+            break;
+        case '-':
+            zoomOutBtn.click();
+            e.preventDefault();
+            break;
+    }
+};
+
+// Mobile sidebar toggle
+document.getElementById('mobile-toggle').onclick = () => {
+    document.getElementById('pdf-sidebar').classList.toggle('open');
+};
+
+// Load PDF on page load
+loadPDF();
+</script>
+{% endblock %}

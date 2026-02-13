@@ -1,0 +1,39 @@
+llm:
+  provider: ollama
+  base_url: http://localhost:11434
+  model: llama3.1:8b
+  temperature: 0.3
+  request_timeout: 600
+
+pipeline1:
+  pdf_dir: ./data/pdfs
+  artifact_dir: ./data/artifacts
+  checkpoint_dir: ./data/checkpoints
+  flagged_dir: ./data/flagged
+
+  extraction:
+    min_quality_threshold: 0.3
+    ocr_detection_threshold: 0.5
+
+  cleaning:
+    header_repeat_threshold: 0.5
+    page_number_proximity: 20
+
+  boundaries:
+    chunk_size_tokens: 4000
+    chunk_overlap_tokens: 500
+    regex_min_sections: 5
+    regex_min_coverage: 0.8
+
+  enrichment:
+    max_themes_per_section: 7
+    max_passages_per_section: 3
+
+  validation:
+    min_confidence: 0.7
+    max_gap_chars: 100
+
+  batch:
+    concurrency: 1
+    checkpoint_every: 1
+    retry_on_failure: 2

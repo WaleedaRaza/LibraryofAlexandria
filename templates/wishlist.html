@@ -47,11 +47,11 @@
     </div>
     
     <!-- User's Requests -->
-    {% if requests %}
+    {% if book_requests %}
         <section>
             <h2 class="wishlist-section-title">Your requests</h2>
             <div class="requests-list">
-                {% for req in requests %}
+                {% for req in book_requests %}
                     <div class="request-card">
                         <div class="request-main">
                             <h3 class="request-title">{{ req.title }}</h3>

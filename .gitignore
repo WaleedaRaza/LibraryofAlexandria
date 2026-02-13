@@ -44,3 +44,20 @@ htmlcov/
 # Temporary files
 *.tmp
 *.bak
+
+# Data directories (large, not deployable)
+batch1books/
+extracted/
+extracted_test/
+templates/cleanbooks/
+
+# Log files at root
+*.txt
+!requirements.txt
+
+# Stale deployment configs
+vercel.json
+api/
+
+# Artifacts (generated, not source)
+artifacts/

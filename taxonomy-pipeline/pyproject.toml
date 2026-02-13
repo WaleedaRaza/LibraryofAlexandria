@@ -1,0 +1,20 @@
+[project]
+name = "taxonomy-pipeline"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "pymupdf>=1.24",
+    "pydantic>=2.0",
+    "httpx>=0.27",
+    "pyyaml>=6.0",
+    "click>=8.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+taxonomy = "src.cli:cli"

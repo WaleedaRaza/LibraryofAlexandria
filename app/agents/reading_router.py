@@ -1,295 +1,311 @@
 """
 Alexandria Library - Reading Router Agent
 
-PURPOSE: Choose WHERE to read from a pre-curated set
-FORBIDDEN: summaries, conclusions, ideology
+PURPOSE: Route questions to the RIGHT sections using taxonomy data
+INPUT:   question, domain, books, chapters (with summaries + themes)
+OUTPUT:  Parallel reading paths pointing to specific sections
 
-Given a domain and list of available books, this agent
-selects specific chapters to read.
+The taxonomy bridge:
+  artifact JSON → sections with summaries/themes → this router → user reads the right passage
 
-It does NOT summarize.
-It does NOT draw conclusions.
-It returns PARALLEL reading paths (different angles on the same question).
+Mock mode uses keyword scoring against section themes + summaries.
+LLM mode sends enriched section data in the prompt.
 """
 
-from typing import List, Optional
+import re
+from typing import List, Optional, Dict, Set
 from ..config import settings
 from .contracts import RoutingResult, ReadingRecommendation, ReadingPath
 from .llm_provider import get_llm_provider
 from .routing_cache import get_routing_cache
-from .domain_mapper import map_to_ids
-
-# Use V1 taxonomy (synced with actual DB book IDs)
-# V2 taxonomy (artifact-based) has stale book IDs that don't match DB
-# TODO: Sync taxonomy_v2 artifacts when importing real 1300 book library
-from .taxonomy import get_candidate_books, validate_book_id
-USE_TAXONOMY_V2 = False
 
 
 class ReadingRouter:
-    """
-    Routes questions to specific reading locations.
-    Returns PARALLEL paths, not ranked recommendations.
-    
-    Stateless. Pure. Replaceable.
-    """
-    
+    """Routes questions to specific reading locations using taxonomy data."""
+
     def route(
         self,
         question: str,
         domain: str,
         subdomain: Optional[str],
         available_books: List[dict],
-        chapters_by_book: dict = None  # book_id -> list of chapter dicts
+        chapters_by_book: dict = None,
     ) -> RoutingResult:
-        """
-        Route a question to specific chapters via PARALLEL paths.
-        
-        Args:
-            question: User's question
-            domain: Classified domain
-            subdomain: Classified subdomain (may be None)
-            available_books: List of book dicts with id, title, author
-            chapters_by_book: Dict mapping book_id to list of chapters
-            
-        Returns:
-            RoutingResult with 2-4 parallel reading paths
-        """
-        # Check cache first
         if not settings.USE_MOCK_AGENTS:
             cache = get_routing_cache()
-            cached_result = cache.get(question, domain, subdomain)
-            if cached_result:
-                return cached_result
-        
-        # Route
+            cached = cache.get(question, domain, subdomain)
+            if cached:
+                return cached
+
         if settings.USE_MOCK_AGENTS:
             result = self._mock_route(question, domain, subdomain, available_books, chapters_by_book or {})
         else:
             result = self._llm_route(question, domain, subdomain, available_books, chapters_by_book or {})
-        
-        # Cache result (only if valid)
+
         if not settings.USE_MOCK_AGENTS and result.is_valid:
             cache = get_routing_cache()
             cache.set(question, domain, subdomain, result)
-        
+
         return result
-    
+
+    # =========================================================================
+    # MOCK ROUTER — taxonomy-driven section selection
+    # =========================================================================
+
     def _mock_route(
         self,
         question: str,
         domain: str,
         subdomain: Optional[str],
         available_books: List[dict],
-        chapters_by_book: dict
+        chapters_by_book: dict,
     ) -> RoutingResult:
         """
-        Mock router for development.
-        Returns parallel paths with different angles.
+        Intelligent mock router. Instead of blindly returning chapter[0],
+        scores sections by keyword overlap between the question and each
+        section's key_themes + summary.
+
+        Flow:
+          1. Extract keywords from question
+          2. For each section, score = theme matches + summary matches
+          3. Also boost sections referenced in the thematic_index
+          4. Return top-scoring sections as reading paths
         """
         if not available_books:
-            return RoutingResult(
-                paths=[],
-                is_valid=True,
-                refusal_reason="No books available in this domain."
-            )
-        
+            return RoutingResult(paths=[], is_valid=True, refusal_reason="No books in this domain.")
+
+        # Extract question keywords (lowercased, stopwords removed)
+        q_words = _extract_keywords(question)
+        if not q_words:
+            q_words = set(question.lower().split())
+
         paths = []
-        
-        # Path 1: Primary angle
-        book1 = available_books[0]
-        chapters1 = chapters_by_book.get(book1["id"], [])
-        chapter1 = chapters1[0] if chapters1 else {"id": "ch_mock_1", "number": 1, "title": "Chapter 1"}
-        
-        paths.append(ReadingPath(
-            angle="Foundational understanding",
-            recommendations=[
-                ReadingRecommendation(
-                    book_id=book1["id"],
-                    book_title=book1["title"],
-                    book_author=book1["author"],
-                    chapter_id=chapter1.get("id", "ch_mock_1"),
-                    chapter_number=chapter1.get("number", 1),
-                    chapter_title=chapter1.get("title", "Chapter 1"),
-                    rationale=f"This text addresses the core concepts related to your question."
+
+        for book in available_books[:3]:
+            book_id = book["id"]
+            chapters = chapters_by_book.get(book_id, [])
+            if not chapters:
+                continue
+
+            # Load the thematic index for this book (theme → [section_ids])
+            from ..services.artifact_loader import build_theme_to_sections
+            theme_map = build_theme_to_sections(book_id)
+
+            # Score every section
+            scored: List[tuple] = []  # (score, chapter_dict)
+
+            # Boost from thematic_index: if a question keyword appears in a theme name,
+            # all sections mapped to that theme get a boost
+            theme_boosted: Dict[str, float] = {}
+            for theme_name, section_ids in theme_map.items():
+                theme_words = set(theme_name.split())
+                overlap = q_words & theme_words
+                if overlap:
+                    boost = len(overlap) * 3.0
+                    for sid in section_ids:
+                        theme_boosted[sid] = theme_boosted.get(sid, 0) + boost
+
+            for ch in chapters:
+                sid = ch.get("id", "")
+                # Skip front/back matter and tiny sections
+                if sid.startswith(("fm_", "bm_")):
+                    continue
+                size = ch.get("end_offset", 0) - ch.get("start_offset", 0)
+                if size < 200:
+                    continue
+
+                score = 0.0
+
+                # Score from key_themes
+                themes = set(
+                    t.lower().replace("_", " ")
+                    for t in ch.get("key_themes", [])
                 )
-            ]
-        ))
-        
-        # Path 2: Alternative angle (if available)
-        if len(available_books) > 1:
-            book2 = available_books[1]
-            chapters2 = chapters_by_book.get(book2["id"], [])
-            chapter2 = chapters2[0] if chapters2 else {"id": "ch_mock_2", "number": 1, "title": "Chapter 1"}
-            
+                for theme in themes:
+                    theme_words = set(theme.split())
+                    overlap = q_words & theme_words
+                    score += len(overlap) * 2.0
+
+                # Score from summary word overlap
+                summary = ch.get("summary", "").lower()
+                summary_words = set(re.findall(r'[a-z]+', summary))
+                summary_overlap = q_words & summary_words
+                score += len(summary_overlap) * 1.0
+
+                # Score from title
+                title_words = set(re.findall(r'[a-z]+', ch.get("title", "").lower()))
+                title_overlap = q_words & title_words
+                score += len(title_overlap) * 1.5
+
+                # Thematic index boost
+                score += theme_boosted.get(sid, 0)
+
+                # Slight preference for longer sections (more content to read)
+                if size > 3000:
+                    score += 0.5
+
+                if score > 0:
+                    scored.append((score, ch))
+
+            # Sort by score descending
+            scored.sort(key=lambda x: x[0], reverse=True)
+
+            if not scored:
+                # No keyword match — fall back to first substantial section
+                substantial = [
+                    c for c in chapters
+                    if not c.get("id", "").startswith(("fm_", "bm_"))
+                    and (c.get("end_offset", 0) - c.get("start_offset", 0)) > 500
+                ]
+                if substantial:
+                    scored = [(0.1, substantial[0])]
+
+            if not scored:
+                continue
+
+            # Build paths from top results
+            # Primary path: best match
+            best_score, best_ch = scored[0]
+            rationale = _build_rationale(best_ch, q_words)
+
             paths.append(ReadingPath(
-                angle="Alternative perspective",
+                angle=_infer_angle(best_ch),
                 recommendations=[
                     ReadingRecommendation(
-                        book_id=book2["id"],
-                        book_title=book2["title"],
-                        book_author=book2["author"],
-                        chapter_id=chapter2.get("id", "ch_mock_2"),
-                        chapter_number=chapter2.get("number", 1),
-                        chapter_title=chapter2.get("title", "Chapter 1"),
-                        rationale=f"A different approach to the same question."
+                        book_id=book_id,
+                        book_title=book["title"],
+                        book_author=book["author"],
+                        chapter_id=best_ch["id"],
+                        chapter_number=best_ch["number"],
+                        chapter_title=best_ch["title"],
+                        rationale=rationale,
                     )
                 ]
             ))
-        
-        return RoutingResult(
-            paths=paths,
-            is_valid=True
-        )
-    
+
+            # Secondary path: second best (if sufficiently different)
+            if len(scored) > 1:
+                second_score, second_ch = scored[1]
+                if second_score > 0 and second_ch["id"] != best_ch["id"]:
+                    rationale2 = _build_rationale(second_ch, q_words)
+                    paths.append(ReadingPath(
+                        angle=_infer_angle(second_ch),
+                        recommendations=[
+                            ReadingRecommendation(
+                                book_id=book_id,
+                                book_title=book["title"],
+                                book_author=book["author"],
+                                chapter_id=second_ch["id"],
+                                chapter_number=second_ch["number"],
+                                chapter_title=second_ch["title"],
+                                rationale=rationale2,
+                            )
+                        ]
+                    ))
+
+        if not paths:
+            return RoutingResult(paths=[], is_valid=True, refusal_reason="No relevant sections found.")
+
+        return RoutingResult(paths=paths[:4], is_valid=True)
+
+    # =========================================================================
+    # LLM ROUTER — enriched prompt with summaries + themes
+    # =========================================================================
+
     def _llm_route(
         self,
         question: str,
         domain: str,
         subdomain: Optional[str],
         available_books: List[dict],
-        chapters_by_book: dict
+        chapters_by_book: dict,
     ) -> RoutingResult:
         """
-        Real LLM routing with parallel paths.
-        
-        CONSTRAINTS:
-        - Uses taxonomy gate to limit candidate books
-        - Returns 2-4 paths (different angles)
-        - Each path has 1-2 recommendations MAX
-        - Total max 6 recommendations across all paths
-        - Never hallucinate books/chapters not in candidates
+        LLM routing with enriched section data.
+        The prompt includes section summaries and themes so the LLM
+        can make informed decisions about where to send the reader.
         """
         try:
-            # TAXONOMY GATE: Get candidate books
-            if USE_TAXONOMY_V2:
-                # Use artifact-based taxonomy
-                gate = get_taxonomy_gate()
-                domain_id, subdomain_id = map_to_ids(domain, subdomain)
-                candidate_book_ids = gate.get_candidate_books(domain_id, subdomain_id, max_books=12)
-                
-                # Get candidate chapters from gate
-                if candidate_book_ids:
-                    candidate_chapters = gate.get_candidate_chapters(candidate_book_ids, max_chapters_per_book=8)
-                    # Merge with existing chapters_by_book
-                    for book_id, chapters in candidate_chapters.items():
-                        if book_id not in chapters_by_book or not chapters_by_book[book_id]:
-                            chapters_by_book[book_id] = chapters
-            else:
-                # Use hardcoded taxonomy (V1)
-                candidate_book_ids = get_candidate_books(domain, subdomain, max_books=12)
-            
-            if not candidate_book_ids:
-                return RoutingResult(
-                    paths=[],
-                    is_valid=False,
-                    refusal_reason=f"No books mapped to {domain}/{subdomain or 'general'} in taxonomy"
-                )
-            
-            # Filter available_books to only candidates
-            candidate_books = [
-                b for b in available_books 
-                if b["id"] in candidate_book_ids
-            ]
-            
+            candidate_books = available_books[:5]
             if not candidate_books:
-                return RoutingResult(
-                    paths=[],
-                    is_valid=False,
-                    refusal_reason="No candidate books available"
-                )
-            
-            # Format books and chapters for LLM
+                return RoutingResult(paths=[], is_valid=False, refusal_reason="No books available")
+
+            # Format books with ENRICHED chapter data
             books_info = []
-            for b in candidate_books[:10]:  # Max 10 to keep prompt manageable
+            for b in candidate_books:
                 chapters = chapters_by_book.get(b["id"], [])
-                if chapters:
-                    chapters_str = "\n    ".join([
-                        f"Ch{c['number']}: {c['title']}" 
-                        for c in chapters[:8]  # Max 8 chapters per book
-                    ])
-                else:
-                    chapters_str = "Chapter 1: Full Text"
-                
+                # Filter to routable sections
+                routable = [
+                    c for c in chapters
+                    if not c.get("id", "").startswith(("fm_", "bm_"))
+                    and (c.get("end_offset", 0) - c.get("start_offset", 0)) > 200
+                    and (c.get("key_themes") or c.get("summary"))
+                ]
+
+                if not routable:
+                    continue
+
+                # Format sections with summaries and themes
+                sections_str = ""
+                for c in routable[:30]:  # Cap to keep prompt manageable
+                    themes = ", ".join(c.get("key_themes", []))
+                    summary = c.get("summary", "")[:150]
+                    sections_str += f"\n    Sec {c['number']} ({c['id']}): {c['title']}"
+                    if themes:
+                        sections_str += f"\n      Themes: {themes}"
+                    if summary:
+                        sections_str += f"\n      About: {summary}"
+
                 books_info.append(
-                    f"  {b['id']}:\n    \"{b['title']}\" by {b['author']}\n    Chapters:\n    {chapters_str}"
+                    f"  {b['id']}:\n    \"{b['title']}\" by {b['author']}{sections_str}"
                 )
-            
+
+            if not books_info:
+                return RoutingResult(paths=[], is_valid=False, refusal_reason="No routable sections")
+
             books_list = "\n\n".join(books_info)
-            
+
             provider = get_llm_provider()
-            
-            system_prompt = f"""You select WHERE to read, not WHAT to conclude.
 
-Given a user's question, you create 2-4 PARALLEL reading paths. Each path is a DIFFERENT SCHOOL OF THOUGHT or ANGLE on the question - not ranked alternatives, but genuinely different ways of approaching the problem.
+            system_prompt = f"""You select WHERE to read. You have detailed section information including summaries and themes.
 
+Use the summaries and themes to find the sections most relevant to the user's question. Do NOT default to the first section — find the RIGHT one.
 
 QUESTION CONTEXT:
-
 Domain: {domain}
 Subdomain: {subdomain or 'General'}
 
-
-CANDIDATE BOOKS (you MUST choose from this list, NO OTHER BOOKS):
+CANDIDATE BOOKS AND SECTIONS:
 
 {books_list}
-
-
-WHAT MAKES A GOOD PATH:
-
-
-GOOD ANGLES (genuinely different perspectives):
-- "Power dynamics" vs "Structural forces" vs "Psychological patterns"
-- "Ancient wisdom" vs "Modern analysis" vs "Practical application"
-- "Individual agency" vs "Systemic factors" vs "Historical context"
-
-BAD ANGLES (just different books, not different thinking):
-- "Book 1" vs "Book 2" vs "Book 3"
-- "First recommendation" vs "Second recommendation"
-- "Primary source" vs "Secondary source"
-
-The user should look at your paths and think: "These are genuinely different ways to understand my question."
-
-
-RATIONALE WRITING:
-
-
-GOOD rationale: "Machiavelli examines why leaders use fear as a tool - relevant to understanding workplace authority."
-BAD rationale: "This book discusses leadership and power dynamics."
-
-The rationale explains WHY this angle matters for THEIR question, not what the book is generally about.
-
 
 OUTPUT FORMAT (strict JSON):
 
 {{
   "paths": [
     {{
-      "angle": "Power & hierarchy",
+      "angle": "Short description of this reading angle",
       "recommendations": [
         {{
           "book_id": "book_xxx",
-          "chapter_number": 1,
-          "rationale": "One sentence on why this angle matters for their question"
+          "chapter_number": 5,
+          "rationale": "Why THIS section answers their question (reference the themes/summary)"
         }}
       ]
     }}
   ]
 }}
 
-═══════════════════════════════════════════════════════════════════
-HARD RULES:
-═══════════════════════════════════════════════════════════════════
-1. Return 2-4 paths (never 1, never more than 4)
+RULES:
+1. Return 1-4 paths
 2. Each path has 1-2 recommendations MAX
-3. Total max 6 recommendations across all paths
-4. ONLY use book_ids from the candidate list above
-5. ONLY use chapter numbers that exist for each book
-6. If only one book is relevant, return 1 path (exception to rule 1)
-7. NO summaries, NO conclusions, NO "the answer is..."
-8. You point to sources. You do not interpret them.
+3. ONLY use book_ids and section numbers from the list above
+4. Choose sections whose themes and summaries match the question
+5. The rationale must explain why THIS section (not the book in general)
+6. NEVER pick section 1 unless it genuinely matches best
+7. NO summaries, NO conclusions — you point to sources
 
-RESPOND WITH ONLY VALID JSON. No markdown, no explanation."""
+RESPOND WITH ONLY VALID JSON."""
 
             result = provider.call(
                 system_prompt=system_prompt,
@@ -299,98 +315,113 @@ RESPOND WITH ONLY VALID JSON. No markdown, no explanation."""
                 max_tokens=600,
                 response_format="json"
             )
-            
-            # Build paths from LLM response
+
+            # Build paths
             paths = []
             books_by_id = {b["id"]: b for b in candidate_books}
-            path_count = 0
-            total_recs = 0
-            
-            for path_data in result.get("paths", []):
-                if path_count >= 4:  # Hard cap at 4 paths
-                    break
-                
+
+            for path_data in result.get("paths", [])[:4]:
                 angle = path_data.get("angle", "Reading path")
                 recommendations = []
-                
-                for rec in path_data.get("recommendations", []):
-                    if total_recs >= 6:  # Hard cap at 6 total recommendations
-                        break
-                    
+
+                for rec in path_data.get("recommendations", [])[:2]:
                     book_id = rec.get("book_id")
-                    
-                    # VALIDATION: Book must be in candidates
                     if not book_id or book_id not in books_by_id:
                         continue
-                    
-                    # VALIDATION: Book must be in taxonomy
-                    if USE_TAXONOMY_V2:
-                        gate = get_taxonomy_gate()
-                        if not gate.validate_book_id(book_id):
-                            continue
-                    else:
-                        if not validate_book_id(book_id):
-                            continue
-                    
+
                     book = books_by_id[book_id]
                     chapters = chapters_by_book.get(book_id, [])
                     ch_num = rec.get("chapter_number", 1)
-                    
-                    # Find chapter or create fallback
-                    chapter = next(
-                        (c for c in chapters if c.get("number") == ch_num),
-                        None
-                    )
-                    
+
+                    chapter = next((c for c in chapters if c.get("number") == ch_num), None)
                     if not chapter and chapters:
-                        # Chapter number doesn't exist, use first chapter
                         chapter = chapters[0]
                         ch_num = chapter.get("number", 1)
                     elif not chapter:
-                        # No chapters at all, skip this recommendation
                         continue
-                    
+
                     recommendations.append(
                         ReadingRecommendation(
                             book_id=book_id,
                             book_title=book["title"],
                             book_author=book["author"],
-                            chapter_id=chapter.get("id", f"ch_{book_id}_{ch_num}"),
+                            chapter_id=chapter.get("id", f"sec_{ch_num:03d}"),
                             chapter_number=ch_num,
-                            chapter_title=chapter.get("title", f"Chapter {ch_num}"),
-                            rationale=rec.get("rationale", "Relevant to your question")[:200]  # Cap rationale length
+                            chapter_title=chapter.get("title", f"Section {ch_num}"),
+                            rationale=rec.get("rationale", "Relevant to your question")[:200],
                         )
                     )
-                    total_recs += 1
-                
-                # Only add path if it has recommendations
+
                 if recommendations:
-                    paths.append(ReadingPath(
-                        angle=angle[:100],  # Cap angle length
-                        recommendations=recommendations
-                    ))
-                    path_count += 1
-            
-            # If LLM returned nothing useful, return refusal
+                    paths.append(ReadingPath(angle=angle[:100], recommendations=recommendations))
+
             if not paths:
-                return RoutingResult(
-                    paths=[],
-                    is_valid=False,
-                    refusal_reason="Could not identify relevant reading for this question"
-                )
-            
-            return RoutingResult(
-                paths=paths,
-                is_valid=True
-            )
-            
-        except ValueError as e:
-            # JSON parsing error
-            return RoutingResult(
-                paths=[],
-                is_valid=False,
-                refusal_reason="Error processing routing request"
-            )
-        except Exception as e:
-            # Any other error - fail gracefully with mock result
+                return self._mock_route(question, domain, subdomain, available_books, chapters_by_book)
+
+            return RoutingResult(paths=paths, is_valid=True)
+
+        except Exception:
             return self._mock_route(question, domain, subdomain, available_books, chapters_by_book)
+
+
+# =============================================================================
+# HELPERS
+# =============================================================================
+
+# Minimal stopwords — keeps domain-meaningful words like "being", "nature",
+# "form", "cause", "truth", "substance" that are core philosophical concepts
+_STOPWORDS = frozenset({
+    "a", "an", "the", "is", "are", "was", "were",
+    "have", "has", "had", "do", "does", "did",
+    "will", "would", "could", "should", "may", "might", "can",
+    "to", "of", "in", "for", "on", "with", "at", "by", "from", "as",
+    "into", "through", "during", "before", "after",
+    "between", "out", "off", "over", "under",
+    "here", "there", "when", "where", "how",
+    "all", "each", "every", "both", "few", "more", "most",
+    "some", "such", "no", "not", "only", "so", "than", "too", "very",
+    "just", "because", "but", "and", "or", "if", "while", "about",
+    "what", "which", "who", "whom", "this", "that", "these", "those",
+    "i", "me", "my", "we", "our", "you", "your", "he", "him", "his",
+    "she", "her", "it", "its", "they", "them", "their",
+})
+
+
+def _extract_keywords(text: str) -> Set[str]:
+    """Extract meaningful keywords from text, removing stopwords."""
+    words = set(re.findall(r'[a-z]+', text.lower()))
+    return words - _STOPWORDS
+
+
+def _build_rationale(ch: dict, q_words: Set[str]) -> str:
+    """Build a rationale string explaining why this section matches."""
+    themes = ch.get("key_themes", [])
+    summary = ch.get("summary", "")
+
+    # Find which themes matched
+    matched_themes = []
+    for t in themes:
+        t_words = set(t.lower().replace("_", " ").split())
+        if t_words & q_words:
+            matched_themes.append(t.replace("_", " "))
+
+    if matched_themes:
+        theme_str = ", ".join(matched_themes[:3])
+        return f"This section addresses {theme_str} — directly relevant to your question."
+
+    if summary:
+        # Truncate summary to a useful snippet
+        return summary[:180].rstrip() + ("..." if len(summary) > 180 else "")
+
+    return "This section is relevant to your question."
+
+
+def _infer_angle(ch: dict) -> str:
+    """Infer a reading angle from section themes/title."""
+    themes = ch.get("key_themes", [])
+    if themes:
+        return " & ".join(t.replace("_", " ").title() for t in themes[:2])
+    title = ch.get("title", "")
+    if title and len(title) > 3:
+        return title
+    return "Core concepts"

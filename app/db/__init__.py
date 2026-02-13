@@ -1,6 +1,5 @@
 """Database module."""
 
-from .database import get_db, init_db, get_supabase, is_sqlite_mode
+from .database import get_db, init_db, is_sqlite_mode, get_supabase
 
-__all__ = ["get_db", "init_db"]
-
+__all__ = ["get_db", "init_db", "is_sqlite_mode", "get_supabase"]

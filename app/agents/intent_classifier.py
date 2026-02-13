@@ -65,8 +65,12 @@ class IntentClassifier:
             matches.append(DomainMatch("Philosophy", "Ethics", 0.85))
         elif any(w in question_lower for w in ["meaning", "death", "existence", "purpose", "suffer"]):
             matches.append(DomainMatch("Philosophy", "Existentialism", 0.80))
-        elif any(w in question_lower for w in ["philosophy", "wisdom", "truth", "knowledge"]):
-            matches.append(DomainMatch("Philosophy", None, 0.70))
+        elif any(w in question_lower for w in [
+            "philosophy", "wisdom", "truth", "knowledge",
+            "substance", "being", "essence", "metaphysics", "aristotle",
+            "cause", "causality", "form", "matter", "potentiality", "actuality",
+        ]):
+            matches.append(DomainMatch("Philosophy", "Metaphysics", 0.80))
         
         # STRATEGY
         if any(w in question_lower for w in ["war", "sun tzu", "battle", "military", "enemy", "defeat"]):

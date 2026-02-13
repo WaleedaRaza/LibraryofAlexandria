@@ -734,6 +734,165 @@
 }
 
 /* --------------------------------------------------------------------------
+   Chat History Messages
+   -------------------------------------------------------------------------- */
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: var(--space-md);
+    max-height: 300px;
+}
+
+.chat-message {
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-sm);
+    border-radius: 8px;
+}
+
+.chat-message--user {
+    background: rgba(201, 169, 98, 0.1);
+    border-left: 3px solid var(--accent-primary);
+}
+
+.chat-message--assistant {
+    background: rgba(125, 157, 114, 0.1);
+    border-left: 3px solid var(--accent-secondary);
+}
+
+.chat-message-role {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.chat-message-content {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+}
+
+.chat-empty,
+.chat-loading,
+.chat-error {
+    text-align: center;
+    padding: var(--space-lg);
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.chat-error {
+    color: #dc2626;
+}
+
+/* --------------------------------------------------------------------------
+   Note Modal
+   -------------------------------------------------------------------------- */
+.note-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+}
+
+.note-modal[hidden] {
+    display: none;
+}
+
+.note-modal-content {
+    background: var(--bg-primary);
+    border-radius: 8px;
+    padding: var(--space-lg);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.note-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.note-modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.note-modal-close {
+    width: 28px;
+    height: 28px;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.note-modal-close:hover {
+    background: var(--bg-tertiary);
+}
+
+.note-modal textarea {
+    width: 100%;
+    padding: var(--space-md);
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    resize: vertical;
+    margin-bottom: var(--space-md);
+}
+
+.note-modal textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.note-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Highlight Menu Improvements
+   -------------------------------------------------------------------------- */
+.highlight-menu {
+    flex-direction: column;
+    padding: var(--space-md);
+    min-width: 160px;
+}
+
+.highlight-menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.highlight-menu-actions .highlight-action {
+    width: 100%;
+    height: auto;
+    padding: 8px 12px;
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
    Responsive
    -------------------------------------------------------------------------- */
 @media (max-width: 1200px) {

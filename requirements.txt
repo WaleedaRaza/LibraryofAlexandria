@@ -20,6 +20,10 @@ bcrypt==5.0.0  # Password hashing
 
 # PDF Processing (for ingestion)
 pypdf==4.0.1
+pymupdf>=1.23.0  # For taxonomy engine (better text extraction)
+
+# HTTP client (for Ollama)
+requests>=2.31.0
 
 # Development
 python-dotenv==1.0.1

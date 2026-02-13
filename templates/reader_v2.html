@@ -1,0 +1,934 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} — Read{% endblock %}
+
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root {
+    --pdf-bg: #1a1a1a;
+    --sidebar-width: 320px;
+    --chat-width: 360px;
+}
+
+/* Layout */
+.reader-v2 {
+    display: flex;
+    height: calc(100vh - 60px);
+    background: var(--pdf-bg);
+}
+
+/* Smart Entry Banner */
+.smart-entry-banner {
+    position: fixed;
+    top: 60px;
+    left: var(--sidebar-width);
+    right: 0;
+    z-index: 50;
+    background: linear-gradient(135deg, rgba(201, 169, 98, 0.15), rgba(201, 169, 98, 0.05));
+    border-bottom: 1px solid rgba(201, 169, 98, 0.3);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.smart-entry-banner.hidden {
+    display: none;
+}
+
+.smart-entry-text {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.smart-entry-text strong {
+    color: var(--accent-primary);
+}
+
+.smart-entry-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.smart-entry-action {
+    padding: 6px 12px;
+    background: rgba(201, 169, 98, 0.2);
+    border: 1px solid rgba(201, 169, 98, 0.4);
+    border-radius: 4px;
+    color: var(--accent-primary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.smart-entry-action:hover {
+    background: rgba(201, 169, 98, 0.3);
+}
+
+.smart-entry-dismiss {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 1.2rem;
+}
+
+/* Left Sidebar - Multi-Mode Navigation */
+.nav-sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.nav-sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-book-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.nav-book-author {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.nav-book-domain {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    font-size: 0.65rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Navigation Mode Tabs */
+.nav-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+.nav-tab {
+    flex: 1;
+    padding: 10px 8px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-tab:hover {
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.02);
+}
+
+.nav-tab.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+}
+
+.nav-tab-icon {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+/* Navigation Content */
+.nav-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.nav-panel {
+    display: none;
+}
+
+.nav-panel.active {
+    display: block;
+}
+
+/* Structure Panel (Chapters/Sections) */
+.nav-section-item {
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    transition: background 0.15s;
+}
+
+.nav-section-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.nav-section-item.current {
+    background: rgba(201, 169, 98, 0.1);
+    border-left: 3px solid var(--accent-primary);
+}
+
+.nav-section-title {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.nav-section-pages {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.nav-section-confidence {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-left: 6px;
+}
+
+.nav-section-confidence.high { background: #22c55e; }
+.nav-section-confidence.medium { background: #eab308; }
+.nav-section-confidence.low { background: #ef4444; }
+
+/* Concepts Panel */
+.nav-concept-item {
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+}
+
+.nav-concept-item:hover {
+    background: var(--bg-tertiary);
+    border-left-color: var(--accent-primary);
+}
+
+.nav-concept-label {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.nav-concept-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.nav-concept-page {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Page Controls */
+.nav-page-controls {
+    padding: 16px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+.nav-page-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.nav-page-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.15s;
+}
+
+.nav-page-btn:hover:not(:disabled) {
+    background: var(--bg-primary);
+}
+
+.nav-page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.nav-page-info {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.nav-page-goto {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.nav-page-goto label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.nav-page-input {
+    width: 70px;
+    padding: 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.nav-page-go {
+    padding: 8px 16px;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Main Viewer */
+.pdf-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.pdf-main-content {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    padding-top: {% if routing_context %}80px{% else %}20px{% endif %};
+}
+
+.pdf-canvas-wrapper {
+    background: white;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.pdf-canvas {
+    display: block;
+}
+
+/* Suggestions Bar */
+.suggestions-bar {
+    padding: 12px 20px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.suggestions-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-right: 8px;
+}
+
+.suggestion-chip {
+    padding: 6px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.suggestion-chip:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+/* Right Panel - Chat */
+.chat-sidebar {
+    width: var(--chat-width);
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.2s ease;
+    position: fixed;
+    right: 0;
+    top: 60px;
+    height: calc(100vh - 60px);
+    z-index: 100;
+}
+
+.chat-sidebar.open {
+    transform: translateX(0);
+}
+
+.chat-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header h3 {
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.chat-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.3rem;
+}
+
+.chat-scope {
+    padding: 10px 16px;
+    background: var(--bg-tertiary);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.chat-scope strong {
+    color: var(--accent-primary);
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.chat-msg {
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.chat-msg.user {
+    background: rgba(201, 169, 98, 0.1);
+}
+
+.chat-msg.assistant {
+    background: rgba(125, 157, 114, 0.1);
+}
+
+.chat-msg-role {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.chat-msg-content {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.chat-citation {
+    display: inline-block;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    margin: 0 2px;
+    cursor: pointer;
+}
+
+.chat-input-area {
+    padding: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.chat-input {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    resize: none;
+    margin-bottom: 8px;
+}
+
+.chat-send {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Chat Toggle */
+.chat-toggle {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    z-index: 90;
+}
+
+.chat-toggle:hover {
+    transform: scale(1.05);
+}
+
+/* Loading & Error states */
+.pdf-loading, .pdf-error {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+
+.pdf-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+    .nav-sidebar {
+        position: fixed;
+        left: -100%;
+        top: 60px;
+        height: calc(100vh - 60px);
+        z-index: 100;
+        transition: left 0.3s;
+    }
+    
+    .nav-sidebar.open {
+        left: 0;
+    }
+    
+    .smart-entry-banner {
+        left: 0;
+    }
+    
+    .mobile-toggle {
+        display: block;
+    }
+}
+
+@media (min-width: 901px) {
+    .mobile-toggle {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reader-v2">
+    <!-- Smart Entry Banner -->
+    {% if routing_context %}
+    <div class="smart-entry-banner" id="smart-entry-banner">
+        <div class="smart-entry-text">
+            <strong>You're here because:</strong> {{ routing_context }}
+        </div>
+        <div class="smart-entry-actions">
+            {% if entry_section %}
+            <button class="smart-entry-action" data-action="why">Why here?</button>
+            {% endif %}
+            <button class="smart-entry-action" data-action="broader">Broader context</button>
+            <button class="smart-entry-dismiss" id="dismiss-banner">×</button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Left: Multi-Mode Navigation -->
+    <aside class="nav-sidebar" id="nav-sidebar">
+        <div class="nav-sidebar-header">
+            <div class="nav-book-title">{{ book.title }}</div>
+            <div class="nav-book-author">{{ book.author }}</div>
+            {% if book.domain %}
+            <span class="nav-book-domain">{{ book.domain }}</span>
+            {% endif %}
+        </div>
+        
+        <!-- Navigation Mode Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-panel="structure">
+                <span class="nav-tab-icon">📑</span>
+                Structure
+            </button>
+            <button class="nav-tab" data-panel="concepts">
+                <span class="nav-tab-icon">💡</span>
+                Concepts
+            </button>
+            <button class="nav-tab" data-panel="definitions">
+                <span class="nav-tab-icon">📖</span>
+                Definitions
+            </button>
+            <button class="nav-tab" data-panel="arguments">
+                <span class="nav-tab-icon">⚔️</span>
+                Arguments
+            </button>
+        </div>
+        
+        <!-- Navigation Content -->
+        <div class="nav-content">
+            <!-- Structure Panel -->
+            <div class="nav-panel active" id="panel-structure">
+                {% if sections %}
+                    {% for section in sections %}
+                    <div class="nav-section-item" data-page="{{ section.page_start }}">
+                        <div class="nav-section-title">
+                            {{ section.title }}
+                            <span class="nav-section-confidence {% if section.confidence >= 0.7 %}high{% elif section.confidence >= 0.4 %}medium{% else %}low{% endif %}"></span>
+                        </div>
+                        <div class="nav-section-pages">Pages {{ section.page_start }}–{{ section.page_end }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted);">
+                        <p>No structure detected yet.</p>
+                        <p style="font-size: 0.8rem;">Use page navigation below.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Concepts Panel -->
+            <div class="nav-panel" id="panel-concepts">
+                {% if concepts %}
+                    {% for concept in concepts %}
+                    <div class="nav-concept-item" data-page="{{ concept.page_start }}">
+                        <div class="nav-concept-label">{{ concept.label }}</div>
+                        {% if concept.description %}
+                        <div class="nav-concept-desc">{{ concept.description }}</div>
+                        {% endif %}
+                        <div class="nav-concept-page">Page {{ concept.page_start }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted);">
+                        <p>No concepts extracted yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Definitions Panel -->
+            <div class="nav-panel" id="panel-definitions">
+                {% if definitions %}
+                    {% for defn in definitions %}
+                    <div class="nav-concept-item" data-page="{{ defn.page_start }}">
+                        <div class="nav-concept-label">{{ defn.label }}</div>
+                        {% if defn.description %}
+                        <div class="nav-concept-desc">{{ defn.description }}</div>
+                        {% endif %}
+                        <div class="nav-concept-page">Page {{ defn.page_start }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted);">
+                        <p>No definitions extracted yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Arguments Panel -->
+            <div class="nav-panel" id="panel-arguments">
+                {% if arguments %}
+                    {% for arg in arguments %}
+                    <div class="nav-concept-item" data-page="{{ arg.page_start }}">
+                        <div class="nav-concept-label">{{ arg.label }}</div>
+                        {% if arg.description %}
+                        <div class="nav-concept-desc">{{ arg.description }}</div>
+                        {% endif %}
+                        <div class="nav-concept-page">Pages {{ arg.page_start }}–{{ arg.page_end }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted);">
+                        <p>No arguments extracted yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Page Controls -->
+        <div class="nav-page-controls">
+            <div class="nav-page-nav">
+                <button class="nav-page-btn" id="prev-page" disabled>← Prev</button>
+                <button class="nav-page-btn" id="next-page" disabled>Next →</button>
+            </div>
+            <div class="nav-page-info">
+                Page <span id="page-num">-</span> of <span id="page-count">-</span>
+            </div>
+            <div class="nav-page-goto">
+                <label>Go to:</label>
+                <input type="number" class="nav-page-input" id="page-input" min="1" value="1">
+                <button class="nav-page-go" id="go-page">Go</button>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Main PDF Viewer -->
+    <main class="pdf-main">
+        <div class="pdf-main-content" id="pdf-viewer">
+            <div class="pdf-loading" id="pdf-loading">
+                <div class="pdf-loading-spinner"></div>
+                <div>Loading PDF...</div>
+            </div>
+            
+            <div class="pdf-error" id="pdf-error" style="display: none;">
+                <div style="font-size: 3rem; margin-bottom: 16px;">📄</div>
+                <div>Failed to load PDF</div>
+                <a href="/library" class="btn btn--secondary" style="margin-top: 16px;">← Back to Library</a>
+            </div>
+            
+            <div class="pdf-canvas-wrapper" id="canvas-wrapper" style="display: none;">
+                <canvas id="pdf-canvas" class="pdf-canvas"></canvas>
+            </div>
+        </div>
+        
+        <!-- Suggestions Bar -->
+        {% if suggestions %}
+        <div class="suggestions-bar">
+            <span class="suggestions-label">Suggested next:</span>
+            {% for sug in suggestions %}
+            <button class="suggestion-chip" data-page="{{ sug.page }}">
+                {{ sug.reason }}
+            </button>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </main>
+    
+    <!-- Chat Toggle -->
+    <button class="chat-toggle" id="chat-toggle">💬</button>
+    
+    <!-- Chat Sidebar -->
+    <aside class="chat-sidebar" id="chat-sidebar">
+        <div class="chat-header">
+            <h3>Chat about this section</h3>
+            <button class="chat-close" id="chat-close">×</button>
+        </div>
+        <div class="chat-scope">
+            Scope: <strong>Pages <span id="chat-scope-start">1</span>–<span id="chat-scope-end">1</span></strong>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <p style="color: var(--text-muted); text-align: center; padding: 20px;">
+                Ask a question about the current page...
+            </p>
+        </div>
+        <div class="chat-input-area">
+            <textarea class="chat-input" id="chat-input" rows="2" placeholder="What does this mean?"></textarea>
+            <button class="chat-send" id="chat-send">Ask</button>
+        </div>
+    </aside>
+</div>
+
+<!-- Mobile Toggle -->
+<button class="mobile-toggle" id="mobile-toggle" style="position: fixed; bottom: 20px; left: 20px; z-index: 101; padding: 12px 16px; background: var(--accent-primary); color: var(--bg-primary); border: none; border-radius: 8px; cursor: pointer;">
+    ☰ Navigation
+</button>
+
+<script>
+// Initialize PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const state = {
+    pdfDoc: null,
+    pageNum: {{ start_page | default(1) }},
+    scale: 1.3,
+    rendering: false,
+    chatOpen: false
+};
+
+const canvas = document.getElementById('pdf-canvas');
+const ctx = canvas.getContext('2d');
+
+// DOM elements
+const prevBtn = document.getElementById('prev-page');
+const nextBtn = document.getElementById('next-page');
+const pageNumSpan = document.getElementById('page-num');
+const pageCountSpan = document.getElementById('page-count');
+const pageInput = document.getElementById('page-input');
+const loadingEl = document.getElementById('pdf-loading');
+const errorEl = document.getElementById('pdf-error');
+const canvasWrapper = document.getElementById('canvas-wrapper');
+
+// Render page
+async function renderPage(num) {
+    if (state.rendering || !state.pdfDoc) return;
+    state.rendering = true;
+    
+    try {
+        const page = await state.pdfDoc.getPage(num);
+        const viewport = page.getViewport({ scale: state.scale });
+        
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        
+        state.pageNum = num;
+        pageNumSpan.textContent = num;
+        pageInput.value = num;
+        
+        prevBtn.disabled = num <= 1;
+        nextBtn.disabled = num >= state.pdfDoc.numPages;
+        
+        // Update chat scope
+        document.getElementById('chat-scope-start').textContent = num;
+        document.getElementById('chat-scope-end').textContent = Math.min(num + 2, state.pdfDoc.numPages);
+        
+        // Update URL
+        const url = new URL(window.location);
+        url.searchParams.set('page', num);
+        history.replaceState({}, '', url);
+        
+        // Log interaction
+        fetch(`/read/{{ book.id }}/log`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({event_type: 'page_view', page_number: num})
+        }).catch(() => {});
+        
+    } finally {
+        state.rendering = false;
+    }
+}
+
+// Load PDF
+async function loadPDF() {
+    try {
+        state.pdfDoc = await pdfjsLib.getDocument('/read/{{ book.id }}/pdf').promise;
+        
+        pageCountSpan.textContent = state.pdfDoc.numPages;
+        pageInput.max = state.pdfDoc.numPages;
+        
+        loadingEl.style.display = 'none';
+        canvasWrapper.style.display = 'block';
+        
+        await renderPage(state.pageNum);
+        
+    } catch (err) {
+        console.error('Load error:', err);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'flex';
+    }
+}
+
+// Event listeners
+prevBtn.onclick = () => { if (state.pageNum > 1) renderPage(state.pageNum - 1); };
+nextBtn.onclick = () => { if (state.pageNum < state.pdfDoc.numPages) renderPage(state.pageNum + 1); };
+
+document.getElementById('go-page').onclick = () => {
+    const num = parseInt(pageInput.value);
+    if (num >= 1 && num <= state.pdfDoc.numPages) renderPage(num);
+};
+
+pageInput.onkeypress = (e) => { if (e.key === 'Enter') document.getElementById('go-page').click(); };
+
+// Navigation tabs
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.onclick = () => {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+    };
+});
+
+// Section/concept clicks
+document.querySelectorAll('[data-page]').forEach(el => {
+    el.onclick = () => {
+        const page = parseInt(el.dataset.page);
+        if (page && state.pdfDoc) renderPage(page);
+    };
+});
+
+// Chat toggle
+document.getElementById('chat-toggle').onclick = () => {
+    document.getElementById('chat-sidebar').classList.toggle('open');
+};
+
+document.getElementById('chat-close').onclick = () => {
+    document.getElementById('chat-sidebar').classList.remove('open');
+};
+
+// Smart entry banner dismiss
+const banner = document.getElementById('smart-entry-banner');
+if (banner) {
+    document.getElementById('dismiss-banner').onclick = () => {
+        banner.classList.add('hidden');
+    };
+}
+
+// Mobile navigation toggle
+document.getElementById('mobile-toggle').onclick = () => {
+    document.getElementById('nav-sidebar').classList.toggle('open');
+};
+
+// Keyboard shortcuts
+document.onkeydown = (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    switch(e.key) {
+        case 'ArrowLeft': prevBtn.click(); e.preventDefault(); break;
+        case 'ArrowRight': nextBtn.click(); e.preventDefault(); break;
+    }
+};
+
+// Load PDF on page load
+loadPDF();
+</script>
+{% endblock %}

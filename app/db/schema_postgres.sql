@@ -75,8 +75,7 @@ CREATE TABLE IF NOT EXISTS highlights (
     id              TEXT PRIMARY KEY,
     user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     chapter_id      TEXT NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
-    start_offset    INTEGER NOT NULL,
-    end_offset      INTEGER NOT NULL,
+    selected_text   TEXT NOT NULL,
     color           TEXT DEFAULT 'yellow',
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -93,6 +92,18 @@ CREATE TABLE IF NOT EXISTS annotations (
 );
 
 CREATE INDEX IF NOT EXISTS idx_annotations_highlight_id ON annotations(highlight_id);
+
+-- Chat messages tied to highlights (MANY messages per highlight)
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id              TEXT PRIMARY KEY,
+    highlight_id    TEXT NOT NULL REFERENCES highlights(id) ON DELETE CASCADE,
+    role            TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+    content         TEXT NOT NULL,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_messages_highlight_id ON chat_messages(highlight_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_created_at ON chat_messages(created_at);
 
 -- ============================================================================
 -- BOOK REQUESTS
@@ -139,4 +150,8 @@ CREATE TABLE IF NOT EXISTS schema_versions (
 
 INSERT INTO schema_versions (version, description) 
 VALUES (1, 'Initial schema - Alexandria v1.0')
+ON CONFLICT (version) DO NOTHING;
+
+INSERT INTO schema_versions (version, description) 
+VALUES (2, 'Add chat_messages table for highlight-tied conversations')
 ON CONFLICT (version) DO NOTHING;
