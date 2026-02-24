@@ -1,337 +1,101 @@
 # Rayan — Start Here
 
-> This is your briefing. Read it in full before touching any code.
+You already saw the codebase. This doc is the map.
 
 ---
 
-## What Alexandria Actually Is
+## The Point
 
-Alexandria is not a book recommendation site. Book recommendation sites tell you "you might like Meditations." We don't do that.
+User asks a question. We route them to the exact section of the actual book that answers it. They read, highlight, chat about the passage.
 
-Alexandria is a **routing engine for primary sources**. A user asks a real question — "how do I stop being destroyed by things I can't control?" — and we point them to the *exact section* of the *actual text* where Epictetus or Marcus Aurelius answers that. Not a summary. Not a review. The passage itself. Then we let them read it, highlight it, ask questions about it, and take notes on it.
+That's it. We're not summarizing books. We're not competing with Goodreads. We're competing with the impulse to ask ChatGPT and get a hallucinated paraphrase instead of reading the source.
 
-Why this matters: every AI you can use online was trained on what people *say about* books. It was not trained on the books themselves. When you ask GPT what Marcus Aurelius says about grief, you get a synthesized paraphrase of a hundred SparkNotes pages. We send you to Book V.8 and let Aurelius speak for himself.
-
-**The constraint is the product.** If a user can walk away without reading, we failed.
+The app works. It has one book (Metaphysics). Your job is to get hundreds of books in, and make the routing good enough that it actually sends people to the right place.
 
 ---
 
-## The Two Systems
-
-There are exactly two systems. They share zero code. They communicate through one file format: the artifact JSON.
+## Two Things, Not One
 
 ```
-SYSTEM A: Taxonomy Pipeline          SYSTEM B: Reading Platform
-(your machine, offline, Ollama)      (web app, FastAPI, serves users)
+taxonomy-pipeline/          →     app/
+(offline, runs on your Mac)       (the web app users see)
 
-PDF → 7-stage pipeline            artifact JSON → route → read
-→ artifact JSON per book    ───►  highlights, chat, notes
+PDF → 7 stages → artifact.json → routes queries → reader
 ```
 
-**Your job right now is System A entirely.** System B is working but starved — it has 1 book. Your job is to feed it hundreds.
+They share zero code. The only handoff is `artifact.json` files that live in `taxonomy-pipeline/data/artifacts/`.
+
+Drop a new artifact there. The app picks it up automatically. No imports, no database writes for book content.
 
 ---
 
-## System A: The Taxonomy Pipeline
+## Docs — What to Read for What
 
-**Location:** `taxonomy-pipeline/`
+| Doc | Read it for |
+|-----|------------|
+| `ARCHITECTURE.md` | Full system map. Both systems, all layers, every data flow. Read this first. |
+| `taxonomy-pipeline/README.md` | How to run the pipeline. Commands, stages, re-run flags. |
+| `CURRENT_VS_DESIRED_STATE.md` | Where we are vs where we need to be. The gap list. |
+| `DEPLOYMENT_ISSUES.md` | All 34 GitHub issues written out with acceptance criteria. |
+| GitHub issues | Same issues with deep technical detail — implementation specs, code sketches, exact files to touch. Issues are more detailed than the doc. |
 
-The pipeline takes a PDF and produces one `artifact.json` per book. That artifact is the canonical representation of the book — full clean text, section structure with character offsets, summaries, themes, and routing hints. Everything System B needs.
-
-### The 7 Stages
-
-```
-PDF
- │
- ▼
-S1: Extraction (PyMuPDF, no LLM)
-    Raw text + page boundaries + TOC if present
- │
- ▼
-S2: Cleaning (deterministic, no LLM)
-    Strip headers/footers, fix hyphenation, normalize whitespace
-    Produces content_hash — ALL OFFSETS REFERENCE THIS STRING FOREVER
- │
- ▼
-S3: Structure (1 LLM call)
-    Classify: book_type, hierarchy, front/back matter
- │
- ▼
-S4: Boundaries (regex first, LLM fallback)
-    Find section breaks → list of sections with char offsets
-    Regex handles ~70% of books (well-structured classics)
-    LLM sliding window handles the rest (poetry, essays, unmarked texts)
- │
- ▼
-S5: Enrichment (1 LLM call per section) ← BOTTLENECK
-    Per section: summary, key_themes, notable_passages, difficulty
-    20-chapter book = 20 sequential calls
- │
- ▼
-S6: Synthesis (1 LLM call per book)
-    Book-level: domain, thematic_index, routing_hints, cross_references
-    routing_hints.good_for is what the router uses to match user queries
- │
- ▼
-S7: Validation (no LLM)
-    Offset coverage, no gaps/overlaps, enrichment complete, confidence score
- │
- ▼
-artifact.json
-```
-
-### The Canonical Artifact
-
-```json
-{
-  "book_id": "meditations__marcus_aurelius",
-  "title": "Meditations",
-  "author": "Marcus Aurelius",
-  "text": {
-    "content": "THE FULL CLEAN TEXT — never modify this after creation",
-    "content_hash": "sha256:..."
-  },
-  "sections": [
-    {
-      "id": "sec_012",
-      "title": "Book V",
-      "start_offset": 48221,
-      "end_offset": 61400,
-      "summary": "Marcus examines the discipline of the will...",
-      "key_themes": ["self_discipline", "acceptance", "morning_routine"],
-      "difficulty": "moderate"
-    }
-  ],
-  "synthesis": {
-    "domain": "philosophy",
-    "subdomains": ["stoicism", "ethics"],
-    "thematic_index": {
-      "acceptance": ["sec_004", "sec_012", "sec_019"],
-      "death": ["sec_006", "sec_014"]
-    },
-    "routing_hints": {
-      "good_for": [
-        "feeling like you have no control over what happens to you",
-        "dealing with anger at others and wanting to let it go",
-        "trying to stay focused when everything feels chaotic"
-      ],
-      "not_good_for": [
-        "practical financial decisions",
-        "technical skill development"
-      ]
-    }
-  }
-}
-```
-
-**The golden rule:** `text.content` is immutable. Every `start_offset` and `end_offset` in every section, every notable passage — they all reference character positions in this string. If you re-run S2 cleaning on an already-processed book, all downstream data is invalidated. Don't do it unless you're rerunning the whole book from scratch.
+Don't read `manifest.md` yet — it's a long historical reference. Come back to it if you need background on a specific decision.
 
 ---
 
-## What's Wrong With the Pipeline Right Now
+## What Needs Doing
 
-### Problem 1: S5 is serial and slow
+### Phase 1: Get books in + make routing work
 
-`s5_enrichment.py` runs LLM calls per section in a plain Python `for` loop. Each section is independent — there is no shared state between them. But they run one at a time.
+This is your entire focus. Don't touch auth, deployment, or brainrot until this is done.
 
-A book with 20 chapters = 20 sequential calls × ~5s each = ~100 seconds just for enrichment. At this rate, 500 books takes 40+ hours.
+**Pipeline hardening** (before running the full batch)
 
-**Fix:** `ThreadPoolExecutor` with 4 workers. Section enrichment calls are I/O-bound (HTTP to Ollama). Parallelizing them is safe and cuts time by 4x.
+The pipeline as-is will take 40+ hours to process 500 books because S5 runs LLM calls sequentially. It also has no `--model` flag, no ETA display, and no failure tracking — so you'd be running blind with no way to retry failures.
 
-This is **issue #5**. Do this before running the full batch.
+Fix that before touching the corpus. Issues: **#5, #8, #35, #36**.
 
-### Problem 2: No --model flag
+**Full corpus run**
 
-Switching models requires editing `config.yaml`. Should be a CLI flag. This matters because the right model choice affects every artifact you produce.
+You have ~550 PDFs. Run them. Review what fails. Issues: **#6, #7, #9**.
 
-**Fix:** Add `--model` option to both `process` and `batch` commands. One line in `cli.py`.
+**Routing**
 
-Also **issue #5**.
+With 1 book the routing works fine. With 500 books it breaks — the router is hardcoded to look at 3 candidates, uses domain silos that hide cross-domain books, and ignores the `routing_hints` entirely. A question about Stoic acceptance shouldn't only surface if the user types the word "stoicism."
 
-### Problem 3: No ETA, no failure manifest
-
-The batch runner prints to terminal and loses failures. 10 hours in you have no idea how many books are done or what failed.
-
-**Fix:** Rolling ETA after each book. Write failures to `data/batch_failures.json`. Add `--retry-failed` flag.
-
-Also **issue #5**.
-
-### Problem 4: title/author derivation is broken for anything except Metaphysics
-
-`artifact_loader.py` has one hardcoded entry (`metaphysics_aristotle`) and a brittle string parser for everything else. With 500 books this breaks on basically everything.
-
-**Fix:** Store `title` and `author` directly in the artifact JSON. Add fields to `schema.py`, populate them from the PDF filename in `runner.py`.
-
-**Issue #8**.
-
-### Problem 5: routing_hints.good_for is generic on weaker models
-
-The S6 synthesis prompt produces useful routing hints on strong models and useless ones on weak models. "Understanding philosophy" is not a routing hint. "Feeling like nothing you do matters" is.
-
-**Fix:** Harden the S6 prompt with explicit good/bad examples. Add post-parse validation that flags generic hints.
-
-**Issue #36**.
-
-### Problem 6: The router only looks at 3 books
-
-`reading_router.py` caps candidates at `available_books[:3]`. With 500 books, 497 are invisible to every query. And domain filtering means cross-domain books never surface even when they'd be perfect.
-
-**Fix:** Build a global thematic index at startup. Pre-filter candidates using theme word overlap, not domain classification. Raise cap to 20.
-
-**Issue #37**.
+Fix that. Issues: **#37, #38, #10**.
 
 ---
 
-## Your Work, In Order
+## Issue Map
 
-### Week 1 — Setup + First Book
-
-1. Read these files in this order:
-   - `ARCHITECTURE.md`
-   - `taxonomy-pipeline/README.md`
-   - `taxonomy-pipeline/src/schema.py` — memorize the data structures
-   - `taxonomy-pipeline/src/pipeline1/runner.py` — understand the orchestrator
-   - `taxonomy-pipeline/src/pipeline1/s5_enrichment.py` — the bottleneck
-
-2. Get Ollama running. Pull `qwen2.5:14b` if you have ≥16GB RAM, otherwise `llama3.1:8b`.
-
-3. Run the pipeline on one book you know well:
-   ```bash
-   cd taxonomy-pipeline
-   pip install -e .
-   ollama serve  # in another terminal
-   python -m src.cli process --pdf data/pdfs/meditations.pdf
-   python -m src.cli inspect --artifact data/artifacts/meditations.json
-   ```
-
-4. Read the artifact. Are the section boundaries correct? Do the summaries make sense? Are the routing hints useful or generic?
-
-5. Run the app and verify the book appears:
-   ```bash
-   cd ..
-   pip install -r requirements.txt
-   uvicorn app.main:app --reload --port 5000
-   # Open http://localhost:5000
-   # Ask: "how do I stop being upset by things outside my control?"
-   # Should route to Meditations
-   ```
-
-### Week 2 — Pipeline Hardening (Issues #5, #8, #35, #36)
-
-Before running 500 books, the pipeline needs to be production-ready. In this order:
-
-**Issue #35 first:** Benchmark `llama3.1:8b` vs `qwen2.5:14b` on 3 books. Pick your model. Document it. Don't skip this — the model choice affects every artifact you produce for the rest of the project.
-
-**Issue #5 next:** Parallelize S5, add `--model` flag, add ETA + failure manifest. This cuts your full batch time from 40+ hours to ~20 hours.
-
-**Issue #36:** Harden the S6 synthesis prompt. Run your 3 benchmark books again with the new prompt. Confirm routing hints are human-readable scenarios, not academic categories.
-
-**Issue #8:** Fix title/author storage. Add fields to schema, populate from PDF filename, update artifact_loader.
-
-### Week 3 — Full Corpus Run (Issues #6, #7, #9)
-
-With the pipeline hardened:
-
-**Issue #6:** Run the full batch. Let it run overnight. Check the failure manifest in the morning.
-
-**Issue #7:** Build `validate-all` CLI command. Run it on your artifact directory. Look at the distribution — how many pass (≥0.7 confidence), how many need review?
-
-**Issue #9:** Triage flagged artifacts. Rerun the fixable ones. Document what's permanently skipped.
-
-### Week 4 — Routing (Issues #37, #38, #10)
-
-With 100+ good artifacts:
-
-**Issue #37:** Build global thematic index. Fix the candidate cap. Fix cross-domain surfacing.
-
-**Issue #38:** Write the routing golden test suite (≥25 test cases). Run it. Fix failures.
-
-**Issue #10:** Full routing quality check. Document which queries route well, which don't, and why.
+| Issue | What | Do When |
+|-------|------|---------|
+| #35 | Benchmark models — pick what to run the corpus with | First |
+| #5 | Parallelize S5, add `--model` flag, ETA, failure manifest | Before corpus run |
+| #36 | Harden S6 prompts so routing hints are useful | Before corpus run |
+| #8 | Fix title/author stored in artifact (currently broken for all books except Metaphysics) | Before corpus run |
+| #6 | Run full batch | After #5 done |
+| #7 | `validate-all` CLI — quality report across all artifacts | After #6 |
+| #9 | Review flagged artifacts, rerun fixable ones | After #7 |
+| #37 | Global thematic index, fix cross-domain routing | After artifacts exist |
+| #38 | Routing golden test suite | After #37 |
+| #10 | Routing quality check | After #38 |
 
 ---
 
-## How to Run the App
+## One Rule
 
-```bash
-# Install dependencies
-pip install -r requirements.txt
+`text.content` inside each artifact is immutable. Every section offset, every highlight in the database, references character positions in that string. Re-run S2 cleaning on a processed book and you invalidate everything downstream.
 
-# Run
-uvicorn app.main:app --reload --port 5000
-
-# Artifacts must exist at:
-# taxonomy-pipeline/data/artifacts/{book_id}.json
-
-# The app loads them automatically — no database import needed
-```
-
-Environment variables (set in `.env` or export):
-```bash
-USE_MOCK_AGENTS=true   # uses keyword routing, no OpenAI needed
-DEBUG=true
-SECRET_KEY=dev-key-anything
-```
+If a book needs to be reprocessed, reprocess it from the beginning with `--rerun-from s1_extraction`. Don't patch individual stages on a book that already has user data.
 
 ---
 
-## Key Files to Know
+## Done When
 
-| File | What It Does |
-|------|-------------|
-| `taxonomy-pipeline/src/schema.py` | The data contract. Every field in the artifact. |
-| `taxonomy-pipeline/src/pipeline1/runner.py` | Orchestrates all 7 stages. Checkpoint/resume logic here. |
-| `taxonomy-pipeline/src/pipeline1/s5_enrichment.py` | The bottleneck. Parallelize this first. |
-| `taxonomy-pipeline/src/pipeline1/s6_synthesis.py` | Routing hints come from here. Prompt quality matters. |
-| `taxonomy-pipeline/src/cli.py` | All CLI commands. Add `--model`, `validate-all`, `test-routing` here. |
-| `app/services/artifact_loader.py` | Reads artifact JSONs into the app. The bridge between pipeline and platform. |
-| `app/agents/reading_router.py` | The routing logic. Mock and LLM paths both here. |
-| `app/agents/intent_classifier.py` | Maps user question → domain(s). |
-| `app/services/agent_service.py` | Orchestrates intent → routing → paths. |
+Type this into the app: *"I feel like nothing I do matters"*
 
----
+Get 2+ reading paths pointing to specific sections in different books. Click one. Read the passage. Highlight something. Ask a question about it. Get an answer that references that exact text.
 
-## The Things That Cannot Break
-
-**Do not change section IDs (`sec_001`, `fm_001`, etc.) after a book is ingested.** They are referenced by the thematic index and by user highlights in the database. Changing them orphans highlights.
-
-**Do not re-run S2 cleaning on a book that already has user data** (highlights, annotations, chat). S2 changes `text.content`, which changes all offsets, which makes every stored highlight reference the wrong text.
-
-**Do not change `CanonicalArtifact` field names** without updating `artifact_loader.py` at the same time. The app reads these fields directly.
-
----
-
-## The Success Condition for Your Work
-
-When you're done with Phase 1 (pipeline + routing), this should work perfectly:
-
-1. Open the app
-2. Type: "I feel like nothing I do matters and I can't stop caring what other people think of me"
-3. Get 2-4 reading paths pointing to specific sections across ≥2 books
-4. Click a path, read the actual passage
-5. Highlight a sentence, ask "what does this mean?"
-6. Get a grounded explanation referencing that exact passage
-
-That's it. That's the whole product. Get that working with 50+ books and you've done your job.
-
----
-
-## GitHub Issues Summary
-
-| # | Title | Priority |
-|---|-------|----------|
-| #5 | Configure taxonomy batch: parallelism, --model flag, ETA, failure manifest | **Do first** |
-| #35 | Model benchmarking: pick the right model | **Do before full batch** |
-| #36 | Harden S6 synthesis prompts | **Before full batch** |
-| #8 | Fix title/author storage in artifacts | **Before full batch** |
-| #6 | Run full corpus batch (~500 books) | After #5 done |
-| #7 | Build validate-all CLI command | After #6 done |
-| #9 | Human review of flagged artifacts | After #7 done |
-| #37 | Global thematic index + fix cross-domain routing | After artifacts exist |
-| #38 | Routing golden test suite | After #37 done |
-| #10 | Routing quality check across genres | After #38 done |
-
-Do not touch Phase 2 (auth, wishlist), Phase 3 (brainrot), or Phase 4 (deployment) until Phase 1 is complete and routing is demonstrably working.
-
----
-
-*The library is only as good as its artifacts. The routing is only as good as what the pipeline wrote into them. Start there.*
+That's the product working. Get there with 50+ books.
