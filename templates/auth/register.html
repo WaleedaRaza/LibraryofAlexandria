@@ -1,41 +1,22 @@
 {% extends "base.html" %}
-
-{% block title %}Create Account — Alexandria{% endblock %}
-
+{% from "partials/glyph.html" import glyph %}
+{% block title %}Join — LibXNDR{% endblock %}
 {% block content %}
-<div class="auth-container">
-    <div class="auth-card">
-        <h1 class="auth-title">Create your account</h1>
-        <p class="auth-subtitle">Save books, highlight passages, and take notes</p>
-        
-        {% if error %}
-            <div class="auth-error">{{ error }}</div>
-        {% endif %}
-        
-        <form action="/auth/register" method="POST" class="auth-form">
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-input" placeholder="reader@example.com" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Display name (optional)</label>
-                <input type="text" name="display_name" class="form-input" placeholder="How you want to be addressed">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-input" placeholder="At least 8 characters" required minlength="8">
-                <p class="form-hint">Minimum 8 characters</p>
-            </div>
-            <button type="submit" class="btn btn--primary btn--full">Create account</button>
-        </form>
-        
-        <p class="auth-switch">
-            Already have an account? <a href="/auth/login">Sign in</a>
-        </p>
-        
-        <p class="auth-note">
-            No social features. No tracking. Your reading is yours.
-        </p>
-    </div>
-</div>
+<section class="auth-shell"><div class="auth-card">
+  <p class="auth-label">{{ glyph('cartouche', 14) }} Your place in the library</p>
+  <h1>Keep what you read.</h1>
+  <p>Books are open to explore. Create an account to save your place and keep passages and notes.</p>
+  {% if error %}<div class="auth-error">{{ error }}</div>{% endif %}
+  {% if google_auth_enabled %}<a class="auth-google" href="/auth/google?next={{ next|urlencode }}">Continue with Google</a><p class="auth-divider">or use email</p>{% endif %}
+  <form action="/auth/register" method="post">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label>Name <span>(optional)</span><input type="text" name="display_name" value="{{ display_name or '' }}" autocomplete="name" placeholder="What should we call you?"></label>
+    <label>Email<input type="email" name="email" value="{{ email or '' }}" required autocomplete="email"></label>
+    <label>Password<input type="password" name="password" minlength="8" required autocomplete="new-password" placeholder="At least 8 characters"></label>
+    <button class="btn btn-primary" type="submit">Create account</button>
+  </form>
+  <p class="auth-switch">Already a member? <a href="/auth/login?next={{ next|urlencode }}">Sign in</a></p>
+  <p class="auth-switch">Account acting strange? <a href="/auth/forgot-password">Reset your password</a></p>
+  <a class="auth-browse" href="/library">Just browsing? Explore the books →</a>
+</div></section>
 {% endblock %}

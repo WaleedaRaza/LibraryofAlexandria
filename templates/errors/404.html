@@ -1,17 +1,19 @@
 {% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
 
-{% block title %}Page Not Found — Alexandria{% endblock %}
+{% block title %}Page Not Found — LibXNDR{% endblock %}
 
 {% block content %}
 <div class="error-container">
+    {{ glyph('pyramid-fallen', 96) }}
     <div class="error-code">404</div>
     <h1 class="error-title">This page doesn't exist</h1>
     <p class="error-message">
         The page you're looking for may have been moved, deleted, or never existed in the first place.
     </p>
     <div class="error-actions">
-        <a href="/" class="btn btn--primary">Go home</a>
-        <a href="/library" class="btn btn--secondary">Browse the library</a>
+        <a href="/library" class="btn btn-primary">Back to the library</a>
+        <a href="/library/find" class="btn">Find a book</a>
     </div>
 </div>
 {% endblock %}

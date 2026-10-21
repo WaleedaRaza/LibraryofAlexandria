@@ -1,0 +1,8 @@
+{#
+  glyph(name, size=24, label=None, class_name='')
+  Renders one symbol from partials/glyphs.svg, which base.html inlines once per page.
+  Decorative by default; pass a label to expose it to assistive tech.
+#}
+{% macro glyph(name, size=24, label=None, class_name='') -%}
+<svg class="glyph glyph-{{ name }}{% if class_name %} {{ class_name }}{% endif %}" width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" {% if label %}role="img" aria-label="{{ label }}"{% else %}aria-hidden="true" focusable="false"{% endif %}><use href="#g-{{ name }}"/></svg>
+{%- endmacro %}

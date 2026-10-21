@@ -31,13 +31,11 @@ def create_app() -> FastAPI:
     init_db()
     
     # Register routes
-    from .routes import pages, ask, reader, library, wishlist, auth
+    from .routes import pages, reader, library, auth
     
     app.include_router(pages.router)
-    app.include_router(ask.router, prefix="/ask", tags=["ask"])
     app.include_router(reader.router, prefix="/read", tags=["reader"])
     app.include_router(library.router, prefix="/library", tags=["library"])
-    app.include_router(wishlist.router, prefix="/wishlist", tags=["wishlist"])
     app.include_router(auth.router, prefix="/auth", tags=["auth"])
     
     return app
@@ -45,4 +43,4 @@ def create_app() -> FastAPI:
 
 # Templates instance (shared across routes)
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent / "templates"))
-
+templates.env.globals["asset_version"] = settings.ASSET_VERSION

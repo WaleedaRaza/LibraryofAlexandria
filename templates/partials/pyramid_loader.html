@@ -1,0 +1,24 @@
+{#
+  pyramid(size='inline', label='Loading')
+  A gold pyramid built from four CSS faces, each carved with glyphs, spinning on its axis.
+  size: 'inline' (48px, for status rows) or 'splash' (160px, for the opening screen).
+#}
+{% macro pyramid(size='inline', label='Loading') -%}
+<div class="pyramid pyramid-{{ size }}" role="status" aria-label="{{ label }}">
+  <div class="pyramid-stage">
+    <div class="pyramid-solid">
+      {% for face in ['lit', 'mid', 'shade', 'dark'] %}
+      <div class="pyramid-face face-{{ face }}">
+        <div class="pyramid-register"><svg viewBox="0 0 24 24"><use href="#g-{{ ['eye', 'scarab', 'sun', 'ankh'][loop.index0] }}"/></svg></div>
+        <div class="pyramid-register">
+          <svg viewBox="0 0 24 24"><use href="#g-{{ ['reed', 'owl', 'water', 'djed'][loop.index0] }}"/></svg>
+          <svg viewBox="0 0 24 24"><use href="#g-{{ ['ibis', 'feather', 'lotus', 'scroll'][loop.index0] }}"/></svg>
+          <svg viewBox="0 0 24 24"><use href="#g-{{ ['water', 'reed', 'owl', 'water'][loop.index0] }}"/></svg>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="pyramid-ground"></div>
+  </div>
+</div>
+{%- endmacro %}

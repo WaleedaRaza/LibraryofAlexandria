@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}PDF Discovery Desk · LibXNDR{% endblock %}
+{% block body_class %}desk-page{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/desk.css?v={{ asset_version }}">{% endblock %}
+
+{% block stage %}
+<section class="desk-command" aria-labelledby="desk-title">
+  <div class="desk-intro">
+    <p class="desk-kicker">PRIVATE UTILITY · LOCAL ONLY</p>
+    <h1 id="desk-title">PDF discovery,<br><span>without the tab avalanche.</span></h1>
+    <p>Work through the Launch 72 in twelve-book batches. Every candidate keeps its original link, file evidence, and a one-click path into your browser's PDF viewer.</p>
+  </div>
+  <form id="desk-search" class="desk-input">
+    <div class="desk-input-head">
+      <label for="books">One book per line <span>optional: Title — Author</span></label>
+      <div class="desk-presets">
+        <button id="load-essential" class="desk-load-list" type="button">Essential 50</button>
+        <label class="desk-batch-label" for="launch-batch">Launch 72</label>
+        <select id="launch-batch" aria-label="Choose a Launch 72 batch">
+          <option value="1">01 · Fiction magnets</option>
+          <option value="2">02 · Speculative & classics</option>
+          <option value="3">03 · Literary & contemporary</option>
+          <option value="4">04 · Story, poetry & thought</option>
+          <option value="5">05 · History, science & society</option>
+          <option value="6">06 · Life & creative practice</option>
+          <option value="all">All 72</option>
+        </select>
+        <button id="load-launch" class="desk-load-list desk-load-launch" type="button">Load batch</button>
+      </div>
+    </div>
+    <textarea id="books" name="books" spellcheck="false" placeholder="The Analects — Confucius&#10;The Republic — Plato&#10;Frankenstein — Mary Shelley" required></textarea>
+    <div class="desk-form-foot">
+      <p>Only you can open a candidate. A verified PDF means the link returns a PDF; it does not establish publication rights.</p>
+      <div class="desk-actions">
+        <button id="desk-stop" class="desk-stop" type="button" hidden>Stop</button>
+        <button id="desk-submit" class="desk-run" type="submit"><span>Run search</span><kbd>⌘↵</kbd></button>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="desk-workbench" aria-live="polite">
+  <header class="desk-statusbar">
+    <div><i id="desk-light"></i><span id="desk-state">READY</span></div>
+    <div class="desk-progress-copy"><span id="desk-progress-label">0 / 0 titles</span><span id="desk-current"></span></div>
+    <div class="desk-status-actions"><span id="desk-counts">0 direct PDFs · 0 other links</span><button id="load-latest-run" type="button">Load sourced run</button><button id="pick-first-looks" type="button">Pick first looks</button></div>
+  </header>
+  <div class="desk-progress"><span id="desk-progress"></span></div>
+  <div id="selection-bar" class="selection-bar" hidden>
+    <div><strong id="selection-count">0</strong><span>links kept for review</span></div>
+    <div class="selection-actions">
+      <button id="review-selected" type="button">Review shortlist</button>
+      <a href="/library?preview_links=1&kind=links">Preview link shelf ↗</a>
+      <button id="copy-selected" type="button">Copy links</button>
+      <button id="export-selected" type="button">Download Chrome bookmarks</button>
+      <button id="clear-selected" type="button">Clear</button>
+    </div>
+  </div>
+  <div id="shortlist" class="desk-shortlist" hidden></div>
+  <div id="desk-results" class="desk-results">
+    <div class="desk-empty">
+      <div class="desk-empty-mark">⌕</div>
+      <p>Your ranked candidates will land here.</p>
+      <span>No tabs open on their own. Every result shows the evidence behind its score.</span>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="/static/js/desk.js?v={{ asset_version }}" defer></script>{% endblock %}

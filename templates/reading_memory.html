@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% block title %}Reading Memory — LibXNDR{% endblock %}
+{% block content %}
+<section class="memory-shell">
+  <header class="memory-head">
+    <div><p class="shelf-eyebrow">{{ glyph('feather', 14) }} Private to you</p><h1>Reading memory<span class="shelf-period">.</span></h1><p>Passages, notes, and conversations you chose to keep.</p></div>
+    <div class="memory-stats"><span><strong>{{ stats.books }}</strong>Books</span><span><strong>{{ stats.highlights }}</strong>Highlights</span><span><strong>{{ stats.notes }}</strong>Notes</span></div>
+  </header>
+  <nav class="shelf-view-nav" aria-label="Your library views">
+    <a href="/library/my">{{ glyph('lotus', 14) }} Reading board</a>
+    <a href="/library/my/memory" aria-current="page">{{ glyph('feather', 14) }} Highlights &amp; notes <span>{{ stats.highlights }}</span></a>
+    <a href="/library/find/runs">{{ glyph('ibis', 14) }} Source runs</a>
+  </nav>
+  <section class="memory-companion" data-memory-companion data-endpoint="/library/my/memory/chat">
+    <div class="memory-companion-intro">
+      <p class="shelf-eyebrow">Your reading companion</p>
+      <h2>Think across what you kept.</h2>
+      <p>Ask about an idea, tension, or connection. The companion searches only your private highlights, notes, and this conversation, then points back to the passages it used.</p>
+      <div class="memory-privacy"><span>{{ 'MODEL CONNECTED' if companion_live else 'RETRIEVAL-ONLY LAUNCH MODE' }}</span><p>{{ 'Answers use the production model and bounded reading context.' if companion_live else 'The durable memory and citation path are live; generative interpretation stays conservative until the production model is enabled.' }}</p></div>
+      {% if stats.highlights %}<div class="memory-prompts" aria-label="Example questions"><button type="button" data-memory-prompt="What themes keep appearing in my highlights?">Recurring themes</button><button type="button" data-memory-prompt="Which two saved passages are in the most tension?">Find a tension</button><button type="button" data-memory-prompt="What should I return to next, based on my notes?">What next?</button></div>{% endif %}
+    </div>
+    <div class="memory-companion-workspace">
+      <div class="memory-thread" id="memory-companion-thread" aria-live="polite">
+        {% if companion_messages %}
+          {% for message in companion_messages %}
+          <article class="memory-message memory-message-{{ message.role }}">
+            <span>{{ 'YOU' if message.role == 'user' else 'COMPANION' }}</span>
+            <p>{{ message.content }}</p>
+            {% if message.sources %}<div class="memory-message-sources">{% for source in message.sources %}<a href="{{ source.url }}">{{ source.title }} · p.{{ source.page_number }}</a>{% endfor %}</div>{% endif %}
+          </article>
+          {% endfor %}
+        {% else %}
+          <div class="memory-thread-empty" data-memory-empty><span>START WITH YOUR OWN EVIDENCE</span><p>Your first question will become the beginning of one continuous, private conversation across your reading.</p></div>
+        {% endif %}
+      </div>
+      <form class="memory-ask" data-memory-form>
+        <label for="memory-question">Ask your reading memory</label>
+        <textarea id="memory-question" name="question" rows="3" maxlength="2000" placeholder="Where do my saved passages disagree about power?" {% if not stats.highlights %}disabled{% endif %}></textarea>
+        <div><small>{{ stats.highlights }} saved passage{{ '' if stats.highlights == 1 else 's' }} available as private context</small><button class="btn btn-primary" type="submit" {% if not stats.highlights %}disabled{% endif %}>Ask across memory</button></div>
+      </form>
+      <p class="memory-companion-error" data-memory-error role="alert"></p>
+    </div>
+  </section>
+  {% if stats.highlights %}
+  <form class="memory-filter" method="get" action="/library/my/memory">
+    <label for="memory-search">Search your passages</label>
+    <input id="memory-search" name="q" value="{{ memory_query }}" placeholder="A phrase, note, book, or author">
+    <label for="memory-book">Book</label>
+    <select id="memory-book" name="book"><option value="">All books</option>{% for item in memory_books %}<option value="{{ item.id }}" {% if memory_book == item.id %}selected{% endif %}>{{ item.title }}</option>{% endfor %}</select>
+    <button type="submit">Filter</button>
+    {% if memory_query or memory_book %}<a href="/library/my/memory">Clear</a>{% endif %}
+  </form>
+  {% endif %}
+  {% if highlights %}
+  <div class="memory-list" id="saved-passages">
+    {% for highlight in highlights %}
+    <article class="memory-entry">
+      <div class="memory-source"><a href="/read/{{ highlight.book_id }}#highlight-{{ highlight.id }}">{{ highlight.book.title if highlight.book else 'Book' }}</a><span>P.{{ highlight.page_number }}</span></div>
+      <blockquote>{{ highlight.selected_text }}</blockquote>
+      {% if highlight.note %}<p class="memory-note"><span>YOUR NOTE</span>{{ highlight.note }}</p>{% endif %}
+      {% if highlight.messages %}<details><summary>{{ highlight.messages|length }} CHAT MESSAGES</summary><div class="memory-chat">{% for message in highlight.messages %}<p><span>{{ 'YOU' if message.role == 'user' else 'COMPANION' }}</span>{{ message.content }}</p>{% endfor %}</div></details>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="shelf-first-run">
+    {{ glyph('scroll', 44) }}
+    <span>Your reading memory</span>
+    <h2>{{ 'No passage matches that filter.' if memory_query or memory_book else 'It begins with a passage.' }}</h2>
+    <p>{{ 'Try another phrase or return to the complete memory.' if memory_query or memory_book else 'Highlight a line in a PDF to collect it here with your notes and conversations.' }}</p>
+    <a href="{{ '/library/my/memory' if memory_query or memory_book else '/library/my' }}">{{ 'Clear filters' if memory_query or memory_book else 'Return to your books' }} <span aria-hidden="true">↗</span></a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/memory_companion.js?v={{ asset_version }}"></script>{% endblock %}

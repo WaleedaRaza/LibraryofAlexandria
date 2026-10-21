@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}About — Alexandria{% endblock %}
+{% block title %}About — LibXNDR{% endblock %}
 
 {% block content %}
 <div class="about-container">
     <article class="about-content">
-        <h1 class="about-title">What is Alexandria?</h1>
+        <h1 class="about-title">What is LibXNDR?</h1>
         
-        <p>Alexandria is a constrained, agent-guided reading system.</p>
+        <p>LibXNDR is a constrained, agent-guided reading system.</p>
         
         <p>It is <strong>not</strong>:</p>
         <ul>
@@ -41,43 +41,5 @@
     </article>
 </div>
 
-<style>
-.about-container {
-    max-width: var(--reading-width);
-    margin: 0 auto;
-}
-
-.about-content {
-    font-family: var(--font-reading);
-    font-size: 1.125rem;
-    line-height: 1.8;
-}
-
-.about-title {
-    font-size: 2rem;
-    margin-bottom: var(--space-xl);
-}
-
-.about-content h2 {
-    font-size: 1.25rem;
-    margin-top: var(--space-xl);
-    margin-bottom: var(--space-md);
-    color: var(--accent-primary);
-}
-
-.about-content p {
-    margin-bottom: 1.5em;
-}
-
-.about-content ul,
-.about-content ol {
-    margin-bottom: 1.5em;
-    padding-left: var(--space-xl);
-}
-
-.about-content li {
-    margin-bottom: var(--space-sm);
-}
-</style>
 {% endblock %}
 

@@ -1,0 +1,53 @@
+{% from "partials/glyph.html" import glyph %}
+{# One book, previewed. Rendered inside the dialog over the shelf and as the body of /library/book/<id>. #}
+<article class="preview" aria-labelledby="preview-title" data-halo-host>
+  <button class="preview-close" type="button" data-preview-close aria-label="Close preview">×</button>
+  <a class="preview-cover" href="{{ ('/auth/login?next=/library/book/' ~ book.id) if not user else (source_url if is_link else ('/read/' ~ book.id)) }}" {% if is_link and user %}target="_blank" rel="noopener noreferrer"{% endif %}><img src="/library/book/{{ book.id }}/cover{{ '?v=2' if is_link else '' }}" alt="Cover of {{ book.title }}" data-halo></a>
+  <div class="preview-body">
+    <p class="eyebrow">{% if is_link %}{{ glyph('eye', 14) }} Web link{% else %}{{ glyph('scroll', 14) }} PDF in the collection{% endif %}{% if book.visibility == 'private' %} · Private to you and reviewers{% endif %}{% if is_draft %} · Rights review pending{% endif %}</p>
+    <h1 class="preview-title" id="preview-title">{{ book.title }}</h1>
+    {% if book.author %}<p class="preview-author">{{ book.author }}</p>{% endif %}
+    <p class="preview-facts">
+      {% if book.page_count %}<span>{{ book.page_count }} pages</span><i>·</i>{% endif %}
+      {% if is_link %}<span>Opens at {{ book.source_domain or 'its original source' }}</span>{% else %}<span>{{ 'Resume at page ' ~ progress.page_number if progress and progress.page_number and progress.page_number > 1 else 'Read in the browser' }}</span>{% endif %}
+      {% if book.domain %}<i>·</i><span>{{ book.domain }}</span>{% endif %}
+    </p>
+    <div class="preview-actions">
+      {% if not user %}
+        <a class="btn btn-primary" href="/auth/login?next={{ ('/library/book/' ~ book.id) if is_link else ('/read/' ~ book.id) }}">{{ glyph('scroll', 16) }} Sign in to {{ 'open' if is_link else 'read' }}</a>
+      {% elif is_link %}
+        {% if source_url %}<a class="btn btn-primary" href="{{ source_url }}" target="_blank" rel="noopener noreferrer">{{ glyph('eye', 16) }} Open source ↗</a>{% endif %}
+      {% else %}
+        <a class="btn btn-primary" href="/read/{{ book.id }}">{{ glyph('scroll', 16) }} {{ 'Resume reading' if progress and progress.page_number and progress.page_number > 1 else 'Read now' }}</a>
+      {% endif %}
+      {% if user and not is_draft %}
+        <form action="{{ '/library/unsave/' if is_saved else '/library/save/' }}{{ book.id }}" method="post"><button class="btn {{ 'btn-gold' if is_saved }}" type="submit">{{ glyph('ankh', 16) }} {{ 'Saved · remove' if is_saved else 'Save' }}</button></form>
+      {% endif %}
+    </div>
+    {% if user and not is_link and not is_draft %}
+    <div class="preview-status">
+      <span class="eyebrow">Reading status</span>
+      <div class="status-choices">
+        {% for key, label in [('want_to_read', 'Want to read'), ('reading', 'Reading'), ('read', 'Read')] %}
+        <form action="/library/book/{{ book.id }}/status" method="post"><input type="hidden" name="status" value="{{ key }}"><button class="status-choice {{ 'on' if reading_status == key }}" type="submit" {% if reading_status == key %}aria-pressed="true"{% endif %}>{{ label }}</button></form>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% if highlights %}<a class="preview-memory" href="/library/my/memory?book={{ book.id }}">{{ glyph('feather', 16) }} Your highlights ({{ highlights|length }}) →</a>{% endif %}
+    {% if is_link %}<p class="preview-note">This edition stays at its original public address. LibXNDR does not copy the file, so the in-app highlighter and reading companion are not available for it yet.</p>{% endif %}
+    {% if other_editions %}
+    <p class="preview-editions"><span>Also available · {{ other_editions|length }} other {{ 'edition' if other_editions|length == 1 else 'editions' }}:</span>{% for edition in other_editions %}<a href="/library/book/{{ edition.id }}{{ '?preview_links=1' if preview_links else '' }}" data-preview>{{ 'Web link' if edition.availability == 'external_link' else 'PDF' }} {{ loop.index }}{% if edition.page_count %} · {{ edition.page_count }} pp{% elif edition.source_domain %} · {{ edition.source_domain }}{% endif %}</a>{% endfor %}</p>
+    {% endif %}
+    {% if user %}<details class="preview-details">
+      <summary>{{ glyph('djed', 14) }} Source details</summary>
+      <div>
+        {% if not is_link and pdf_url %}<a href="{{ pdf_url }}" target="_blank" rel="noopener noreferrer">Open the PDF directly ↗</a>{% endif %}
+        {% if is_link and source_url %}<a href="{{ source_url }}" target="_blank" rel="noopener noreferrer">Linked PDF ↗</a>{% endif %}
+        {% if original_url and original_url != source_url %}<a href="{{ original_url }}" target="_blank" rel="noopener noreferrer">Original indexed link ↗</a>{% endif %}
+        {% if source_page %}<a href="{{ source_page }}" target="_blank" rel="noopener noreferrer">Visit the source page ↗</a>{% endif %}
+        {% if book.source_filename and not is_link %}<small>{{ book.source_filename }}{% if book.file_size %} · {{ '%.1f'|format(book.file_size / 1024 / 1024) }} MB{% endif %}</small>{% endif %}
+      </div>
+    </details>{% endif %}
+  </div>
+</article>

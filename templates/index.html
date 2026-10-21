@@ -1,105 +1,42 @@
 {% extends "base.html" %}
-
-{% block title %}Alexandria — Form your own answers{% endblock %}
-
+{% block title %}Waleed's Library{% endblock %}
 {% block content %}
-<!-- Loading overlay - shows during form submission -->
-<div class="loading-overlay" id="loadingOverlay">
-    <p class="loading-text">Finding where this is discussed…</p>
+{% set featured = books[0] %}
+<section class="featured">
+  <div class="featured-copy">
+    <p class="featured-label">// WALEED'S LIBRARY · {{ total_books }} BOOKS</p>
+    <h1>A personal collection, opened for serious reading.</h1>
+    <p class="lede">Browse the shelves without an account. Sign up when you want to open a PDF, keep your place, highlight passages, write notes, and talk through what you are reading.</p>
+    <div class="featured-actions">
+      <a class="btn btn-primary" href="/library">BROWSE THE COLLECTION →</a>
+      {% if not user %}<a class="btn" href="/auth/register">CREATE READING ACCOUNT</a>{% endif %}
+    </div>
+  </div>
+  <a class="featured-cover-wrap" href="/library/book/{{ featured.id }}">
+    <img class="featured-cover" src="/library/book/{{ featured.id }}/cover" alt="{{ featured.title }}">
+  </a>
+</section>
+<div class="library-toolbar">
+  <form action="/library" method="get">
+    <input name="search" type="search" placeholder="search titles, authors, subjects...">
+    <button class="btn btn-primary" type="submit">SEARCH</button>
+  </form>
+  <span class="result-count">// FEATURES: PDF READER · HIGHLIGHTS · NOTES · PASSAGE CHAT</span>
 </div>
-
-<div class="home-container">
-    <!-- Hero Section -->
-    <div class="home-hero">
-        <h1 class="home-title">Looking for answers?</h1>
-        <p class="home-subtitle">We point you to the book. You form your own.</p>
-        <p class="home-tagline">Everyone has a take. We have the sources they're summarizing.</p>
-    </div>
-    
-    <!-- Ask Form -->
-    <div class="home-ask">
-        <form action="/ask/" method="POST" class="ask-form" id="askForm">
-            <div class="ask-input-wrapper">
-                <textarea 
-                    name="question" 
-                    class="ask-input" 
-                    placeholder="Frustrated at work? Confused about money? Wondering why people believe what they believe? What brought you here?"
-                    rows="3"
-                    required
-                    autofocus
-                ></textarea>
-            </div>
-            <button type="submit" class="ask-submit">
-                Find the reading →
-            </button>
-        </form>
-    </div>
-    
-    <!-- Book Preview Section with Covers -->
-    {% if books %}
-        <div class="home-library">
-            <div class="home-library-header">
-                <div>
-                    <h2 class="home-library-title">The Library</h2>
-                    <span class="home-library-subtitle">{{ total_books }} primary sources. No summaries. No takes.</span>
-                </div>
-                <a href="/library" class="home-library-link">Browse all →</a>
-            </div>
-            
-            <div class="book-grid">
-                {% for book in books[:12] %}
-                    <article class="book-card">
-                        <a href="/library/book/{{ book.id }}" class="book-card-link">
-                            <div class="book-cover book-cover--{{ book.domain|lower|default('philosophy') }}">
-                                <span class="book-cover-title">{{ book.title }}</span>
-                                {% if user and book.id in saved_book_ids %}
-                                    <span class="book-cover-saved">✓</span>
-                                {% endif %}
-                            </div>
-                            <h3 class="book-card-title">{{ book.title }}</h3>
-                            <p class="book-card-author">{{ book.author }}</p>
-                            {% if book.domain %}
-                                <span class="book-card-domain">{{ book.domain }}</span>
-                            {% endif %}
-                        </a>
-                    </article>
-                {% endfor %}
-            </div>
+<section class="library-content">
+  <div class="native-grid">
+    {% for book in books %}
+    <article class="native-book">
+      <a href="/library/book/{{ book.id }}">
+        <div class="cover-box"><img class="native-cover" src="/library/book/{{ book.id }}/cover" alt="{{ book.title }}" loading="lazy"></div>
+        <div class="native-meta">
+          <h2 class="native-title">{{ book.title }}</h2>
+          <p class="native-author">{{ book.author }}</p>
+          <span class="cat-badge cat-{{ book.domain|lower|replace(' ', '-') }}">{{ book.domain }}</span>
         </div>
-    {% endif %}
-    
-    <!-- Quick Examples -->
-    <div class="home-examples">
-        <p class="home-examples-label">Real questions deserve real sources:</p>
-        <div class="home-examples-list">
-            <button type="button" class="home-example" data-question="Why does my boss act like that?">
-                Why does my boss act like that?
-            </button>
-            <button type="button" class="home-example" data-question="How do I stop caring what people think?">
-                How do I stop caring what people think?
-            </button>
-            <button type="button" class="home-example" data-question="Why do smart people believe stupid things?">
-                Why do smart people believe stupid things?
-            </button>
-            <button type="button" class="home-example" data-question="Why do power dynamics ruin relationships?">
-                Why do power dynamics ruin relationships?
-            </button>
-        </div>
-    </div>
-</div>
-
-<script>
-// Example questions populate the textarea
-document.querySelectorAll('.home-example').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelector('.ask-input').value = btn.dataset.question;
-        document.querySelector('.ask-input').focus();
-    });
-});
-
-// Show loading overlay on form submit
-document.getElementById('askForm').addEventListener('submit', () => {
-    document.getElementById('loadingOverlay').classList.add('loading-overlay--visible');
-});
-</script>
+      </a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}

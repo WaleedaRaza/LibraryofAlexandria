@@ -1,352 +1,51 @@
 {% extends "base.html" %}
-
-{% block title %}{{ book.title }} — Chapter {{ current_chapter.number }}{% endblock %}
-
+{% from "partials/glyph.html" import glyph %}
+{% from "partials/pyramid_loader.html" import pyramid %}
+{% block title %}Reading {{ book.title }} — LibXNDR{% endblock %}
+{% block body_class %}reader-page{% endblock %}
 {% block head %}
-<link rel="stylesheet" href="/static/css/reader.css?v=6">
-<style>
-/* Highlight colors in text */
-.hl { 
-    cursor: pointer; 
-    padding: 2px 0; 
-    border-radius: 2px;
-    transition: filter 0.15s;
-}
-.hl:hover { filter: brightness(0.9); }
-.hl--yellow { background-color: #fef08a; }
-.hl--green { background-color: #86efac; }
-.hl--blue { background-color: #93c5fd; }
-.hl--purple { background-color: #d8b4fe; }
-.hl--red { background-color: #fca5a5; }
-
-/* Color picker in highlight menu */
-.color-picker { display: flex; gap: 6px; margin-bottom: 8px; }
-.color-btn { 
-    width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; 
-    cursor: pointer; transition: transform 0.15s;
-}
-.color-btn:hover { transform: scale(1.15); }
-.color-btn.active { border-color: #fff; box-shadow: 0 0 0 2px var(--accent-primary); }
-.color-btn--yellow { background: #fef08a; }
-.color-btn--green { background: #86efac; }
-.color-btn--blue { background: #93c5fd; }
-.color-btn--purple { background: #d8b4fe; }
-.color-btn--red { background: #fca5a5; }
-
-/* Highlight cards in sidebar */
-.highlight-card {
-    background: var(--bg-tertiary);
-    border-radius: 6px;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-left: 4px solid #fef08a;
-    cursor: pointer;
-    transition: background 0.15s;
-}
-.highlight-card:hover { background: var(--bg-secondary); }
-.highlight-card[data-color="green"] { border-left-color: #86efac; }
-.highlight-card[data-color="blue"] { border-left-color: #93c5fd; }
-.highlight-card[data-color="purple"] { border-left-color: #d8b4fe; }
-.highlight-card[data-color="red"] { border-left-color: #fca5a5; }
-
-.highlight-text { 
-    font-style: italic; 
-    color: var(--text-secondary); 
-    font-size: 0.85rem;
-    line-height: 1.4;
-    margin-bottom: 8px;
-}
-.highlight-note { 
-    background: rgba(0,0,0,0.05); 
-    padding: 8px; 
-    border-radius: 4px; 
-    font-size: 0.8rem;
-    margin-bottom: 8px;
-}
-.highlight-actions { display: flex; gap: 8px; }
-.highlight-action-btn { 
-    font-size: 0.75rem; 
-    padding: 4px 10px; 
-    background: var(--bg-primary); 
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.15s;
-}
-.highlight-action-btn:hover { background: var(--bg-tertiary); }
-.highlight-action-btn--delete { color: #dc2626; }
-
-/* Note modal */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-}
-.modal-overlay[hidden] { display: none; }
-.modal-box {
-    background: var(--bg-primary);
-    border-radius: 8px;
-    padding: 20px;
-    width: 90%;
-    max-width: 450px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-}
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.modal-header h3 { margin: 0; font-size: 1.1rem; }
-.modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
-.modal-textarea {
-    width: 100%;
-    padding: 12px;
-    font-family: var(--font-ui);
-    font-size: 0.9rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    resize: vertical;
-    margin-bottom: 12px;
-}
-.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
-
-/* Chat panel */
-.chat-panel {
-    position: fixed;
-    right: 0;
-    top: 60px;
-    width: 360px;
-    height: calc(100vh - 60px);
-    background: var(--bg-secondary);
-    border-left: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    z-index: 100;
-    transform: translateX(100%);
-    transition: transform 0.2s ease;
-}
-.chat-panel.open { transform: translateX(0); }
-.chat-panel-header { 
-    padding: 16px; 
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.chat-panel-quote {
-    padding: 12px 16px;
-    background: var(--bg-tertiary);
-    font-style: italic;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    border-left: 3px solid var(--accent-primary);
-    max-height: 100px;
-    overflow-y: auto;
-}
-.chat-messages { flex: 1; overflow-y: auto; padding: 16px; }
-.chat-msg { margin-bottom: 12px; padding: 10px; border-radius: 6px; }
-.chat-msg--user { background: rgba(201, 169, 98, 0.1); }
-.chat-msg--assistant { background: rgba(125, 157, 114, 0.1); }
-.chat-msg-role { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
-.chat-msg-content { font-size: 0.875rem; line-height: 1.5; }
-.chat-input-area { padding: 16px; border-top: 1px solid var(--border-color); }
-.chat-input { 
-    width: 100%; 
-    padding: 10px; 
-    font-family: var(--font-ui);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    resize: none;
-    margin-bottom: 8px;
-}
-.chat-send { 
-    width: 100%; 
-    padding: 10px; 
-    background: var(--accent-primary); 
-    color: var(--bg-primary);
-    border: none;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-}
-.chat-send:hover { background: #d4b76d; }
-</style>
+<link rel="stylesheet" href="/static/css/reader.css?v={{ asset_version }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
 {% endblock %}
-
 {% block content %}
-<div class="reader-container">
-    <!-- LEFT: Chapter Navigation -->
-    <aside class="reader-sidebar">
-        <div class="reader-sidebar-header">
-            <a href="/library/book/{{ book.id }}" class="reader-book-link">
-                <div class="reader-book-cover book-cover--{{ book.domain|lower|default('philosophy') }}"></div>
-                <span class="reader-book-title">{{ book.title }}</span>
-                <span class="reader-book-author">{{ book.author }}</span>
-            </a>
+<div class="reader-shell" data-book-id="{{ book.id }}" data-pdf-url="{{ pdf_url }}" data-start-page="{{ progress.page_number }}" data-authenticated="{{ 'true' if user else 'false' }}">
+    <header class="reader-toolbar">
+        <div class="reader-book"><a href="/library" aria-label="Back to the library">{{ glyph('pyramid', 18) }}</a><div><a href="/library/book/{{ book.id }}">{{ book.title }}</a><span>{{ book.author }}</span></div></div>
+        <div class="page-controls">
+            <button id="previous-page" type="button" aria-label="Previous page">←</button>
+            <label for="page-number">Page</label><input id="page-number" type="number" min="1" value="{{ progress.page_number }}"><span>of <strong id="page-count">—</strong></span>
+            <button id="next-page" type="button" aria-label="Next page">→</button>
         </div>
-        
-        <nav class="reader-chapters">
-            <h3 class="reader-chapters-title">Chapters</h3>
-            <ol class="reader-chapter-list">
-                {% for chapter in chapters %}
-                    <li class="reader-chapter-item {% if chapter.number == current_chapter.number %}reader-chapter-item--active{% endif %}">
-                        <a href="/read/{{ book.id }}?chapter={{ chapter.number }}" class="reader-chapter-link">
-                            {{ chapter.number }}. {{ chapter.title }}
-                        </a>
-                    </li>
+        <div class="reader-actions"><button id="zoom-out" type="button" aria-label="Zoom out">−</button><span id="zoom-value">100%</span><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="toggle-notebook" type="button" aria-expanded="true">{{ glyph('feather', 16) }} Notebook <span>{{ highlights|length }}</span></button></div>
+    </header>
+    <main class="reader-workspace">
+        <section class="pdf-workspace" aria-label="PDF reader">
+            <div id="reader-status" class="reader-status">{{ pyramid('inline', 'Opening the book') }}<p>Opening the book…</p></div>
+            <div id="pdf-page" class="pdf-page" hidden><canvas id="pdf-canvas"></canvas><div id="text-layer" class="text-layer"></div></div>
+            <div id="selection-tools" class="selection-tools" hidden><button id="save-highlight" type="button">Keep this passage</button></div>
+        </section>
+        <aside id="reader-notebook" class="reader-notebook" aria-label="Reading notebook">
+            <div class="notebook-heading"><div><p class="eyebrow">{{ 'Private to you' if user else 'Read freely' }}</p><h2>Reading notebook</h2></div><button id="close-notebook" type="button" aria-label="Close notebook">×</button></div>
+            {% if not user %}<div class="guest-reader-callout"><p>Enjoy the whole book. Want to keep a passage, note, or your place?</p><a href="/auth/register?next=/read/{{ book.id }}">Create a free account ↗</a><a href="/auth/login?next=/read/{{ book.id }}">Sign in instead</a></div>{% endif %}
+            <div id="notebook-empty" class="notebook-empty" {% if highlights %}hidden{% endif %}>{{ glyph('feather', 36) }}<p>{{ 'Select a passage in the book to keep it here.' if user else 'The book is open. Your private notebook begins when you join.' }}</p><span>{{ 'Your notes and conversations follow you across devices.' if user else 'No account is needed to read.' }}</span></div>
+            <div id="highlight-list" class="highlight-list">
+                {% for highlight in highlights %}
+                <article class="highlight-entry" id="highlight-{{ highlight.id }}" data-id="{{ highlight.id }}" data-page="{{ highlight.page_number }}">
+                    <button class="highlight-jump" type="button">Page {{ highlight.page_number }}</button>
+                    <blockquote>{{ highlight.selected_text }}</blockquote>
+                    <label>Private note<textarea class="note-input" maxlength="20000" placeholder="What do you want to remember?">{{ highlight.note or '' }}</textarea></label>
+                    <button class="save-note" type="button">Save note</button>
+                    <details class="passage-chat" {% if highlight.messages %}open{% endif %}><summary>Discuss this passage</summary>
+                        <div class="chat-messages">{% for message in highlight.messages %}<p class="{{ message.role }}"><span>{{ 'You' if message.role == 'user' else 'Companion' }}</span>{{ message.content }}</p>{% endfor %}</div>
+                        <form class="chat-form"><label>Ask about this passage<textarea name="question" required minlength="2" maxlength="2000" placeholder="What does this mean here?"></textarea></label><button type="submit">Ask the reading companion</button></form>
+                    </details>
+                    <button class="delete-highlight" type="button">Delete highlight</button>
+                </article>
                 {% endfor %}
-            </ol>
-        </nav>
-    </aside>
-    
-    <!-- CENTER: Reading Pane -->
-    <main class="reader-main">
-        {% if routing_context %}
-            <div class="reader-context">
-                <p class="reader-context-label">You were directed here because</p>
-                <p class="reader-context-text">{{ routing_context }}</p>
             </div>
-        {% endif %}
-        
-        <header class="reader-header">
-            <h1 class="reader-chapter-heading">
-                <span class="reader-chapter-number">{{ current_chapter.number }}.</span>
-                {{ current_chapter.title }}
-            </h1>
-        </header>
-        
-        <article class="reader-content" id="reader-content">
-            {{ chapter_text | safe }}
-        </article>
-        
-        <nav class="reader-nav">
-            {% if current_chapter.number > 1 %}
-                <a href="/read/{{ book.id }}?chapter={{ current_chapter.number - 1 }}" class="reader-nav-link">← Previous</a>
-            {% else %}
-                <span class="reader-nav-link reader-nav-link--disabled">← Previous</span>
-            {% endif %}
-            
-            {% if current_chapter.number < chapters|length %}
-                <a href="/read/{{ book.id }}?chapter={{ current_chapter.number + 1 }}" class="reader-nav-link">Next →</a>
-            {% else %}
-                <span class="reader-nav-link reader-nav-link--disabled">Next →</span>
-            {% endif %}
-        </nav>
+        </aside>
     </main>
-    
-    <!-- RIGHT: Highlights Sidebar -->
-    <aside class="reader-annotations" id="highlights-sidebar">
-        <div class="annotations-header">
-            <h3 class="annotations-title">Your Highlights</h3>
-            {% if highlights %}
-                <span class="annotations-count">{{ highlights|length }}</span>
-            {% endif %}
-        </div>
-        
-        <div class="highlights-list" id="highlights-list">
-            {% if highlights %}
-                {% for hl in highlights %}
-                    <div class="highlight-card" 
-                         data-highlight-id="{{ hl.id }}" 
-                         data-color="{{ hl.color }}"
-                         data-text="{{ hl.selected_text }}">
-                        <div class="highlight-text">"{{ hl.snippet }}"</div>
-                        
-                        {% if hl.note %}
-                            <div class="highlight-note">📝 {{ hl.note }}</div>
-                        {% endif %}
-                        
-                        <div class="highlight-actions">
-                            <button class="highlight-action-btn" data-action="note" data-id="{{ hl.id }}">
-                                {% if hl.note %}✏️ Edit{% else %}📝 Note{% endif %}
-                            </button>
-                            <button class="highlight-action-btn" data-action="chat" data-id="{{ hl.id }}">
-                                💬 Chat
-                            </button>
-                            <button class="highlight-action-btn highlight-action-btn--delete" data-action="delete" data-id="{{ hl.id }}">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="annotations-empty">
-                    <div class="annotations-empty-icon">📝</div>
-                    <p class="annotations-empty-text">
-                        No highlights yet.<br>
-                        Select text to highlight.
-                    </p>
-                </div>
-            {% endif %}
-        </div>
-        
-        <div class="annotations-hints">
-            Select text → Choose color → Highlight
-        </div>
-    </aside>
 </div>
-
-<!-- Highlight Menu (on text selection) -->
-<div class="highlight-menu" id="highlight-menu" hidden>
-    <div class="color-picker" id="color-picker">
-        <button class="color-btn color-btn--yellow active" data-color="yellow" title="Important"></button>
-        <button class="color-btn color-btn--green" data-color="green" title="Agree"></button>
-        <button class="color-btn color-btn--blue" data-color="blue" title="Question"></button>
-        <button class="color-btn color-btn--purple" data-color="purple" title="Insight"></button>
-        <button class="color-btn color-btn--red" data-color="red" title="Disagree"></button>
-    </div>
-    <button class="btn btn--primary" id="highlight-btn" style="width: 100%; font-size: 0.85rem;">
-        🖍️ Highlight
-    </button>
-</div>
-
-<!-- Note Modal -->
-<div class="modal-overlay" id="note-modal" hidden>
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3>Add Note</h3>
-            <button class="modal-close" id="note-modal-close">×</button>
-        </div>
-        <textarea class="modal-textarea" id="note-textarea" rows="4" placeholder="Your thoughts..."></textarea>
-        <div class="modal-actions">
-            <button class="btn btn--secondary" id="note-cancel">Cancel</button>
-            <button class="btn btn--primary" id="note-save">Save Note</button>
-        </div>
-    </div>
-</div>
-
-<!-- Chat Panel (slides in from right) -->
-<div class="chat-panel" id="chat-panel">
-    <div class="chat-panel-header">
-        <h3>Chat about this passage</h3>
-        <button class="modal-close" id="chat-close">×</button>
-    </div>
-    <div class="chat-panel-quote" id="chat-quote"></div>
-    <div class="chat-messages" id="chat-messages">
-        <p style="color: var(--text-muted); text-align: center; padding: 20px;">
-            Ask a question about this passage...
-        </p>
-    </div>
-    <div class="chat-input-area">
-        <textarea class="chat-input" id="chat-input" rows="2" placeholder="What does this mean?"></textarea>
-        <button class="chat-send" id="chat-send">Ask</button>
-    </div>
-</div>
-
-<script>
-// Data from server
-window.READER_DATA = {
-    bookId: "{{ book.id }}",
-    chapterId: "{{ current_chapter.id }}",
-    highlights: {{ highlights | tojson | safe if highlights else '[]' }}
-};
-</script>
+<script id="reader-data" type="application/json">{{ {"book": book, "highlights": highlights}|tojson }}</script>
 {% endblock %}
-
-{% block scripts %}
-<script src="/static/js/reader.js?v=9"></script>
-{% endblock %}
+{% block scripts %}<script src="/static/js/library_reader.js?v={{ asset_version }}"></script>{% endblock %}

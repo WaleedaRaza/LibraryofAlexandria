@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% block title %}Your account — LibXNDR{% endblock %}
+{% block content %}
+<div class="account-shell">
+  <aside class="account-intro">
+    <p class="collection-eyebrow">{{ glyph('cartouche', 14) }} Your place in the library</p>
+    <h1>Make yourself<br>at home<span>.</span></h1>
+    <p>A name, a face, and a shelf of your own.</p>
+    <a href="/library/my">← Back to your library</a>
+    <div class="account-portrait" aria-hidden="true">{% if user.avatar_key %}<img src="/account/avatar?v={{ user.avatar_key|urlencode }}" alt="">{% else %}<span>{{ user.display_name[:1]|upper }}</span>{% endif %}</div>
+    <strong class="account-reader-name">{{ user.display_name }}</strong>
+    {% if user.username %}<span class="account-handle">@{{ user.username }}</span>{% endif %}
+  </aside>
+  <div class="account-column">
+    {% if saved %}<p class="form-feedback success" role="status">Your profile is saved.</p>{% endif %}
+    {% if error %}<p class="form-feedback error" role="alert">{{ error }}</p>{% endif %}
+    <form class="account-form" action="/account" method="post" enctype="multipart/form-data">
+      <div class="section-heading"><span>01 / Profile</span><h2>How you appear.</h2></div>
+      <label>Display name<input name="display_name" required maxlength="80" autocomplete="name" value="{{ form_name if form_name is defined else user.display_name }}"></label>
+      <label>Username<input name="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,23}" autocomplete="username" value="{{ form_username if form_username is defined else (user.username or '') }}" placeholder="your.name"><small>3–24 characters. Letters, numbers, dots, hyphens, and underscores.</small></label>
+      <label>Profile photo<input type="file" name="photo" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG, or WebP · up to 5 MB. Cropped to a square.</small></label>
+      {% if user.avatar_key %}<label class="check-label"><input type="checkbox" name="remove_photo" value="true"> Remove current photo</label>{% endif %}
+      <button class="btn btn-primary" type="submit">{{ glyph('ankh', 16) }} Save profile</button>
+    </form>
+    <section class="account-access">
+      <div class="section-heading"><span>02 / Account</span><h2>Yours to keep.</h2></div>
+      <p class="account-email">{{ user.email }}</p>
+      <p>Your reading list, highlights, notes, and conversations are private. Books you add are reviewed by Waleed.</p>
+      {% if user.role == 'admin' %}<a class="account-review-link" href="/review">Open the review room ↗</a>{% endif %}
+      <form method="post" action="/auth/logout"><button class="text-action" type="submit">Sign out of this device →</button></form>
+    </section>
+  </div>
+</div>
+{% endblock %}

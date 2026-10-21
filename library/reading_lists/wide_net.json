@@ -1,0 +1,3407 @@
+{
+  "name": "Wide net",
+  "description": "Popular books across genres that the vault does not have yet, for the review room.",
+  "batch_size": 40,
+  "books": [
+    {
+      "category": "Fantasy",
+      "title": "The Fellowship of the Ring",
+      "author": "J. R. R. Tolkien"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Two Towers",
+      "author": "J. R. R. Tolkien"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Return of the King",
+      "author": "J. R. R. Tolkien"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Silmarillion",
+      "author": "J. R. R. Tolkien"
+    },
+    {
+      "category": "Fantasy",
+      "title": "A Clash of Kings",
+      "author": "George R. R. Martin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "A Storm of Swords",
+      "author": "George R. R. Martin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "A Feast for Crows",
+      "author": "George R. R. Martin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "A Dance with Dragons",
+      "author": "George R. R. Martin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Fire and Blood",
+      "author": "George R. R. Martin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Name of the Wind",
+      "author": "Patrick Rothfuss"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Wise Man's Fear",
+      "author": "Patrick Rothfuss"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Way of Kings",
+      "author": "Brandon Sanderson"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Words of Radiance",
+      "author": "Brandon Sanderson"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Mistborn: The Final Empire",
+      "author": "Brandon Sanderson"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Well of Ascension",
+      "author": "Brandon Sanderson"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Hero of Ages",
+      "author": "Brandon Sanderson"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Elantris",
+      "author": "Brandon Sanderson"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Warbreaker",
+      "author": "Brandon Sanderson"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Eye of the World",
+      "author": "Robert Jordan"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Great Hunt",
+      "author": "Robert Jordan"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Assassin's Apprentice",
+      "author": "Robin Hobb"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Fifth Season",
+      "author": "N. K. Jemisin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Obelisk Gate",
+      "author": "N. K. Jemisin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Lies of Locke Lamora",
+      "author": "Scott Lynch"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Blade Itself",
+      "author": "Joe Abercrombie"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Gardens of the Moon",
+      "author": "Steven Erikson"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Black Company",
+      "author": "Glen Cook"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Colour of Magic",
+      "author": "Terry Pratchett"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Mort",
+      "author": "Terry Pratchett"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Guards! Guards!",
+      "author": "Terry Pratchett"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Small Gods",
+      "author": "Terry Pratchett"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Good Omens",
+      "author": "Neil Gaiman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "American Gods",
+      "author": "Neil Gaiman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Neverwhere",
+      "author": "Neil Gaiman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Stardust",
+      "author": "Neil Gaiman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Coraline",
+      "author": "Neil Gaiman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Ocean at the End of the Lane",
+      "author": "Neil Gaiman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Last Unicorn",
+      "author": "Peter S. Beagle"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Princess Bride",
+      "author": "William Goldman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "A Wizard of Earthsea",
+      "author": "Ursula K. Le Guin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Tombs of Atuan",
+      "author": "Ursula K. Le Guin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Once and Future King",
+      "author": "T. H. White"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Lion, the Witch and the Wardrobe",
+      "author": "C. S. Lewis"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Prince Caspian",
+      "author": "C. S. Lewis"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Magician's Nephew",
+      "author": "C. S. Lewis"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Golden Compass",
+      "author": "Philip Pullman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Subtle Knife",
+      "author": "Philip Pullman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Amber Spyglass",
+      "author": "Philip Pullman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Eragon",
+      "author": "Christopher Paolini"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Magicians",
+      "author": "Lev Grossman"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Night Circus",
+      "author": "Erin Morgenstern"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Jonathan Strange & Mr Norrell",
+      "author": "Susanna Clarke"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Piranesi",
+      "author": "Susanna Clarke"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Priory of the Orange Tree",
+      "author": "Samantha Shannon"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Six of Crows",
+      "author": "Leigh Bardugo"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Crooked Kingdom",
+      "author": "Leigh Bardugo"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Shadow and Bone",
+      "author": "Leigh Bardugo"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Poppy War",
+      "author": "R. F. Kuang"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Babel",
+      "author": "R. F. Kuang"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Yellowface",
+      "author": "R. F. Kuang"
+    },
+    {
+      "category": "Fantasy",
+      "title": "A Court of Thorns and Roses",
+      "author": "Sarah J. Maas"
+    },
+    {
+      "category": "Fantasy",
+      "title": "A Court of Mist and Fury",
+      "author": "Sarah J. Maas"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Throne of Glass",
+      "author": "Sarah J. Maas"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Fourth Wing",
+      "author": "Rebecca Yarros"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Iron Flame",
+      "author": "Rebecca Yarros"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Cruel Prince",
+      "author": "Holly Black"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Legends & Lattes",
+      "author": "Travis Baldree"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The House in the Cerulean Sea",
+      "author": "T. J. Klune"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Circe",
+      "author": "Madeline Miller"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Song of Achilles",
+      "author": "Madeline Miller"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Atlas Six",
+      "author": "Olivie Blake"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Howl's Moving Castle",
+      "author": "Diana Wynne Jones"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Hobbit",
+      "author": "J. R. R. Tolkien"
+    },
+    {
+      "category": "Fantasy",
+      "title": "A Game of Thrones",
+      "author": "George R. R. Martin"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Dune Messiah",
+      "author": "Frank Herbert"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Children of Dune",
+      "author": "Frank Herbert"
+    },
+    {
+      "category": "Fantasy",
+      "title": "The Dragonbone Chair",
+      "author": "Tad Williams"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Red Rising",
+      "author": "Pierce Brown"
+    },
+    {
+      "category": "Fantasy",
+      "title": "Golden Son",
+      "author": "Pierce Brown"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Dune",
+      "author": "Frank Herbert"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Foundation",
+      "author": "Isaac Asimov"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Foundation and Empire",
+      "author": "Isaac Asimov"
+    },
+    {
+      "category": "Science fiction",
+      "title": "I, Robot",
+      "author": "Isaac Asimov"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Ender's Game",
+      "author": "Orson Scott Card"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Speaker for the Dead",
+      "author": "Orson Scott Card"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Martian",
+      "author": "Andy Weir"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Project Hail Mary",
+      "author": "Andy Weir"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Artemis",
+      "author": "Andy Weir"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Neuromancer",
+      "author": "William Gibson"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Snow Crash",
+      "author": "Neal Stephenson"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Cryptonomicon",
+      "author": "Neal Stephenson"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Hyperion",
+      "author": "Dan Simmons"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Left Hand of Darkness",
+      "author": "Ursula K. Le Guin"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Do Androids Dream of Electric Sheep?",
+      "author": "Philip K. Dick"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Man in the High Castle",
+      "author": "Philip K. Dick"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Ubik",
+      "author": "Philip K. Dick"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Martian Chronicles",
+      "author": "Ray Bradbury"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Stranger in a Strange Land",
+      "author": "Robert A. Heinlein"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Starship Troopers",
+      "author": "Robert A. Heinlein"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Hitchhiker's Guide to the Galaxy",
+      "author": "Douglas Adams"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Restaurant at the End of the Universe",
+      "author": "Douglas Adams"
+    },
+    {
+      "category": "Science fiction",
+      "title": "2001: A Space Odyssey",
+      "author": "Arthur C. Clarke"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Rendezvous with Rama",
+      "author": "Arthur C. Clarke"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Childhood's End",
+      "author": "Arthur C. Clarke"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Three-Body Problem",
+      "author": "Liu Cixin"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Dark Forest",
+      "author": "Liu Cixin"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Death's End",
+      "author": "Liu Cixin"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Forever War",
+      "author": "Joe Haldeman"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Slaughterhouse-Five",
+      "author": "Kurt Vonnegut"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Cat's Cradle",
+      "author": "Kurt Vonnegut"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Sirens of Titan",
+      "author": "Kurt Vonnegut"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Flowers for Algernon",
+      "author": "Daniel Keyes"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Handmaid's Tale",
+      "author": "Margaret Atwood"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Oryx and Crake",
+      "author": "Margaret Atwood"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Never Let Me Go",
+      "author": "Kazuo Ishiguro"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Klara and the Sun",
+      "author": "Kazuo Ishiguro"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Station Eleven",
+      "author": "Emily St. John Mandel"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Blindsight",
+      "author": "Peter Watts"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Leviathan Wakes",
+      "author": "James S. A. Corey"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Old Man's War",
+      "author": "John Scalzi"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Ancillary Justice",
+      "author": "Ann Leckie"
+    },
+    {
+      "category": "Science fiction",
+      "title": "A Fire Upon the Deep",
+      "author": "Vernor Vinge"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Ready Player One",
+      "author": "Ernest Cline"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The Time Machine",
+      "author": "H. G. Wells"
+    },
+    {
+      "category": "Science fiction",
+      "title": "The War of the Worlds",
+      "author": "H. G. Wells"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Twenty Thousand Leagues Under the Sea",
+      "author": "Jules Verne"
+    },
+    {
+      "category": "Science fiction",
+      "title": "A Canticle for Leibowitz",
+      "author": "Walter M. Miller Jr."
+    },
+    {
+      "category": "Science fiction",
+      "title": "Solaris",
+      "author": "Stanisław Lem"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Stories of Your Life and Others",
+      "author": "Ted Chiang"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Recursion",
+      "author": "Blake Crouch"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Dark Matter",
+      "author": "Blake Crouch"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Children of Time",
+      "author": "Adrian Tchaikovsky"
+    },
+    {
+      "category": "Science fiction",
+      "title": "Hail Mary",
+      "author": "Andy Weir"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "It Ends with Us",
+      "author": "Colleen Hoover"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "It Starts with Us",
+      "author": "Colleen Hoover"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Verity",
+      "author": "Colleen Hoover"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Ugly Love",
+      "author": "Colleen Hoover"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Reminders of Him",
+      "author": "Colleen Hoover"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "November 9",
+      "author": "Colleen Hoover"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Beach Read",
+      "author": "Emily Henry"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "People We Meet on Vacation",
+      "author": "Emily Henry"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Book Lovers",
+      "author": "Emily Henry"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Happy Place",
+      "author": "Emily Henry"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Funny Story",
+      "author": "Emily Henry"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Normal People",
+      "author": "Sally Rooney"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Conversations with Friends",
+      "author": "Sally Rooney"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Beautiful World, Where Are You",
+      "author": "Sally Rooney"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Seven Husbands of Evelyn Hugo",
+      "author": "Taylor Jenkins Reid"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Daisy Jones & The Six",
+      "author": "Taylor Jenkins Reid"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Malibu Rising",
+      "author": "Taylor Jenkins Reid"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Carrie Soto Is Back",
+      "author": "Taylor Jenkins Reid"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Outlander",
+      "author": "Diana Gabaldon"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Dragonfly in Amber",
+      "author": "Diana Gabaldon"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Notebook",
+      "author": "Nicholas Sparks"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "A Walk to Remember",
+      "author": "Nicholas Sparks"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Me Before You",
+      "author": "Jojo Moyes"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Time Traveler's Wife",
+      "author": "Audrey Niffenegger"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Fault in Our Stars",
+      "author": "John Green"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Looking for Alaska",
+      "author": "John Green"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Red, White & Royal Blue",
+      "author": "Casey McQuiston"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Hating Game",
+      "author": "Sally Thorne"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Kiss Quotient",
+      "author": "Helen Hoang"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Love Hypothesis",
+      "author": "Ali Hazelwood"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Love and Other Words",
+      "author": "Christina Lauren"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Unhoneymooners",
+      "author": "Christina Lauren"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Twisted Love",
+      "author": "Ana Huang"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Icebreaker",
+      "author": "Hannah Grace"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Spanish Love Deception",
+      "author": "Elena Armas"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Things We Never Got Over",
+      "author": "Lucy Score"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Where the Crawdads Sing",
+      "author": "Delia Owens"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Eleanor Oliphant Is Completely Fine",
+      "author": "Gail Honeyman"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Midnight Library",
+      "author": "Matt Haig"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Lessons in Chemistry",
+      "author": "Bonnie Garmus"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Tomorrow, and Tomorrow, and Tomorrow",
+      "author": "Gabrielle Zevin"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Little Fires Everywhere",
+      "author": "Celeste Ng"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Everything I Never Told You",
+      "author": "Celeste Ng"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Big Little Lies",
+      "author": "Liane Moriarty"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Nine Perfect Strangers",
+      "author": "Liane Moriarty"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Nightingale",
+      "author": "Kristin Hannah"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Four Winds",
+      "author": "Kristin Hannah"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Great Alone",
+      "author": "Kristin Hannah"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Women",
+      "author": "Kristin Hannah"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "A Little Life",
+      "author": "Hanya Yanagihara"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Secret History",
+      "author": "Donna Tartt"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Goldfinch",
+      "author": "Donna Tartt"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "My Year of Rest and Relaxation",
+      "author": "Ottessa Moshfegh"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Eileen",
+      "author": "Ottessa Moshfegh"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Bell Jar",
+      "author": "Sylvia Plath"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Pride and Prejudice",
+      "author": "Jane Austen"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Emma",
+      "author": "Jane Austen"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Sense and Sensibility",
+      "author": "Jane Austen"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Jane Eyre",
+      "author": "Charlotte Brontë"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Wuthering Heights",
+      "author": "Emily Brontë"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Rebecca",
+      "author": "Daphne du Maurier"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Little Women",
+      "author": "Louisa May Alcott"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Anne of Green Gables",
+      "author": "L. M. Montgomery"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Color Purple",
+      "author": "Alice Walker"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Beloved",
+      "author": "Toni Morrison"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Bluest Eye",
+      "author": "Toni Morrison"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Song of Solomon",
+      "author": "Toni Morrison"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Joy Luck Club",
+      "author": "Amy Tan"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The House on Mango Street",
+      "author": "Sandra Cisneros"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Americanah",
+      "author": "Chimamanda Ngozi Adichie"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Half of a Yellow Sun",
+      "author": "Chimamanda Ngozi Adichie"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Pachinko",
+      "author": "Min Jin Lee"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Homegoing",
+      "author": "Yaa Gyasi"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "The Vanishing Half",
+      "author": "Brit Bennett"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Such a Fun Age",
+      "author": "Kiley Reid"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Crying in H Mart",
+      "author": "Michelle Zauner"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Educated",
+      "author": "Tara Westover"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Becoming",
+      "author": "Michelle Obama"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Untamed",
+      "author": "Glennon Doyle"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Wild",
+      "author": "Cheryl Strayed"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Eat, Pray, Love",
+      "author": "Elizabeth Gilbert"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Big Magic",
+      "author": "Elizabeth Gilbert"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Women Who Run with the Wolves",
+      "author": "Clarissa Pinkola Estés"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Twilight",
+      "author": "Stephenie Meyer"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "New Moon",
+      "author": "Stephenie Meyer"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Eclipse",
+      "author": "Stephenie Meyer"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Breaking Dawn",
+      "author": "Stephenie Meyer"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Midnight Sun",
+      "author": "Stephenie Meyer"
+    },
+    {
+      "category": "Romance and the BookTok shelf",
+      "title": "Fifty Shades of Grey",
+      "author": "E. L. James"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Gone Girl",
+      "author": "Gillian Flynn"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Sharp Objects",
+      "author": "Gillian Flynn"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Girl with the Dragon Tattoo",
+      "author": "Stieg Larsson"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Girl on the Train",
+      "author": "Paula Hawkins"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Da Vinci Code",
+      "author": "Dan Brown"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Angels & Demons",
+      "author": "Dan Brown"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Silent Patient",
+      "author": "Alex Michaelides"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Maidens",
+      "author": "Alex Michaelides"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "And Then There Were None",
+      "author": "Agatha Christie"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Murder on the Orient Express",
+      "author": "Agatha Christie"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Murder of Roger Ackroyd",
+      "author": "Agatha Christie"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Hound of the Baskervilles",
+      "author": "Arthur Conan Doyle"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "A Study in Scarlet",
+      "author": "Arthur Conan Doyle"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Big Sleep",
+      "author": "Raymond Chandler"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Maltese Falcon",
+      "author": "Dashiell Hammett"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "In Cold Blood",
+      "author": "Truman Capote"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Talented Mr. Ripley",
+      "author": "Patricia Highsmith"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Silence of the Lambs",
+      "author": "Thomas Harris"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Red Dragon",
+      "author": "Thomas Harris"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Shining",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "It",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Stand",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Misery",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Carrie",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Pet Sematary",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Salem's Lot",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "11/22/63",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "On Writing",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Green Mile",
+      "author": "Stephen King"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Frankenstein",
+      "author": "Mary Shelley"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Haunting of Hill House",
+      "author": "Shirley Jackson"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "We Have Always Lived in the Castle",
+      "author": "Shirley Jackson"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Exorcist",
+      "author": "William Peter Blatty"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Interview with the Vampire",
+      "author": "Anne Rice"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "House of Leaves",
+      "author": "Mark Z. Danielewski"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Mexican Gothic",
+      "author": "Silvia Moreno-Garcia"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Only Good Indians",
+      "author": "Stephen Graham Jones"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Bird Box",
+      "author": "Josh Malerman"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Woman in the Window",
+      "author": "A. J. Finn"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Guest List",
+      "author": "Lucy Foley"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Thursday Murder Club",
+      "author": "Richard Osman"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Lincoln Lawyer",
+      "author": "Michael Connelly"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Firm",
+      "author": "John Grisham"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "A Time to Kill",
+      "author": "John Grisham"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Jurassic Park",
+      "author": "Michael Crichton"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Hunt for Red October",
+      "author": "Tom Clancy"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Bourne Identity",
+      "author": "Robert Ludlum"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Shutter Island",
+      "author": "Dennis Lehane"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Mystic River",
+      "author": "Dennis Lehane"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Name of the Rose",
+      "author": "Umberto Eco"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "The Shadow of the Wind",
+      "author": "Carlos Ruiz Zafón"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "Dark Places",
+      "author": "Gillian Flynn"
+    },
+    {
+      "category": "Thrillers, mystery, horror",
+      "title": "No Country for Old Men",
+      "author": "Cormac McCarthy"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Harry Potter and the Chamber of Secrets",
+      "author": "J. K. Rowling"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Harry Potter and the Prisoner of Azkaban",
+      "author": "J. K. Rowling"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Harry Potter and the Goblet of Fire",
+      "author": "J. K. Rowling"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Harry Potter and the Order of the Phoenix",
+      "author": "J. K. Rowling"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Harry Potter and the Half-Blood Prince",
+      "author": "J. K. Rowling"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Harry Potter and the Deathly Hallows",
+      "author": "J. K. Rowling"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Hunger Games",
+      "author": "Suzanne Collins"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Catching Fire",
+      "author": "Suzanne Collins"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Mockingjay",
+      "author": "Suzanne Collins"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Ballad of Songbirds and Snakes",
+      "author": "Suzanne Collins"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Percy Jackson and the Lightning Thief",
+      "author": "Rick Riordan"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Sea of Monsters",
+      "author": "Rick Riordan"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Titan's Curse",
+      "author": "Rick Riordan"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Divergent",
+      "author": "Veronica Roth"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Maze Runner",
+      "author": "James Dashner"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Giver",
+      "author": "Lois Lowry"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Holes",
+      "author": "Louis Sachar"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Wonder",
+      "author": "R. J. Palacio"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Perks of Being a Wallflower",
+      "author": "Stephen Chbosky"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Thirteen Reasons Why",
+      "author": "Jay Asher"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Hate U Give",
+      "author": "Angie Thomas"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Speak",
+      "author": "Laurie Halse Anderson"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Eleanor & Park",
+      "author": "Rainbow Rowell"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Book Thief",
+      "author": "Markus Zusak"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Outsiders",
+      "author": "S. E. Hinton"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Where the Red Fern Grows",
+      "author": "Wilson Rawls"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Bridge to Terabithia",
+      "author": "Katherine Paterson"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Charlotte's Web",
+      "author": "E. B. White"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Matilda",
+      "author": "Roald Dahl"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Charlie and the Chocolate Factory",
+      "author": "Roald Dahl"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The BFG",
+      "author": "Roald Dahl"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "James and the Giant Peach",
+      "author": "Roald Dahl"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "A Wrinkle in Time",
+      "author": "Madeleine L'Engle"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Phantom Tollbooth",
+      "author": "Norton Juster"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Hatchet",
+      "author": "Gary Paulsen"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Number the Stars",
+      "author": "Lois Lowry"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Diary of a Wimpy Kid",
+      "author": "Jeff Kinney"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Artemis Fowl",
+      "author": "Eoin Colfer"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Mysterious Benedict Society",
+      "author": "Trenton Lee Stewart"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Inkheart",
+      "author": "Cornelia Funke"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Graveyard Book",
+      "author": "Neil Gaiman"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Ender's Shadow",
+      "author": "Orson Scott Card"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Alice's Adventures in Wonderland",
+      "author": "Lewis Carroll"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Wind in the Willows",
+      "author": "Kenneth Grahame"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Peter Pan",
+      "author": "J. M. Barrie"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Secret Garden",
+      "author": "Frances Hodgson Burnett"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "A Little Princess",
+      "author": "Frances Hodgson Burnett"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Treasure Island",
+      "author": "Robert Louis Stevenson"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Call of the Wild",
+      "author": "Jack London"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "White Fang",
+      "author": "Jack London"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Black Beauty",
+      "author": "Anna Sewell"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Heidi",
+      "author": "Johanna Spyri"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Little Prince",
+      "author": "Antoine de Saint-Exupéry"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Winnie-the-Pooh",
+      "author": "A. A. Milne"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Adventures of Tom Sawyer",
+      "author": "Mark Twain"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "Adventures of Huckleberry Finn",
+      "author": "Mark Twain"
+    },
+    {
+      "category": "Young adult and childhood",
+      "title": "The Chronicles of Narnia",
+      "author": "C. S. Lewis"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Tender Is the Night",
+      "author": "F. Scott Fitzgerald"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Catcher in the Rye",
+      "author": "J. D. Salinger"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Of Mice and Men",
+      "author": "John Steinbeck"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Grapes of Wrath",
+      "author": "John Steinbeck"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "East of Eden",
+      "author": "John Steinbeck"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "A Farewell to Arms",
+      "author": "Ernest Hemingway"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Sun Also Rises",
+      "author": "Ernest Hemingway"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "For Whom the Bell Tolls",
+      "author": "Ernest Hemingway"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Scarlet Letter",
+      "author": "Nathaniel Hawthorne"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Great Expectations",
+      "author": "Charles Dickens"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "A Tale of Two Cities",
+      "author": "Charles Dickens"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Oliver Twist",
+      "author": "Charles Dickens"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "David Copperfield",
+      "author": "Charles Dickens"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "A Christmas Carol",
+      "author": "Charles Dickens"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Bleak House",
+      "author": "Charles Dickens"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Tess of the d'Urbervilles",
+      "author": "Thomas Hardy"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Far from the Madding Crowd",
+      "author": "Thomas Hardy"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Vanity Fair",
+      "author": "William Makepeace Thackeray"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Heart of Darkness",
+      "author": "Joseph Conrad"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Animal Farm",
+      "author": "George Orwell"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Nineteen Eighty-Four",
+      "author": "George Orwell"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Down and Out in Paris and London",
+      "author": "George Orwell"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Ulysses",
+      "author": "James Joyce"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Dubliners",
+      "author": "James Joyce"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "A Portrait of the Artist as a Young Man",
+      "author": "James Joyce"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Mrs Dalloway",
+      "author": "Virginia Woolf"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "To the Lighthouse",
+      "author": "Virginia Woolf"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "A Room of One's Own",
+      "author": "Virginia Woolf"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Orlando",
+      "author": "Virginia Woolf"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Picture of Dorian Gray",
+      "author": "Oscar Wilde"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Importance of Being Earnest",
+      "author": "Oscar Wilde"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Dr Jekyll and Mr Hyde",
+      "author": "Robert Louis Stevenson"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Demons",
+      "author": "Fyodor Dostoevsky"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Dead Souls",
+      "author": "Nikolai Gogol"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Fathers and Sons",
+      "author": "Ivan Turgenev"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Master and Margarita",
+      "author": "Mikhail Bulgakov"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Doctor Zhivago",
+      "author": "Boris Pasternak"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "One Day in the Life of Ivan Denisovich",
+      "author": "Aleksandr Solzhenitsyn"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Lolita",
+      "author": "Vladimir Nabokov"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Pale Fire",
+      "author": "Vladimir Nabokov"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Madame Bovary",
+      "author": "Gustave Flaubert"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Les Misérables",
+      "author": "Victor Hugo"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Hunchback of Notre-Dame",
+      "author": "Victor Hugo"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Count of Monte Cristo",
+      "author": "Alexandre Dumas"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Three Musketeers",
+      "author": "Alexandre Dumas"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "In Search of Lost Time: Swann's Way",
+      "author": "Marcel Proust"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Candide",
+      "author": "Voltaire"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Don Quixote",
+      "author": "Miguel de Cervantes"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Divine Comedy",
+      "author": "Dante Alighieri"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Decameron",
+      "author": "Giovanni Boccaccio"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Sorrows of Young Werther",
+      "author": "Johann Wolfgang von Goethe"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Demian",
+      "author": "Hermann Hesse"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Magic Mountain",
+      "author": "Thomas Mann"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Death in Venice",
+      "author": "Thomas Mann"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "All Quiet on the Western Front",
+      "author": "Erich Maria Remarque"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Tin Drum",
+      "author": "Günter Grass"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "One Hundred Years of Solitude",
+      "author": "Gabriel García Márquez"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Love in the Time of Cholera",
+      "author": "Gabriel García Márquez"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Chronicle of a Death Foretold",
+      "author": "Gabriel García Márquez"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The House of the Spirits",
+      "author": "Isabel Allende"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Pedro Páramo",
+      "author": "Juan Rulfo"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Ficciones",
+      "author": "Jorge Luis Borges"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Labyrinths",
+      "author": "Jorge Luis Borges"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Hopscotch",
+      "author": "Julio Cortázar"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "2666",
+      "author": "Roberto Bolaño"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Savage Detectives",
+      "author": "Roberto Bolaño"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Blindness",
+      "author": "José Saramago"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Things Fall Apart",
+      "author": "Chinua Achebe"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Invisible Man",
+      "author": "Ralph Ellison"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Native Son",
+      "author": "Richard Wright"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Their Eyes Were Watching God",
+      "author": "Zora Neale Hurston"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Go Tell It on the Mountain",
+      "author": "James Baldwin"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Giovanni's Room",
+      "author": "James Baldwin"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Fire Next Time",
+      "author": "James Baldwin"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Catch-22",
+      "author": "Joseph Heller"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "One Flew Over the Cuckoo's Nest",
+      "author": "Ken Kesey"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "On the Road",
+      "author": "Jack Kerouac"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Fear and Loathing in Las Vegas",
+      "author": "Hunter S. Thompson"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Infinite Jest",
+      "author": "David Foster Wallace"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Gravity's Rainbow",
+      "author": "Thomas Pynchon"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Crying of Lot 49",
+      "author": "Thomas Pynchon"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "White Noise",
+      "author": "Don DeLillo"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Underworld",
+      "author": "Don DeLillo"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "All the Pretty Horses",
+      "author": "Cormac McCarthy"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Housekeeping",
+      "author": "Marilynne Robinson"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Gilead",
+      "author": "Marilynne Robinson"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Remains of the Day",
+      "author": "Kazuo Ishiguro"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Midnight's Children",
+      "author": "Salman Rushdie"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The God of Small Things",
+      "author": "Arundhati Roy"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Life of Pi",
+      "author": "Yann Martel"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Kite Runner",
+      "author": "Khaled Hosseini"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "A Thousand Splendid Suns",
+      "author": "Khaled Hosseini"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Norwegian Wood",
+      "author": "Haruki Murakami"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Kafka on the Shore",
+      "author": "Haruki Murakami"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Wind-Up Bird Chronicle",
+      "author": "Haruki Murakami"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "1Q84",
+      "author": "Haruki Murakami"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Snow Country",
+      "author": "Yasunari Kawabata"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Kokoro",
+      "author": "Natsume Sōseki"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "No Longer Human",
+      "author": "Osamu Dazai"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Tale of Genji",
+      "author": "Murasaki Shikibu"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Convenience Store Woman",
+      "author": "Sayaka Murata"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Metamorphoses",
+      "author": "Ovid"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Beowulf",
+      "author": "Anonymous"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Canterbury Tales",
+      "author": "Geoffrey Chaucer"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Hamlet",
+      "author": "William Shakespeare"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Macbeth",
+      "author": "William Shakespeare"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "King Lear",
+      "author": "William Shakespeare"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Romeo and Juliet",
+      "author": "William Shakespeare"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Othello",
+      "author": "William Shakespeare"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Tempest",
+      "author": "William Shakespeare"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "A Midsummer Night's Dream",
+      "author": "William Shakespeare"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Gulliver's Travels",
+      "author": "Jonathan Swift"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Robinson Crusoe",
+      "author": "Daniel Defoe"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Leaves of Grass",
+      "author": "Walt Whitman"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Waste Land",
+      "author": "T. S. Eliot"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Selected Poems",
+      "author": "Emily Dickinson"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Collected Poems of Sylvia Plath",
+      "author": "Sylvia Plath"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Ariel",
+      "author": "Sylvia Plath"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Howl and Other Poems",
+      "author": "Allen Ginsberg"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Milk and Honey",
+      "author": "Rupi Kaur"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Sun and Her Flowers",
+      "author": "Rupi Kaur"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Devotions",
+      "author": "Mary Oliver"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "The Prophet",
+      "author": "Kahlil Gibran"
+    },
+    {
+      "category": "Classics and literary fiction",
+      "title": "Twenty Love Poems and a Song of Despair",
+      "author": "Pablo Neruda"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Sapiens",
+      "author": "Yuval Noah Harari"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Homo Deus",
+      "author": "Yuval Noah Harari"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "21 Lessons for the 21st Century",
+      "author": "Yuval Noah Harari"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Noise",
+      "author": "Daniel Kahneman"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Outliers",
+      "author": "Malcolm Gladwell"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Tipping Point",
+      "author": "Malcolm Gladwell"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Blink",
+      "author": "Malcolm Gladwell"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Talking to Strangers",
+      "author": "Malcolm Gladwell"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Freakonomics",
+      "author": "Steven D. Levitt"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "SuperFreakonomics",
+      "author": "Steven D. Levitt"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Guns, Germs, and Steel",
+      "author": "Jared Diamond"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Collapse",
+      "author": "Jared Diamond"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "A Short History of Nearly Everything",
+      "author": "Bill Bryson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Body",
+      "author": "Bill Bryson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Cosmos",
+      "author": "Carl Sagan"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Pale Blue Dot",
+      "author": "Carl Sagan"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Demon-Haunted World",
+      "author": "Carl Sagan"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "A Brief History of Time",
+      "author": "Stephen Hawking"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Selfish Gene",
+      "author": "Richard Dawkins"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Gene",
+      "author": "Siddhartha Mukherjee"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Emperor of All Maladies",
+      "author": "Siddhartha Mukherjee"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Immortal Life of Henrietta Lacks",
+      "author": "Rebecca Skloot"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Breath",
+      "author": "James Nestor"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Determined",
+      "author": "Robert Sapolsky"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Digital Minimalism",
+      "author": "Cal Newport"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Essentialism",
+      "author": "Greg McKeown"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The 7 Habits of Highly Effective People",
+      "author": "Stephen R. Covey"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "How to Win Friends and Influence People",
+      "author": "Dale Carnegie"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Man's Search for Meaning",
+      "author": "Viktor E. Frankl"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Subtle Art of Not Giving a F*ck",
+      "author": "Mark Manson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Can't Hurt Me",
+      "author": "David Goggins"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "12 Rules for Life",
+      "author": "Jordan B. Peterson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Four Agreements",
+      "author": "Don Miguel Ruiz"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Power of Now",
+      "author": "Eckhart Tolle"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "A New Earth",
+      "author": "Eckhart Tolle"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Alchemist",
+      "author": "Paulo Coelho"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Untethered Soul",
+      "author": "Michael A. Singer"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Daring Greatly",
+      "author": "Brené Brown"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Gifts of Imperfection",
+      "author": "Brené Brown"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Atlas of the Heart",
+      "author": "Brené Brown"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Quiet",
+      "author": "Susan Cain"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Grit",
+      "author": "Angela Duckworth"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Mindset",
+      "author": "Carol S. Dweck"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Drive",
+      "author": "Daniel H. Pink"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Range",
+      "author": "David Epstein"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Art of Thinking Clearly",
+      "author": "Rolf Dobelli"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Influence",
+      "author": "Robert B. Cialdini"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Nudge",
+      "author": "Richard H. Thaler"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Black Swan",
+      "author": "Nassim Nicholas Taleb"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Antifragile",
+      "author": "Nassim Nicholas Taleb"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Skin in the Game",
+      "author": "Nassim Nicholas Taleb"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Rich Dad Poor Dad",
+      "author": "Robert T. Kiyosaki"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Intelligent Investor",
+      "author": "Benjamin Graham"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Millionaire Next Door",
+      "author": "Thomas J. Stanley"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "I Will Teach You to Be Rich",
+      "author": "Ramit Sethi"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Zero to One",
+      "author": "Peter Thiel"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Lean Startup",
+      "author": "Eric Ries"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Hard Thing About Hard Things",
+      "author": "Ben Horowitz"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Steve Jobs",
+      "author": "Walter Isaacson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Elon Musk",
+      "author": "Walter Isaacson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Leonardo da Vinci",
+      "author": "Walter Isaacson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Einstein: His Life and Universe",
+      "author": "Walter Isaacson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Good to Great",
+      "author": "Jim Collins"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Built to Last",
+      "author": "Jim Collins"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Innovator's Dilemma",
+      "author": "Clayton M. Christensen"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Start with Why",
+      "author": "Simon Sinek"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Leaders Eat Last",
+      "author": "Simon Sinek"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Dare to Lead",
+      "author": "Brené Brown"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Radical Candor",
+      "author": "Kim Scott"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Never Split the Difference",
+      "author": "Chris Voss"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Getting to Yes",
+      "author": "Roger Fisher"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The 4-Hour Workweek",
+      "author": "Timothy Ferriss"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Tools of Titans",
+      "author": "Timothy Ferriss"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Almanack of Naval Ravikant",
+      "author": "Eric Jorgenson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Creative Act",
+      "author": "Rick Rubin"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Steal Like an Artist",
+      "author": "Austin Kleon"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Bird by Bird",
+      "author": "Anne Lamott"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Artist's Way",
+      "author": "Julia Cameron"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Ways of Seeing",
+      "author": "John Berger"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Story of Art",
+      "author": "E. H. Gombrich"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Just Kids",
+      "author": "Patti Smith"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Kitchen Confidential",
+      "author": "Anthony Bourdain"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Salt, Fat, Acid, Heat",
+      "author": "Samin Nosrat"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Into the Wild",
+      "author": "Jon Krakauer"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Into Thin Air",
+      "author": "Jon Krakauer"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Endurance",
+      "author": "Alfred Lansing"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Unbroken",
+      "author": "Laura Hillenbrand"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Born to Run",
+      "author": "Christopher McDougall"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "When Breath Becomes Air",
+      "author": "Paul Kalanithi"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Being Mortal",
+      "author": "Atul Gawande"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Checklist Manifesto",
+      "author": "Atul Gawande"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Tuesdays with Morrie",
+      "author": "Mitch Albom"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Year of Magical Thinking",
+      "author": "Joan Didion"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Slouching Towards Bethlehem",
+      "author": "Joan Didion"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "A Moveable Feast",
+      "author": "Ernest Hemingway"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Night",
+      "author": "Elie Wiesel"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Diary of a Young Girl",
+      "author": "Anne Frank"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Maus",
+      "author": "Art Spiegelman"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Persepolis",
+      "author": "Marjane Satrapi"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Between the World and Me",
+      "author": "Ta-Nehisi Coates"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The New Jim Crow",
+      "author": "Michelle Alexander"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Caste",
+      "author": "Isabel Wilkerson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Warmth of Other Suns",
+      "author": "Isabel Wilkerson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "How to Be an Antiracist",
+      "author": "Ibram X. Kendi"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Stamped from the Beginning",
+      "author": "Ibram X. Kendi"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Autobiography of Malcolm X",
+      "author": "Malcolm X"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "I Know Why the Caged Bird Sings",
+      "author": "Maya Angelou"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Long Walk to Freedom",
+      "author": "Nelson Mandela"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Born a Crime",
+      "author": "Trevor Noah"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Greenlights",
+      "author": "Matthew McConaughey"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Open",
+      "author": "Andre Agassi"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Spare",
+      "author": "Prince Harry"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Bad Blood",
+      "author": "John Carreyrou"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Big Short",
+      "author": "Michael Lewis"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Moneyball",
+      "author": "Michael Lewis"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Liar's Poker",
+      "author": "Michael Lewis"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Flash Boys",
+      "author": "Michael Lewis"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Evicted",
+      "author": "Matthew Desmond"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Nickel and Dimed",
+      "author": "Barbara Ehrenreich"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Hillbilly Elegy",
+      "author": "J. D. Vance"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Say Nothing",
+      "author": "Patrick Radden Keefe"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Empire of Pain",
+      "author": "Patrick Radden Keefe"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Killers of the Flower Moon",
+      "author": "David Grann"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Wager",
+      "author": "David Grann"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Devil in the White City",
+      "author": "Erik Larson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Splendid and the Vile",
+      "author": "Erik Larson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "1776",
+      "author": "David McCullough"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "John Adams",
+      "author": "David McCullough"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Team of Rivals",
+      "author": "Doris Kearns Goodwin"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Alexander Hamilton",
+      "author": "Ron Chernow"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Titan",
+      "author": "Ron Chernow"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "SPQR",
+      "author": "Mary Beard"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Rise and Fall of the Third Reich",
+      "author": "William L. Shirer"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "A People's History of the United States",
+      "author": "Howard Zinn"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Guns of August",
+      "author": "Barbara W. Tuchman"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Silk Roads",
+      "author": "Peter Frankopan"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Prisoners of Geography",
+      "author": "Tim Marshall"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Origins of Totalitarianism",
+      "author": "Hannah Arendt"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Orientalism",
+      "author": "Edward W. Said"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Discipline and Punish",
+      "author": "Michel Foucault"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Manufacturing Consent",
+      "author": "Noam Chomsky"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Capital in the Twenty-First Century",
+      "author": "Thomas Piketty"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Bullshit Jobs",
+      "author": "David Graeber"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Dawn of Everything",
+      "author": "David Graeber"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Shallows",
+      "author": "Nicholas Carr"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Stolen Focus",
+      "author": "Johann Hari"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Lost Connections",
+      "author": "Johann Hari"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Dopamine Nation",
+      "author": "Anna Lembke"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Anxious Generation",
+      "author": "Jonathan Haidt"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Coddling of the American Mind",
+      "author": "Jonathan Haidt"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Structure of Scientific Revolutions",
+      "author": "Thomas S. Kuhn"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Elegant Universe",
+      "author": "Brian Greene"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Seven Brief Lessons on Physics",
+      "author": "Carlo Rovelli"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Order of Time",
+      "author": "Carlo Rovelli"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "What If?",
+      "author": "Randall Munroe"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Astrophysics for People in a Hurry",
+      "author": "Neil deGrasse Tyson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Sixth Extinction",
+      "author": "Elizabeth Kolbert"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Silent Spring",
+      "author": "Rachel Carson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Braiding Sweetgrass",
+      "author": "Robin Wall Kimmerer"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Hidden Life of Trees",
+      "author": "Peter Wohlleben"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Entangled Life",
+      "author": "Merlin Sheldrake"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Superintelligence",
+      "author": "Nick Bostrom"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Alignment Problem",
+      "author": "Brian Christian"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Algorithms to Live By",
+      "author": "Brian Christian"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Code Breaker",
+      "author": "Walter Isaacson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Daily Stoic",
+      "author": "Ryan Holiday"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Stillness Is the Key",
+      "author": "Ryan Holiday"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Models",
+      "author": "Mark Manson"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Mountain Is You",
+      "author": "Brianna Wiest"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "101 Essays That Will Change the Way You Think",
+      "author": "Brianna Wiest"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Five Love Languages",
+      "author": "Gary Chapman"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Come as You Are",
+      "author": "Emily Nagoski"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Burnout",
+      "author": "Emily Nagoski"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Why Does He Do That?",
+      "author": "Lundy Bancroft"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Courage to Be Disliked",
+      "author": "Ichiro Kishimi"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Ikigai",
+      "author": "Héctor García"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Life-Changing Magic of Tidying Up",
+      "author": "Marie Kondo"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Wabi Sabi",
+      "author": "Beth Kempton"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Zen and the Art of Motorcycle Maintenance",
+      "author": "Robert M. Pirsig"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Tao of Pooh",
+      "author": "Benjamin Hoff"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Dhammapada",
+      "author": "Anonymous"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Zen Mind, Beginner's Mind",
+      "author": "Shunryu Suzuki"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Peace Is Every Step",
+      "author": "Thich Nhat Hanh"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Wherever You Go, There You Are",
+      "author": "Jon Kabat-Zinn"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "Mere Christianity",
+      "author": "C. S. Lewis"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Screwtape Letters",
+      "author": "C. S. Lewis"
+    },
+    {
+      "category": "Modern nonfiction and big ideas",
+      "title": "The Imitation of Christ",
+      "author": "Thomas à Kempis"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Berserk",
+      "author": "Kentaro Miura"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "One Piece",
+      "author": "Eiichiro Oda"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Naruto",
+      "author": "Masashi Kishimoto"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Death Note",
+      "author": "Tsugumi Ohba"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Attack on Titan",
+      "author": "Hajime Isayama"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Fullmetal Alchemist",
+      "author": "Hiromu Arakawa"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Dragon Ball",
+      "author": "Akira Toriyama"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Vagabond",
+      "author": "Takehiko Inoue"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Slam Dunk",
+      "author": "Takehiko Inoue"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Monster",
+      "author": "Naoki Urasawa"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "20th Century Boys",
+      "author": "Naoki Urasawa"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Akira",
+      "author": "Katsuhiro Otomo"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Ghost in the Shell",
+      "author": "Masamune Shirow"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Chainsaw Man",
+      "author": "Tatsuki Fujimoto"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Jujutsu Kaisen",
+      "author": "Gege Akutami"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Demon Slayer",
+      "author": "Koyoharu Gotouge"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "My Hero Academia",
+      "author": "Kohei Horikoshi"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Hunter x Hunter",
+      "author": "Yoshihiro Togashi"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Bleach",
+      "author": "Tite Kubo"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Tokyo Ghoul",
+      "author": "Sui Ishida"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Vinland Saga",
+      "author": "Makoto Yukimura"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Oyasumi Punpun",
+      "author": "Inio Asano"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Nausicaä of the Valley of the Wind",
+      "author": "Hayao Miyazaki"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Sailor Moon",
+      "author": "Naoko Takeuchi"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Fruits Basket",
+      "author": "Natsuki Takaya"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Watchmen",
+      "author": "Alan Moore"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "V for Vendetta",
+      "author": "Alan Moore"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "The Sandman",
+      "author": "Neil Gaiman"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Batman: The Dark Knight Returns",
+      "author": "Frank Miller"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Batman: Year One",
+      "author": "Frank Miller"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Saga",
+      "author": "Brian K. Vaughan"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Y: The Last Man",
+      "author": "Brian K. Vaughan"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Fun Home",
+      "author": "Alison Bechdel"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Blankets",
+      "author": "Craig Thompson"
+    },
+    {
+      "category": "Manga and graphic novels",
+      "title": "Understanding Comics",
+      "author": "Scott McCloud"
+    }
+  ]
+}

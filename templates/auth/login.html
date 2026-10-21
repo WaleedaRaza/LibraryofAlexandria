@@ -1,36 +1,21 @@
 {% extends "base.html" %}
-
-{% block title %}Sign In — Alexandria{% endblock %}
-
+{% from "partials/glyph.html" import glyph %}
+{% block title %}Sign In — LibXNDR{% endblock %}
 {% block content %}
-<div class="auth-container">
-    <div class="auth-card">
-        <h1 class="auth-title">Welcome back</h1>
-        <p class="auth-subtitle">Sign in to access your library and notes</p>
-        
-        {% if error %}
-            <div class="auth-error">{{ error }}</div>
-        {% endif %}
-        
-        {% if message %}
-            <div class="auth-message auth-message--info">{{ message }}</div>
-        {% endif %}
-        
-        <form action="/auth/login" method="POST" class="auth-form">
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-input" placeholder="reader@example.com" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-input" placeholder="••••••••" required>
-            </div>
-            <button type="submit" class="btn btn--primary btn--full">Sign in</button>
-        </form>
-        
-        <p class="auth-switch">
-            Don't have an account? <a href="/auth/register">Create one</a>
-        </p>
-    </div>
-</div>
+<section class="auth-shell"><div class="auth-card">
+  <p class="auth-label">{{ glyph('cartouche', 14) }} Welcome back</p>
+  <h1>Pick up where you left off.</h1>
+  <p>Your books, progress, highlights, notes, and passage conversations.</p>
+  {% if error %}<div class="auth-error">{{ error }}</div>{% endif %}
+  {% if google_auth_enabled %}<a class="auth-google" href="/auth/google?next={{ next|urlencode }}">Continue with Google</a><p class="auth-divider">or use email</p>{% endif %}
+  <form action="/auth/login" method="post">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label>Email<input type="email" name="email" value="{{ email or '' }}" required autocomplete="email"></label>
+    <label>Password<input type="password" name="password" required autocomplete="current-password"></label>
+    <a class="auth-inline-link" href="/auth/forgot-password">Forgot password?</a>
+    <button class="btn btn-primary" type="submit">Sign in</button>
+  </form>
+  <p class="auth-switch">No account? <a href="/auth/register?next={{ next|urlencode }}">Create one</a></p>
+  <a class="auth-browse" href="/library">Browse without signing in →</a>
+</div></section>
 {% endblock %}

@@ -18,7 +18,7 @@ from app.agents.taxonomy import get_candidate_books, get_taxonomy_coverage
 from app.services.canon_service import CanonService
 
 
-def test_single_query(question: str):
+def run_single_query(question: str):
     """Test routing for a single question."""
     print("=" * 80)
     print("ALEXANDRIA ROUTING TEST")
@@ -145,6 +145,5 @@ if __name__ == "__main__":
     else:
         question = "How do I deal with things I can't control?"
     
-    test_single_query(question)
+    run_single_query(question)
     show_taxonomy()
-

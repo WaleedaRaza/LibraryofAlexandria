@@ -1,0 +1,64 @@
+{
+  "name": "Essential 50: breadth pass",
+  "description": "A gap-filling first pass for Waleed's Library: world fiction, speculative foundations, genre, poetry and drama, philosophy, historical witness, science, society, and creative practice.",
+  "books": [
+    {"category": "Literary cornerstones", "title": "Don Quixote", "author": "Miguel de Cervantes", "why": "The modern novel learning to see itself."},
+    {"category": "Literary cornerstones", "title": "Pride and Prejudice", "author": "Jane Austen", "why": "Comic precision, social intelligence, and romantic form."},
+    {"category": "Literary cornerstones", "title": "Jane Eyre", "author": "Charlotte Brontë", "why": "Interior voice, desire, conscience, and the Gothic tradition."},
+    {"category": "Literary cornerstones", "title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "why": "A compact American tragedy of aspiration and self-invention."},
+    {"category": "Literary cornerstones", "title": "Things Fall Apart", "author": "Chinua Achebe", "why": "Colonial rupture rendered from inside Igbo life."},
+    {"category": "Literary cornerstones", "title": "Invisible Man", "author": "Ralph Ellison", "why": "Identity, ideology, race, and the American voice."},
+    {"category": "Literary cornerstones", "title": "One Hundred Years of Solitude", "author": "Gabriel García Márquez", "why": "The central modern epic of family, history, and magical realism."},
+    {"category": "Literary cornerstones", "title": "Their Eyes Were Watching God", "author": "Zora Neale Hurston", "why": "Voice, autonomy, folklore, and love."},
+
+    {"category": "Fantasy and speculative", "title": "The Lord of the Rings", "author": "J. R. R. Tolkien", "why": "The defining modern secondary-world epic."},
+    {"category": "Fantasy and speculative", "title": "A Game of Thrones", "author": "George R. R. Martin", "why": "Dynastic fantasy rebuilt around power, contingency, and consequence."},
+    {"category": "Fantasy and speculative", "title": "Dune", "author": "Frank Herbert", "why": "Ecology, religion, empire, and charismatic power at planetary scale."},
+    {"category": "Fantasy and speculative", "title": "A Wizard of Earthsea", "author": "Ursula K. Le Guin", "why": "A foundational fantasy of naming, balance, and the shadow self."},
+    {"category": "Fantasy and speculative", "title": "The Left Hand of Darkness", "author": "Ursula K. Le Guin", "why": "Gender, estrangement, diplomacy, and radical perspective-taking."},
+    {"category": "Fantasy and speculative", "title": "Foundation", "author": "Isaac Asimov", "why": "Civilizational forecasting and the classic idea-driven space epic."},
+    {"category": "Fantasy and speculative", "title": "Neuromancer", "author": "William Gibson", "why": "The language and atmosphere that crystallized cyberpunk."},
+    {"category": "Fantasy and speculative", "title": "Kindred", "author": "Octavia E. Butler", "why": "Time travel made into an intimate confrontation with slavery."},
+
+    {"category": "Genre and storycraft", "title": "The Murder of Roger Ackroyd", "author": "Agatha Christie", "why": "A benchmark for mystery architecture and reader misdirection."},
+    {"category": "Genre and storycraft", "title": "The Big Sleep", "author": "Raymond Chandler", "why": "The hard-boiled voice at full voltage."},
+    {"category": "Genre and storycraft", "title": "The Haunting of Hill House", "author": "Shirley Jackson", "why": "Psychological horror built from ambiguity and control of tone."},
+    {"category": "Genre and storycraft", "title": "Lonesome Dove", "author": "Larry McMurtry", "why": "The Western enlarged into an epic of friendship, violence, and myth."},
+    {"category": "Genre and storycraft", "title": "The Remains of the Day", "author": "Kazuo Ishiguro", "why": "Restraint, memory, complicity, and devastating unreliable narration."},
+
+    {"category": "Drama, poetry, and younger readers", "title": "Hamlet", "author": "William Shakespeare", "why": "The indispensable drama of consciousness, grief, and action."},
+    {"category": "Drama, poetry, and younger readers", "title": "The Poems of Emily Dickinson", "author": "Emily Dickinson", "why": "Compressed poems that remake death, faith, mind, and attention."},
+    {"category": "Drama, poetry, and younger readers", "title": "Leaves of Grass", "author": "Walt Whitman", "why": "The democratic, bodily, expansive American poetic voice."},
+    {"category": "Drama, poetry, and younger readers", "title": "Alice's Adventures in Wonderland", "author": "Lewis Carroll", "why": "Children's literature, logic, language play, and dream structure."},
+    {"category": "Drama, poetry, and younger readers", "title": "The Little Prince", "author": "Antoine de Saint-Exupéry", "why": "A cross-generational fable about care, loss, and perception."},
+
+    {"category": "Philosophy and world thought", "title": "The Analects", "author": "Confucius", "why": "A foundational tradition of ethics as cultivated relationship and practice."},
+    {"category": "Philosophy and world thought", "title": "Nicomachean Ethics", "author": "Aristotle", "why": "The canonical account of virtue, habit, flourishing, and practical judgment."},
+    {"category": "Philosophy and world thought", "title": "Critique of Pure Reason", "author": "Immanuel Kant", "why": "The turning point for modern accounts of knowledge and experience."},
+    {"category": "Philosophy and world thought", "title": "The Wretched of the Earth", "author": "Frantz Fanon", "why": "Colonialism, violence, liberation, and the postcolonial psyche."},
+    {"category": "Philosophy and world thought", "title": "The Souls of Black Folk", "author": "W. E. B. Du Bois", "why": "History, sociology, memoir, and double consciousness in one form."},
+    {"category": "Philosophy and world thought", "title": "Orientalism", "author": "Edward Said", "why": "How scholarship and representation become instruments of power."},
+
+    {"category": "History and witness", "title": "The Histories", "author": "Herodotus", "why": "Inquiry, travel, empire, and the beginnings of narrative history."},
+    {"category": "History and witness", "title": "History of the Peloponnesian War", "author": "Thucydides", "why": "Power politics, war, plague, rhetoric, and democratic failure."},
+    {"category": "History and witness", "title": "Narrative of the Life of Frederick Douglass", "author": "Frederick Douglass", "why": "First-person testimony, literacy, slavery, and self-emancipation."},
+    {"category": "History and witness", "title": "The Diary of a Young Girl", "author": "Anne Frank", "why": "The Holocaust encountered through one developing consciousness."},
+    {"category": "History and witness", "title": "Night", "author": "Elie Wiesel", "why": "Compressed testimony of Auschwitz, faith, and survival."},
+    {"category": "History and witness", "title": "The Autobiography of Malcolm X", "author": "Malcolm X and Alex Haley", "why": "Transformation, race, religion, political awakening, and self-revision."},
+
+    {"category": "Science and nature", "title": "On the Origin of Species", "author": "Charles Darwin", "why": "The argument that reorganized biology and humanity's place in nature."},
+    {"category": "Science and nature", "title": "The Structure of Scientific Revolutions", "author": "Thomas S. Kuhn", "why": "The durable vocabulary of paradigms, anomalies, and scientific change."},
+    {"category": "Science and nature", "title": "Cosmos", "author": "Carl Sagan", "why": "Scientific wonder joined to history, skepticism, and human scale."},
+    {"category": "Science and nature", "title": "Silent Spring", "author": "Rachel Carson", "why": "The book that transformed public environmental consciousness."},
+    {"category": "Science and nature", "title": "A Brief History of Time", "author": "Stephen Hawking", "why": "A cultural gateway to cosmology, time, and black holes."},
+    {"category": "Science and nature", "title": "The Emperor of All Maladies", "author": "Siddhartha Mukherjee", "why": "Medicine, biography, and the history of cancer as one long struggle."},
+
+    {"category": "Society and culture", "title": "The Feminine Mystique", "author": "Betty Friedan", "why": "A catalytic document in modern feminism and domestic social history."},
+    {"category": "Society and culture", "title": "The Fire Next Time", "author": "James Baldwin", "why": "Moral clarity on race, religion, love, and the American future."},
+    {"category": "Society and culture", "title": "The Warmth of Other Suns", "author": "Isabel Wilkerson", "why": "The Great Migration told through intimate lives and structural history."},
+
+    {"category": "Creative practice", "title": "The Creative Act", "author": "Rick Rubin", "why": "A contemplative field guide to attention and making."},
+    {"category": "Creative practice", "title": "Ways of Seeing", "author": "John Berger", "why": "A short, foundational education in images, power, and looking."},
+    {"category": "Creative practice", "title": "On Writing", "author": "Stephen King", "why": "Memoir and concrete craft advice from a master storyteller."}
+  ]
+}

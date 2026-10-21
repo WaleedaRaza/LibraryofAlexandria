@@ -1,68 +1,74 @@
 {% extends "base.html" %}
-
-{% block title %}Library — Alexandria{% endblock %}
-
-{% block content %}
-<div class="library-container">
-    <header class="library-header">
-        <h1 class="library-title">The Library</h1>
-        <p class="library-subtitle">{{ books|length }} texts in the canon. No summaries. No takes. Just the books.</p>
-    </header>
-    
-    <!-- Filters -->
-    <div class="library-filters">
-        <form action="/library" method="GET" class="library-search">
-            <input 
-                type="text" 
-                name="search" 
-                placeholder="Search title or author..."
-                value="{{ search or '' }}"
-                class="library-search-input"
-            >
-            <button type="submit" class="library-search-btn">Search</button>
-        </form>
-        
-        <div class="library-domains">
-            <a href="/library" class="library-domain {% if not current_domain %}library-domain--active{% endif %}">
-                All
-            </a>
-            {% for domain in domains %}
-                <a href="/library?domain={{ domain }}" 
-                   class="library-domain {% if current_domain == domain %}library-domain--active{% endif %}">
-                    {{ domain }}
-                </a>
-            {% endfor %}
-        </div>
+{% from "partials/glyph.html" import glyph %}
+{% block title %}LibXNDR{% endblock %}
+{% block stage %}
+{% if preview_links %}<div class="catalog-preview-note"><span>Private preview</span> Link editions here are candidates, not public books. Each needs an individual rights review.</div>{% endif %}
+{% if browse == 'books' and discovery_books and not search %}
+<section class="library-hero {{ 'is-quiet' if guest_preview }}" aria-labelledby="library-hero-title">
+  <div class="hero-copy">
+    <p class="discovery-eyebrow">LibXNDR · founded with Waleed's Library</p>
+    <h1 id="library-hero-title"><span class="hero-count" data-count-to="{{ vault_total }}">{{ vault_total }}</span> books and counting.</h1>
+    <p class="hero-manifesto">Read anything you want. <strong>Add something for the next person.</strong></p>
+    <div class="hero-actions">
+      {% if guest_preview %}<a class="btn btn-primary" href="/auth/login?next=/library">Sign in to read</a><a class="text-action" href="#catalog">A look inside →</a>
+      {% else %}<a class="btn" href="#catalog">{{ glyph('scroll', 16) }} Browse A–Z</a>{% endif %}
     </div>
-    
-    <!-- Book Grid with Covers -->
-    {% if books %}
-        <div class="library-grid">
-            {% for book in books %}
-                <article class="book-card">
-                    <a href="/library/book/{{ book.id }}" class="book-card-link">
-                        <div class="book-cover book-cover--{{ book.domain|lower|default('philosophy') }}">
-                            <span class="book-cover-title">{{ book.title }}</span>
-                            {% if user and book.id in saved_book_ids %}
-                                <span class="book-cover-saved">✓</span>
-                            {% endif %}
-                        </div>
-                        <h2 class="book-card-title">{{ book.title }}</h2>
-                        <p class="book-card-author">{{ book.author }}</p>
-                        {% if book.domain %}
-                            <span class="book-card-domain">{{ book.domain }}</span>
-                        {% endif %}
-                    </a>
-                </article>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="library-empty">
-            <p>No books found.</p>
-            {% if search %}
-                <a href="/library" class="btn btn--secondary">Clear search</a>
-            {% endif %}
-        </div>
-    {% endif %}
-</div>
+    <details class="alexandria-note"><summary>Why Alexandria? {{ glyph('sun', 18) }}</summary><p>The ancient Library of Alexandria became a symbol of the ambition to gather written knowledge from across the known world. LibXNDR borrows that impulse: every reader can arrive with a book and leave something useful for the next one.</p></details>
+  </div>
+  {% set book = discovery_books[0] %}
+  <article class="random-book" id="random-book" data-book-id="{{ book.id }}" data-halo-host>
+    <div class="random-book-label"><span>Choose by cover</span><button id="discovery-next" type="button">Another cover ↻</button></div>
+    <a class="random-book-cover" id="random-book-link" href="/library/book/{{ book.id }}{{ '?preview_links=1' if preview_links else '' }}" data-preview><img id="random-book-image" src="/library/book/{{ book.id }}/cover" alt="Cover of {{ book.title }}" fetchpriority="high" decoding="async" data-halo></a>
+    <div class="random-book-copy"><p id="random-book-format">{{ 'Web link' if book.availability == 'external_link' else 'PDF' }} · {{ book.domain or 'Book' }}</p><h2 id="random-book-title">{{ book.title }}</h2><span id="random-book-author">{{ book.author or 'Unknown author' }}</span><a id="random-book-open" href="/library/book/{{ book.id }}{{ '?preview_links=1' if preview_links else '' }}" data-preview>Open this book ↗</a></div>
+  </article>
+  <script id="discovery-data" type="application/json">{{ discovery_data|tojson }}</script>
+</section>
+{% endif %}
 {% endblock %}
+{% block content %}
+{% if guest_preview %}
+<div class="collection-heading" id="catalog">
+  <div><p class="collection-eyebrow">A look inside</p><h2>{{ books|length }} of {{ vault_total }} books{% if search %} matching “{{ search }}”{% endif %}</h2></div>
+  <div class="collection-actions"><a class="btn" href="/auth/login?next=/library">Sign in to browse all {{ vault_total }} books</a></div>
+</div>
+{% if books %}
+<div class="book-grid">
+  {% for book in books %}
+  <a class="book-tile" href="/library/book/{{ book.id }}" data-preview data-halo-host>
+    <span class="cover"><img src="/library/book/{{ book.id }}/cover" alt="Cover of {{ book.title }}" loading="lazy" decoding="async" data-halo></span>
+    <span class="tile-copy"><strong>{{ book.title }}</strong><em>{{ book.author or 'Unknown author' }}</em></span>
+  </a>
+  {% endfor %}
+</div>
+{% else %}<div class="empty-native">{{ glyph('pyramid-fallen', 48) }}<p>Nothing in the preview matches. Sign in to search the whole library.</p></div>{% endif %}
+<p class="eye-note">Click the eye at the top to use the Eye of Alexandria, our tool for finding book PDFs on the web. If you find one that belongs here, you can send it to Waleed for the collection.</p>
+{% else %}
+<div class="collection-heading" id="catalog">
+  <div><p class="collection-eyebrow">The collection · {{ books|length }} {{ 'book' if books|length == 1 else 'books' }}{% if edition_count != books|length %} · {{ edition_count }} editions{% endif %}</p><h2>{{ 'Authors' if browse == 'authors' else 'The collection' }}</h2></div>
+  <div class="collection-actions"><nav class="browse-switch" aria-label="Browse by"><a href="{{ links.browse_books }}" class="{{ 'is-current' if browse == 'books' }}" {% if browse == 'books' %}aria-current="page"{% endif %}>{{ glyph('reed', 14) }} By book</a><a href="{{ links.browse_authors }}" class="{{ 'is-current' if browse == 'authors' }}" {% if browse == 'authors' %}aria-current="page"{% endif %}>{{ glyph('owl', 14) }} By author</a></nav></div>
+</div>
+{% if browse == 'authors' %}
+  {% if author_groups %}<div class="author-index">
+    {% for group in author_groups %}<details class="author-group"><summary><span>{{ group.name }}</span><span>{{ group.books|length }} {{ 'work' if group.books|length == 1 else 'works' }} <i aria-hidden="true">›</i></span></summary><div class="author-books">{% for book in group.books %}<a href="/library/book/{{ book.id }}{{ '?preview_links=1' if preview_links else '' }}" data-preview><img src="/library/book/{{ book.id }}/cover" alt="" loading="lazy"><span><strong>{{ book.title }}</strong><small>{{ 'Web link' if book.availability == 'external_link' else 'PDF' }}{% if book.edition_count > 1 %} · {{ book.edition_count }} editions{% endif %} · {{ book.domain or 'General' }}</small></span><b aria-hidden="true">›</b></a>{% endfor %}</div></details>{% endfor %}
+  </div>{% else %}<div class="empty-native">{{ glyph('owl', 48) }}<p>No authors match. Try another search.</p></div>{% endif %}
+{% elif books %}
+  <nav class="alphabet-jump" aria-label="Jump to books by first letter">{% for group in alphabet_groups %}<a href="#letter-{{ group.letter|lower|replace('–', '-')|replace('#', 'other') }}">{{ group.letter }}</a>{% endfor %}</nav>
+  <div class="alphabet-catalog">
+  {% for group in alphabet_groups %}
+    <section class="alphabet-shelf" id="letter-{{ group.letter|lower|replace('–', '-')|replace('#', 'other') }}" data-letter="{{ group.letter }}" aria-labelledby="heading-{{ group.letter|lower|replace('–', '-')|replace('#', 'other') }}">
+      <header><h3 id="heading-{{ group.letter|lower|replace('–', '-')|replace('#', 'other') }}">{{ group.letter }}</h3><span>{{ group.books|length }} {{ 'book' if group.books|length == 1 else 'books' }}</span></header>
+      <div class="book-grid">
+      {% for book in group.books %}
+        <a class="book-tile" href="/library/book/{{ book.id }}{{ '?preview_links=1' if preview_links else '' }}" data-preview data-halo-host>
+          <span class="cover"><img src="/library/book/{{ book.id }}/cover" alt="Cover of {{ book.title }}" loading="lazy" decoding="async" data-halo>{% if book.reading_status in ('reading', 'read') %}<i class="status-dot dot-{{ book.reading_status }}" title="{{ 'Finished' if book.reading_status == 'read' else 'Reading now' }}"></i>{% endif %}{% if book.note_count %}<i class="note-badge" title="{{ book.note_count }} highlights">{{ book.note_count }}</i>{% endif %}</span>
+          <span class="tile-copy"><strong>{{ book.title }}</strong><em>{{ book.author or 'Unknown author' }}</em><small class="tile-format {{ 'is-link' if book.availability == 'external_link' }}">{% if book.availability == 'external_link' %}{{ glyph('eye', 12) }} Web link{% else %}{{ glyph('scroll', 12) }} PDF{% endif %}{% if book.edition_count > 1 %} · {{ book.edition_count }} editions{% endif %}</small></span>
+        </a>
+      {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
+  </div>
+{% else %}<div class="empty-native">{{ glyph('pyramid-fallen', 48) }}<p>No books match. Try another title or author.</p></div>{% endif %}
+{% endif %}
+{% endblock %}
+{% block scripts %}{% if browse == 'books' and books %}<script src="/static/js/library_browse.js?v={{ asset_version }}"></script>{% endif %}{% endblock %}

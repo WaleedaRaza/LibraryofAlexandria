@@ -1,83 +1,78 @@
 {% extends "base.html" %}
-
-{% block title %}My Library — Alexandria{% endblock %}
-
+{% from "partials/glyph.html" import glyph %}
+{% block title %}My Library — LibXNDR{% endblock %}
 {% block content %}
-<div class="my-library-container">
-    <header class="my-library-header">
-        <h1 class="my-library-title">My Library</h1>
-        <p class="my-library-subtitle">Your thinking shelf — {{ books|length }} book{{ 's' if books|length != 1 else '' }} saved</p>
-    </header>
-    
-    {% if books %}
-        <!-- Stats -->
-        <div class="my-library-stats">
-            <div class="stat">
-                <div class="stat-value">{{ books|length }}</div>
-                <div class="stat-label">Books saved</div>
+<section class="shelf-shell">
+  <header class="shelf-head">
+    <div>
+      <p class="shelf-eyebrow">{{ glyph('lotus', 14) }} Your private reading room</p>
+      <h1>My library<span class="shelf-period">.</span></h1>
+      <p>Keep a book close before, during, and after reading it.</p>
+    </div>
+    <div class="shelf-head-actions">
+      <span><strong>{{ stats.books }}</strong> saved {{ 'book' if stats.books == 1 else 'books' }}</span>
+      <a href="/library">Browse the collection <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <nav class="shelf-view-nav" aria-label="Your library views">
+    <a href="/library/my" aria-current="page">{{ glyph('lotus', 14) }} Reading board</a>
+    <a href="/library/my/memory">{{ glyph('feather', 14) }} Highlights &amp; notes <span>{{ stats.highlights }}</span></a>
+    <a href="/library/find/runs">{{ glyph('ibis', 14) }} Source runs</a>
+  </nav>
+
+  {% if books %}
+  <div class="reading-board">
+    {% for column in columns %}
+    <section class="reading-lane lane-{{ column.key }}" aria-labelledby="lane-title-{{ column.key }}">
+      <header class="lane-head">
+        <span class="lane-number">0{{ loop.index }}</span>
+        <h2 id="lane-title-{{ column.key }}">{{ column.label }}</h2>
+        <span class="lane-count">{{ column.books|length }}</span>
+      </header>
+      {% if column.books %}
+      <ol class="lane-list">
+        {% for book in column.books %}
+        {% set destination = '/library/book/' if book.availability == 'external_link' else '/read/' %}
+        <li>
+          <article class="shelf-entry" data-halo-host>
+            <a class="shelf-entry-cover" href="{{ destination }}{{ book.id }}" aria-label="Open {{ book.title }}" {% if book.availability == 'external_link' %}data-preview{% endif %}>
+              <img src="/library/book/{{ book.id }}/cover" alt="" loading="lazy">
+            </a>
+            <div class="shelf-entry-content">
+              <span class="shelf-entry-kind {{ 'is-link' if book.availability == 'external_link' }}">{% if book.availability == 'external_link' %}{{ glyph('eye', 11) }} Web link{% else %}{{ glyph('scroll', 11) }} PDF{% endif %}{% if book.visibility == 'private' %} · Waiting for Waleed{% endif %}</span>
+              <a class="shelf-entry-title" href="{{ destination }}{{ book.id }}" {% if book.availability == 'external_link' %}data-preview{% endif %}>{{ book.title }}</a>
+              <p class="shelf-entry-author">{{ book.author or 'Author unknown' }}</p>
+              {% if book.availability != 'external_link' and book.percent > 0 %}<p class="shelf-entry-progress">Page {{ book.page_number }} · {{ book.percent }}% reached</p>{% endif %}
+              <form class="shelf-move" action="/library/book/{{ book.id }}/status" method="post">
+                <input type="hidden" name="next" value="/library/my">
+                <label for="move-{{ book.id }}">Move to</label>
+                <select id="move-{{ book.id }}" name="status">
+                  {% for key, label in [('want_to_read', 'Want to read'), ('reading', 'Reading'), ('read', 'Read')] %}
+                  <option value="{{ key }}" {{ 'selected' if book.reading_status == key }}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" aria-label="Save reading status for {{ book.title }}">Save</button>
+              </form>
             </div>
-            <div class="stat">
-                <div class="stat-value">{{ total_annotations|default(0) }}</div>
-                <div class="stat-label">Annotations</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">{{ total_highlights|default(0) }}</div>
-                <div class="stat-label">Highlights</div>
-            </div>
-        </div>
-        
-        <!-- Book Grid -->
-        <div class="my-library-grid">
-            {% for book in books %}
-                <article class="book-card">
-                    <a href="/library/book/{{ book.id }}" class="book-card-link">
-                        <div class="book-cover book-cover--{{ book.domain|lower|default('philosophy') }}">
-                            <span class="book-cover-title">{{ book.title }}</span>
-                        </div>
-                        <h3 class="book-card-title">{{ book.title }}</h3>
-                        <p class="book-card-author">{{ book.author }}</p>
-                        
-                        {% if book.progress is defined %}
-                            <div class="book-card-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-bar-fill" style="width: {{ book.progress }}%;"></div>
-                                </div>
-                                <span class="progress-text">
-                                    {% if book.progress == 100 %}Done{% elif book.progress == 0 %}Not started{% else %}{{ book.progress }}%{% endif %}
-                                </span>
-                            </div>
-                            {% if book.last_chapter %}
-                                <p class="book-card-last-read">Last: Ch. {{ book.last_chapter }}</p>
-                            {% endif %}
-                        {% endif %}
-                    </a>
-                    
-                    {% if book.progress is defined and book.progress > 0 and book.progress < 100 %}
-                        <div class="book-card-resume">
-                            <a href="/read/{{ book.id }}{% if book.last_chapter %}?chapter={{ book.last_chapter }}{% endif %}">Resume reading →</a>
-                        </div>
-                    {% elif book.progress == 0 %}
-                        <div class="book-card-resume">
-                            <a href="/read/{{ book.id }}">Start reading →</a>
-                        </div>
-                    {% endif %}
-                </article>
-            {% endfor %}
-        </div>
-    {% else %}
-        <!-- Empty State -->
-        <div class="empty-state">
-            <div class="empty-icon">📚</div>
-            <h2 class="empty-title">Your shelf is empty</h2>
-            <p class="empty-message">
-                Save books as you read to build your personal library. 
-                Your highlights and annotations will live here.
-            </p>
-            <div class="empty-actions">
-                <a href="/" class="btn btn--primary">Ask a question</a>
-                <a href="/library" class="btn btn--secondary">Browse the library</a>
-            </div>
-        </div>
-    {% endif %}
-</div>
+          </article>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="lane-empty">{{ 'Save a book for later and it will land here.' if column.key == 'want_to_read' else 'Move a book here when you are ready.' if column.key == 'reading' else 'Finished books will have a home here.' }}</p>
+      {% endif %}
+    </section>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="shelf-first-run">
+    {{ glyph('lotus', 44) }}
+    <span>01 / Your first book</span>
+    <h2>Start with a book you want to keep.</h2>
+    <p>Browse the collection, open any book, and add it to your reading board. Your place and notes will stay with you.</p>
+    <a href="/library">Find a book <span aria-hidden="true">↗</span></a>
+  </div>
+  {% endif %}
+</section>
 {% endblock %}

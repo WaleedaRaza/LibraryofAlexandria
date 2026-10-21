@@ -1,86 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Alexandria{% endblock %}</title>
-    
-    <!-- Distinctive typography: Crimson Pro for reading, JetBrains Mono for UI -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="/static/css/main.css">
-    {% block head %}{% endblock %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07070a">
+  <title>{% block title %}LibXNDR{% endblock %}</title>
+  <meta name="description" content="A personal library, opened for reading.">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css?v={{ asset_version }}">
+  {% block head %}{% endblock %}
 </head>
-<body>
-    <nav class="nav">
-        <div class="nav-inner">
-            <a href="/" class="nav-logo">ALEXANDRIA</a>
-            <div class="nav-links">
-                <a href="/library" class="nav-link">Library</a>
-                {% if user %}
-                    <a href="/library/my" class="nav-link">My Books</a>
-                    <a href="/wishlist" class="nav-link">Wishlist</a>
-                    
-                    <!-- User Menu -->
-                    <div class="user-menu">
-                        <button class="user-menu-trigger" id="user-menu-btn" aria-expanded="false">
-                            <span class="user-avatar">{{ user.display_name[:1]|upper }}</span>
-                            <span class="user-name">{{ user.display_name }}</span>
-                            <svg class="user-menu-arrow" width="12" height="12" viewBox="0 0 12 12"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>
-                        </button>
-                        <div class="user-dropdown" id="user-dropdown" hidden>
-                            <div class="user-dropdown-header">
-                                <span class="user-dropdown-email">{{ user.email }}</span>
-                            </div>
-                            <a href="/library/my" class="user-dropdown-item">📚 My Books</a>
-                            <a href="/wishlist" class="user-dropdown-item">✨ Wishlist</a>
-                            <hr class="user-dropdown-divider">
-                            <form action="/auth/logout" method="POST">
-                                <button type="submit" class="user-dropdown-item user-dropdown-item--logout">🚪 Sign out</button>
-                            </form>
-                        </div>
-                    </div>
-                {% else %}
-                    <a href="/auth/login" class="nav-link nav-link--signin">Sign In</a>
-                {% endif %}
-            </div>
-        </div>
+{% from "partials/glyph.html" import glyph %}
+{% from "partials/pyramid_loader.html" import pyramid %}
+{% set path = request.url.path if request is defined else '' %}
+<body class="{% block body_class %}app-page{% endblock %}"{% if total_books is defined %} data-total-books="{{ total_books }}"{% endif %}>
+  {% include "partials/glyphs.svg" %}
+  <template id="splash-template">
+    <div class="splash" aria-hidden="true">
+      {{ pyramid('splash', 'LibXNDR is opening') }}
+      <div class="splash-word">LIBXNDR</div>
+      <p class="splash-count" hidden><b data-splash-count>0</b> books on the shelves</p>
+    </div>
+  </template>
+  <script src="/static/js/splash.js?v={{ asset_version }}"></script>
+  <header class="topbar">
+    <a class="logo" href="/library" aria-label="LibXNDR home">
+      <span class="logo-cartouche" aria-hidden="true">{{ glyph('pyramid', 18) }}</span>
+      <span class="logo-mark">LIBXNDR</span>
+      {% if total_books is defined and user %}<span class="logo-count">{{ total_books }}</span>{% endif %}
+    </a>
+    <div class="topbar-spacer"></div>
+    {% if show_shelf and user %}
+    <form class="topbar-search" action="/library" method="get" role="search">
+      {% if browse == 'authors' %}<input type="hidden" name="browse" value="authors">{% endif %}
+      {% if preview_links %}<input type="hidden" name="preview_links" value="1">{% endif %}
+      <label class="sr-only" for="catalog-search">Search the library</label><input id="catalog-search" name="search" type="search" placeholder="Search the library" value="{{ search or '' }}">
+    </form>
+    {% endif %}
+    <nav class="topbar-nav" aria-label="Primary">
+      <a class="topbar-link" href="/library" {% if path in ('/', '/library', '/library/') %}aria-current="page"{% endif %}><span>Browse</span></a>
+      {% if user %}
+        <a class="topbar-link" href="/library/my" {% if path.startswith('/library/my') %}aria-current="page"{% endif %}><span class="nav-wide">My library</span><span class="nav-compact">Mine</span></a>
+      {% endif %}
+      <a class="topbar-eye" href="/library/find" title="The eye: search the web for PDFs" aria-label="The eye: search the web for PDFs" {% if path.startswith('/library/find') %}aria-current="page"{% endif %}>{{ glyph('eye', 22) }}</a>
+      {% if user %}
+        <a class="topbar-account" href="/account" aria-label="Your account">{% if user.avatar_key %}<img src="/account/avatar?v={{ user.avatar_key|urlencode }}" alt="">{% else %}<span aria-hidden="true">{{ user.display_name[:1]|upper }}</span>{% endif %}</a>
+      {% else %}
+        <a class="topbar-link" href="/auth/login" {% if path.startswith('/auth/') %}aria-current="page"{% endif %}>Sign in</a>
+      {% endif %}
     </nav>
-    
-    <script>
-    // User dropdown toggle
-    (function() {
-        const btn = document.getElementById('user-menu-btn');
-        const dropdown = document.getElementById('user-dropdown');
-        if (!btn || !dropdown) return;
-        
-        btn.addEventListener('click', () => {
-            const isOpen = !dropdown.hidden;
-            dropdown.hidden = isOpen;
-            btn.setAttribute('aria-expanded', !isOpen);
-        });
-        
-        // Close on click outside
-        document.addEventListener('click', (e) => {
-            if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.hidden = true;
-                btn.setAttribute('aria-expanded', 'false');
-            }
-        });
-    })();
-    </script>
-    
-    <main class="main">
-        {% block content %}{% endblock %}
-    </main>
-    
-    <footer class="footer">
-        <p>"Name ten books" — The only answer that matters</p>
-    </footer>
-    
-    {% block scripts %}{% endblock %}
+  </header>
+  {% block stage %}{% endblock %}
+  <main class="product-main">{% block content %}{% endblock %}</main>
+  <dialog class="book-dialog" id="book-dialog" aria-label="Book preview"><div class="preview-loading">{{ pyramid('inline', 'Opening the book') }}</div></dialog>
+  <script src="/static/js/shell.js?v={{ asset_version }}" defer></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>
-

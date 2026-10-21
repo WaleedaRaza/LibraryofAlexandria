@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% block title %}Your source runs — LibXNDR{% endblock %}
+{% block content %}
+<section class="finder-shell">
+  <header class="finder-head">
+    <p class="collection-eyebrow">{{ glyph('ibis', 14) }} Your source runs</p>
+    <h1>Leave. Return.<br>Keep the evidence.</h1>
+    <p>Every batch you have run with the finder, with its results, stays attached to your account.</p>
+    <p><a class="text-action" href="/library/find">← Back to Find books</a></p>
+  </header>
+  {% if jobs %}
+  <section class="finder-history">
+    <ol>{% for job in jobs %}<li><a href="/library/find/{{ job.id }}"><span>{{ '%02d'|format(loop.index) }}</span><div><strong>{{ job.total }} title{{ '' if job.total == 1 else 's' }}</strong><small>{{ job.completed }} checked · {{ job.percent }}%</small></div><b class="finder-state state-{{ job.status }}">{{ job.status }}</b><em aria-hidden="true">›</em></a></li>{% endfor %}</ol>
+  </section>
+  {% else %}
+  <div class="shelf-first-run">{{ glyph('ibis', 44) }}<span>No runs yet</span><h2>Paste a list, find dozens.</h2><p>Batch runs you start on Find books will be listed here.</p><a href="/library/find">Open Find books ↗</a></div>
+  {% endif %}
+</section>
+{% endblock %}

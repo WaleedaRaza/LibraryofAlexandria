@@ -5,6 +5,7 @@ __pycache__/
 *.so
 .Python
 venv/
+.venv/
 env/
 ENV/
 *.egg-info/
@@ -32,6 +33,8 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 data/
+library/uploads/
+library/covers/
 
 # Logs
 *.log

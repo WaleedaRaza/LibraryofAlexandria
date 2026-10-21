@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% from "partials/pyramid_loader.html" import pyramid %}
+{% block title %}The Eye of Alexandria — LibXNDR{% endblock %}
+{% block content %}
+<section class="finder-shell">
+  <header class="finder-head">
+    <p class="collection-eyebrow">{{ glyph('eye', 14) }} The Eye of Alexandria</p>
+    <p>This tool points you to a fair-use, viewable PDF of any book on the internet.</p>
+  </header>
+
+  {% if not source_finder_enabled %}
+  <p class="form-feedback error">The eye is turned off on this deployment.</p>
+  {% elif not user %}
+  <section class="finder-account-note"><div><h2>Sign in to use the eye.</h2><p>Searches and anything you send stay with your account.</p></div><div><a class="btn btn-primary" href="/auth/login?next=/library/find">Sign in</a><a href="/auth/register?next=/library/find">Create an account</a></div></section>
+  {% else %}
+  <form class="quick-finder" id="quick-finder">
+    <div class="quick-finder-fields">
+      <label>Title <input name="title" required maxlength="160" placeholder="The Analects" value="{{ title or '' }}"></label>
+      <label>Author <small>optional</small><input name="author" maxlength="160" placeholder="Confucius" value="{{ author or '' }}"></label>
+    </div>
+    <button class="btn btn-primary" type="submit">{{ glyph('eye', 16) }} Search the web</button>
+    <div class="loading-row" id="quick-finder-loading" hidden>{{ pyramid('inline', 'Searching the web') }}<span>Checking files and page counts. This can take up to a minute.</span></div>
+    <p id="quick-finder-status" role="status" aria-live="polite"></p>
+    <div id="quick-finder-results"></div>
+  </form>
+
+  {% if submitted %}<div class="contribute-success" role="status">Sent to Waleed. It sits on your shelf until he reviews it. <a href="/library/my">Open My library ↗</a></div>{% endif %}
+  {% if contribute_error %}<div class="auth-error" role="alert">{{ contribute_error }}</div>{% endif %}
+  <form class="contribute-form frame" id="contribute-form" action="/library/contribute" method="post" enctype="multipart/form-data" {% if not (contribute_error or links) %}hidden{% endif %}>
+    <span class="frame-label">Send to Waleed</span>
+    <div class="quick-finder-fields">
+      <label>Title <input name="title" type="text" required maxlength="160" value="{{ title or '' }}"></label>
+      <label>Author <input name="author" type="text" maxlength="160" value="{{ author or '' }}"></label>
+    </div>
+    <label>Links <small>one per line</small><textarea name="links" rows="3">{{ links or '' }}</textarea></label>
+    <label>Or a PDF you have <small>up to 4 · 24 MB total</small><input name="files" type="file" accept=".pdf,application/pdf" multiple></label>
+    <label>A note <small>optional</small><textarea name="note" rows="2" maxlength="800" placeholder="Edition, translation, anything worth knowing">{{ note or '' }}</textarea></label>
+    <div class="design-row"><button class="btn btn-primary" type="submit">{{ glyph('ankh', 16) }} Send</button><button class="text-action" type="button" data-contribute-cancel>Cancel</button></div>
+  </form>
+
+  <details class="finder-more">
+    <summary>{{ glyph('ibis', 14) }} Search a whole list at once</summary>
+    {% if error and not contribute_error %}<p class="form-feedback error" role="alert">{{ error }}</p>{% endif %}
+    <form class="finder-form" action="/library/find" method="post">
+      <label for="finder-books">Titles <span>one per line · optional author after — or “by” · up to 50</span></label>
+      <textarea id="finder-books" name="books" required rows="8" placeholder="The Analects — Confucius&#10;Beloved — Toni Morrison">{{ books or '' }}</textarea>
+      <div><button class="btn" type="submit">Start the run</button>{% if jobs %}<a class="finder-runs-link" href="/library/find/runs">Past runs ({{ jobs|length }}) →</a>{% endif %}</div>
+    </form>
+  </details>
+
+  {% if submissions %}
+  <details class="finder-more">
+    <summary>{{ glyph('feather', 14) }} What you have sent ({{ submissions|length }})</summary>
+    <div class="submission-list">{% for item in submissions %}<article><div><strong>{{ item.title }}</strong><span>{{ item.author or 'Author not specified' }}</span></div><div><b>{{ {'pending': 'Waiting for Waleed', 'approved': 'In the collection', 'declined': 'Kept private'}.get(item.status, item.status) }}</b></div></article>{% endfor %}</div>
+  </details>
+  {% endif %}
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}{% if source_finder_enabled and user %}<script src="/static/js/finder_quick.js?v={{ asset_version }}"></script>{% endif %}{% endblock %}

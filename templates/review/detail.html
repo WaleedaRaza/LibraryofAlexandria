@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% block title %}Review {{ submission.title }} — LibXNDR{% endblock %}
+{% block content %}
+<section class="review-shell review-detail">
+  <a class="review-back" href="/review">← Review room</a>
+  <header class="shelf-head"><div><p class="shelf-eyebrow">{{ submission.status|upper }} · BROUGHT BY {{ submission.contributor|upper }}</p><h1>{{ submission.title }}<span class="shelf-period">.</span></h1><p>{{ submission.author or 'Author to identify' }}</p></div></header>
+  {% if submission.note %}<section class="review-contributor-note"><span>From the reader</span><p>{{ submission.note }}</p></section>{% endif %}
+  {% if error %}<p class="form-feedback error" role="alert">{{ error }}</p>{% endif %}
+  <form action="/review/{{ submission.id }}/decision" method="post" class="review-workspace">
+    <div class="review-sources"><div class="section-heading"><span>01 / Inspect the editions</span><h2>What came in.</h2></div><p class="review-hint">Open each source. Select only the editions you want in the public collection.</p>
+      {% for source in submission.sources %}<article class="review-source"><div class="review-source-top">{% if submission.status == 'pending' %}<input type="checkbox" name="source_ids" value="{{ source.id }}" id="source-{{ loop.index }}" {% if source.id in (selected_ids or []) %}checked{% endif %}><label for="source-{{ loop.index }}">{{ 'PDF file' if source.availability != 'external_link' else 'External link' }}</label>{% else %}<strong>{{ 'PDF file' if source.availability != 'external_link' else 'External link' }}</strong>{% endif %}<span>{{ source.page_count|string + ' pages' if source.page_count else 'Page count unverified' }}</span></div>
+      <p>{{ source.source_filename if source.availability != 'external_link' else source.source_url }}</p><a href="{{ '/read/' if source.availability != 'external_link' else '/library/book/' }}{{ source.id }}" target="_blank" rel="noopener noreferrer">Inspect source <span aria-hidden="true">↗</span></a></article>{% endfor %}
+      <p class="review-hint">This room shows submitted sources and metadata. The reader's highlights, notes, and conversations stay private.</p>
+    </div>
+    <div class="review-decision">
+      {% if submission.status == 'pending' %}<div class="section-heading"><span>02 / Catalog and decide</span><h2>Give it a place.</h2></div>
+      <label>Title<input name="title" required maxlength="160" value="{{ form_title if form_title is defined else submission.title }}"></label>
+      <label>Author or editor<input name="author" required maxlength="160" value="{{ form_author if form_author is defined else submission.author }}"></label>
+      <label>Review record<textarea name="note" required maxlength="2000" rows="5" placeholder="Edition and completeness, source, and basis for sharing — or why this should stay private.">{{ form_note or '' }}</textarea></label>
+      <p class="review-hint">Publishing adds the selected sources to the public collection. The reader keeps their own shelf and notes.</p>
+      <button class="btn btn-primary" name="decision" value="approved" type="submit">Publish selected sources</button><button class="text-action" name="decision" value="declined" type="submit">Decline publication</button>
+      {% else %}<div class="section-heading"><span>02 / Review complete</span><h2>{{ 'Added to the collection.' if submission.status == 'approved' else 'Kept off the public shelf.' }}</h2></div><p class="review-hint">The reader retains their personal sources and reading history.</p>{% for review in submission.reviews %}<article class="review-record"><span>{{ review.decision|upper }} · {{ review.created_at|string|truncate(19, true, '') }}</span><p>{{ review.note }}</p></article>{% endfor %}{% endif %}
+    </div>
+  </form>
+</section>
+{% endblock %}

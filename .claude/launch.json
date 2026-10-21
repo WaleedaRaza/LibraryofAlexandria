@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "libxndr",
+      "runtimeExecutable": "/Users/waleedraza/Documents/ChatGPT/library of alexandria/.venv/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "uvicorn",
+        "app.main:app",
+        "--port",
+        "5055",
+        "--host",
+        "127.0.0.1"
+      ],
+      "port": 5055
+    }
+  ]
+}

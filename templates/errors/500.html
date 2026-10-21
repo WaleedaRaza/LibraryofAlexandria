@@ -1,18 +1,20 @@
 {% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
 
-{% block title %}Something Went Wrong — Alexandria{% endblock %}
+{% block title %}Something Went Wrong — LibXNDR{% endblock %}
 
 {% block content %}
 <div class="error-container">
-    <div class="error-code" style="color: var(--accent-danger);">500</div>
+    {{ glyph('pyramid-fallen', 96) }}
+    <div class="error-code">500</div>
     <h1 class="error-title">Something went wrong</h1>
     <p class="error-message">
         We encountered an unexpected error. This has been logged and we'll look into it. 
         Please try again in a moment.
     </p>
     <div class="error-actions">
-        <a href="/" class="btn btn--primary">Go home</a>
-        <a href="javascript:location.reload()" class="btn btn--secondary">Try again</a>
+        <a href="/library" class="btn btn-primary">Back to the library</a>
+        <a href="javascript:location.reload()" class="btn">Try again</a>
     </div>
 </div>
 {% endblock %}

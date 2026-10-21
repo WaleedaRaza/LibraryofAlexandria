@@ -1,60 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Confirming... — Alexandria{% endblock %}
+{% block title %}Confirm your email — LibXNDR{% endblock %}
 
 {% block content %}
 <div class="verify-container">
-    <div class="verify-icon" id="status-icon">⏳</div>
-    <h1 class="verify-title" id="status-title">Confirming your email...</h1>
-    <p class="verify-text" id="status-text">Please wait while we sign you in.</p>
+    <h1 class="verify-title" id="status-title">{% if confirmation_error %}Confirmation failed{% else %}Confirming your email...{% endif %}</h1>
+    <p class="verify-text" id="status-text">{{ confirmation_error or 'Please wait while we sign you in.' }}</p>
+    <a href="/auth/login" class="btn btn-primary" id="sign-in-again" {% if not confirmation_error %}hidden{% endif %}>Go to sign in</a>
+    {% if confirmation_error %}<a href="/auth/forgot-password" class="auth-browse">Reset the password instead →</a>{% endif %}
 </div>
 
-<script>
-(function() {
-    // Supabase returns tokens in the URL fragment (after #)
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
-    
-    const accessToken = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-    
-    if (accessToken && refreshToken) {
-        // Set cookies via fetch to a special endpoint
-        fetch('/auth/set-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                access_token: accessToken,
-                refresh_token: refreshToken
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                // Redirect to home
-                window.location.href = '/';
-            } else {
-                showError('Session could not be created. Please try logging in.');
-            }
-        })
-        .catch(err => {
-            showError('Something went wrong. Please try logging in.');
-        });
-    } else {
-        // No tokens - might be an error or already confirmed
-        const error = params.get('error_description') || params.get('error');
-        if (error) {
-            showError(decodeURIComponent(error));
-        } else {
-            // Maybe they came here directly - redirect to login
-            window.location.href = '/auth/login';
-        }
-    }
-    
-    function showError(message) {
-        document.getElementById('status-icon').textContent = '❌';
-        document.getElementById('status-title').textContent = 'Confirmation failed';
-        document.getElementById('status-text').innerHTML = message + '<br><br><a href="/auth/login" class="btn btn--primary">Go to login</a>';
-    }
-})();
-</script>
 {% endblock %}
+{% block scripts %}{% if not confirmation_error %}<script src="/static/js/confirm_email.js?v={{ asset_version }}"></script>{% endif %}{% endblock %}

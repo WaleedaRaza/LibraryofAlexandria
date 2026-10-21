@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% from "partials/pyramid_loader.html" import pyramid %}
+{% block title %}Design system — LibXNDR{% endblock %}
+{% block content %}
+<div class="design-shell">
+  <header class="finder-head">
+    <p class="collection-eyebrow">{{ glyph('djed', 14) }} Development only</p>
+    <h1>The LibXNDR system.</h1>
+    <p>Every glyph, the loader, and the main components in one place. This page is not linked and returns 404 in production.</p>
+  </header>
+
+  <section>
+    <div class="section-heading"><span>01 / Glyphs</span><h2>Flat colour, one identifying detail each.</h2></div>
+    <div class="design-glyphs">
+      {% for name, job in [('pyramid','logo, splash'),('eye','preview, strong lead'),('ibis','find books'),('scroll','read, PDF'),('ankh','save'),('scarab','new, loading'),('feather','review, notes'),('cartouche','identity'),('djed','section marker'),('sun','about, empty'),('lotus','my library'),('owl','by author'),('reed','by book, A–Z'),('water','divider'),('pyramid-fallen','404'),('book','missing cover')] %}
+      <figure><div>{{ glyph(name, 16) }}{{ glyph(name, 24) }}{{ glyph(name, 64) }}</div><figcaption>{{ name }} · {{ job }}</figcaption></figure>
+      {% endfor %}
+    </div>
+    <div class="design-row">{{ glyph('eye', 48, class_name='glyph-gold') }}{{ glyph('ankh', 48, class_name='glyph-turquoise') }}{{ glyph('scarab', 48, class_name='glyph-carnelian') }}{{ glyph('owl', 48, class_name='glyph-dim') }}<span class="eyebrow">Tinted with currentColor</span></div>
+  </section>
+
+  <section>
+    <div class="section-heading"><span>02 / Loader</span><h2>The pyramid turns while the library works.</h2></div>
+    <div class="design-row">{{ pyramid('inline') }}<span class="eyebrow">inline · 48px</span></div>
+    <div class="design-row">{{ pyramid('splash') }}<span class="eyebrow">splash · 170px</span></div>
+  </section>
+
+  <section>
+    <div class="section-heading"><span>03 / Colour</span><h2>Egyptian pigments on black.</h2></div>
+    <div class="design-swatches">
+      {% for name in ['bg','bg-raised','ink','ink-dim','ink-faint','gold','gold-deep','lapis','turquoise','carnelian','malachite','danger'] %}<div><i style="background: var(--{{ name }})"></i>--{{ name }}</div>{% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <div class="section-heading"><span>04 / Controls</span><h2>Buttons, tags, fields.</h2></div>
+    <div class="design-row"><a class="btn btn-primary" href="#">{{ glyph('scroll', 16) }} Read now</a><a class="btn" href="#">{{ glyph('ankh', 16) }} Save</a><a class="btn btn-gold" href="#">Saved · remove</a><button class="btn btn-quiet" type="button">Quiet</button><button class="text-action" type="button">Text action →</button></div>
+    <div class="design-row"><span class="tag">{{ glyph('scroll', 12) }} PDF</span><span class="tag is-link">{{ glyph('eye', 12) }} Web link</span><span class="tag is-gold">Pending</span><span class="finder-state state-complete">complete</span><span class="finder-state state-running">running</span><span class="finder-state state-failed">failed</span></div>
+    <div class="status-choices"><button class="status-choice" type="button">Want to read</button><button class="status-choice on" type="button">Reading</button><button class="status-choice" type="button">Read</button></div>
+    <form class="quick-finder" onsubmit="return false"><div class="quick-finder-fields"><label>Title <input placeholder="The Analects"></label><label>Author <small>optional</small><input placeholder="Confucius"></label></div><div class="design-row"><button class="btn btn-primary" type="button">{{ glyph('ibis', 16) }} Search</button><div class="loading-row">{{ pyramid('inline') }}<span>Testing candidate files…</span></div></div></form>
+    <div class="design-row"><p class="form-feedback success">Saved to your shelf.</p><p class="form-feedback error">That link points at a private network.</p></div>
+  </section>
+
+  <section>
+    <div class="section-heading"><span>05 / Book tile and preview</span><h2>Covers carry the colour.</h2></div>
+    {% if sample %}
+    <div class="book-grid" style="max-width: 520px">
+      {% for book in sample %}
+      <a class="book-tile" href="/library/book/{{ book.id }}" data-preview data-halo-host>
+        <span class="cover"><img src="/library/book/{{ book.id }}/cover" alt="" loading="lazy" data-halo></span>
+        <span class="tile-copy"><strong>{{ book.title }}</strong><em>{{ book.author }}</em><small class="tile-format {{ 'is-link' if book.availability == 'external_link' }}">{% if book.availability == 'external_link' %}{{ glyph('eye', 12) }} Web link{% else %}{{ glyph('scroll', 12) }} PDF{% endif %}</small></span>
+      </a>
+      {% endfor %}
+    </div>
+    <p class="eyebrow">Click a tile to open the preview dialog.</p>
+    {% endif %}
+    <div class="frame"><span class="frame-label">Frame</span><div style="padding: 1.5rem"><p class="lede">A framed region with a box-drawing label. Use at most one per view.</p></div></div>
+    <div class="divider">{{ glyph('water', 20) }}</div>
+    <div class="shelf-first-run">{{ glyph('lotus', 44) }}<span>Empty state</span><h2>Start with a book you want to keep.</h2><p>One glyph, one sentence, one action.</p><a href="#">Find a book ↗</a></div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{
+  "books": [
+    {
+      "title": "Dracula",
+      "author": "Bram Stoker",
+      "label": "Dracula — Toronto Metropolitan University Library",
+      "url": "https://pressbooks.library.torontomu.ca/dracula/open/download?type=pdf",
+      "source_page": "https://pressbooks.library.torontomu.ca/dracula/",
+      "rights": "public domain edition"
+    }
+  ]
+}

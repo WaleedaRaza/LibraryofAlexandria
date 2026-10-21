@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "site": "libxndr",
+    "public": "public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "libxndr-web",
+          "region": "us-east1",
+          "pinTag": true
+        }
+      }
+    ]
+  }
+}

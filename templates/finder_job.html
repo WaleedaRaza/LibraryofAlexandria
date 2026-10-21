@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% from "partials/pyramid_loader.html" import pyramid %}
+{% block title %}Source run — LibXNDR{% endblock %}
+{% block content %}
+<section class="finder-shell finder-results" data-finder-job="{{ job.id }}" data-job-status="{{ job.status }}">
+  <header class="finder-job-head"><div><p class="collection-eyebrow">{{ glyph('ibis', 14) }} Source run · {{ job.status }}</p><h1>{{ job.completed }} of {{ job.total }} checked.</h1><p>Results stay attached to your account. Leave this page and return whenever you like.</p></div><div><a href="/library/find">New list</a>{% if job.status in ['queued','running'] %}<form action="/library/find/{{ job.id }}/cancel" method="post"><button type="submit">Stop run</button></form>{% endif %}</div></header>
+  <div class="finder-progress" aria-label="{{ job.completed }} of {{ job.total }} complete"><span style="width: {{ (job.completed / job.total * 100)|round(1) }}%"></span></div>
+  <div class="finder-live-row">{% if job.status in ['queued','running'] %}{{ pyramid('inline', 'Checking titles') }}{% endif %}<p id="finder-live" class="finder-live" role="status" aria-live="polite">{% if job.status in ['queued','running'] %}Checking the next title… the page advances one durable step at a time.{% elif job.status == 'complete' %}Run complete. Inspect and select the editions worth keeping.{% else %}Run stopped. Completed results remain below.{% endif %}</p></div>
+  {% if saved %}<p class="form-feedback success">Selected links are on your private shelf and have been offered to the library for review. <a href="/library/my">Open My Library ↗</a></p>{% endif %}
+  {% if error %}<p class="form-feedback error">{{ error }}</p>{% endif %}
+  <div class="finder-items">
+  {% for item in job['items'] %}
+    <details class="finder-item" {% if item.status in ['complete','failed'] %}open{% endif %}>
+      <summary><span>{{ '%02d'|format(loop.index) }}</span><strong>{{ item.title }}</strong><small>{{ item.author or 'Author not specified' }}</small><b class="finder-state state-{{ item.status }}">{{ item.status }}{% if item.candidates %} · {{ item.candidates|length }} leads{% endif %}</b></summary>
+      <div class="finder-item-body">
+      {% if item.candidates %}<form action="/library/find/{{ job.id }}/save" method="post"><input type="hidden" name="item_id" value="{{ item.id }}"><div class="finder-candidates">
+        {% for result in item.candidates %}<label class="finder-candidate"><input type="checkbox" name="urls" value="{{ result.url }}"><span><strong>{{ result.title }}</strong><small>{{ result.domain or 'Web source' }} · {{ result.page_count|string + ' pages' if result.page_count else 'pages unverified' }} · score {{ result.score or 0 }}{% if result.edition_fit %} · {{ result.edition_fit }}{% endif %}</small><em>{{ result.reasons|join(' · ') }}</em></span><a href="{{ result.url }}" target="_blank" rel="noopener noreferrer">View ↗</a></label>{% endfor %}
+      </div><div class="finder-selection-note" data-selection-note role="status" aria-live="polite"><span aria-hidden="true">○</span><p><strong>Select a result.</strong> Open it first and make sure it is the edition you want.</p></div><fieldset class="finder-credit-options" data-credit-options><legend>If approved, how should the library credit you?</legend><label><input type="radio" name="credit_mode" value="credited" checked> With my LibXNDR name</label><label><input type="radio" name="credit_mode" value="anonymous"> Anonymously</label></fieldset><button class="btn btn-primary" type="submit" disabled>Contribute selected for review</button></form>
+      {% elif item.status == 'failed' %}<p class="finder-no-result">This title did not complete. The rest of the run can continue.</p>
+      {% elif item.status == 'complete' %}<p class="finder-no-result">No verified, viewable lead cleared the first pass.</p>
+      {% else %}<p class="finder-no-result">Waiting its turn.</p>{% endif %}
+      </div>
+    </details>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/finder_job.js?v={{ asset_version }}"></script>{% endblock %}

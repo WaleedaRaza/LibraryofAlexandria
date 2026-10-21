@@ -10,6 +10,7 @@ jinja2==3.1.3
 
 # Database - Supabase REST API (no more psycopg2 connection issues!)
 supabase>=2.27.0
+google-cloud-storage>=2.16.0
 
 # LLM
 openai==1.12.0
@@ -17,14 +18,16 @@ openai==1.12.0
 # Security
 python-multipart==0.0.9  # For form data
 bcrypt==5.0.0  # Password hashing
+Pillow==12.3.0  # Validate and normalize profile photos
 
 # PDF Processing (for ingestion)
 pypdf==4.0.1
 pymupdf>=1.23.0  # For taxonomy engine (better text extraction)
 
-# HTTP client (for Ollama)
+# HTTP client (for Ollama) and the private reading desk search
 requests>=2.31.0
+ddgs>=9.0.0
+httpx==0.27.2  # Compatible with Starlette's TestClient and Supabase
 
 # Development
 python-dotenv==1.0.1
-
