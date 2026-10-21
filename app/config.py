@@ -27,7 +27,7 @@ class Settings:
     SECRET_KEY: str = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
     PUBLIC_BASE_URL: Optional[str] = os.getenv("PUBLIC_BASE_URL")
     GOOGLE_AUTH_ENABLED: bool = os.getenv("GOOGLE_AUTH_ENABLED", "false").lower() == "true"
-    ASSET_VERSION: str = os.getenv("ASSET_VERSION", "40")
+    ASSET_VERSION: str = os.getenv("ASSET_VERSION", "41")
     
     @property
     def is_production(self) -> bool:

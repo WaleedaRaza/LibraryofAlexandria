@@ -1,7 +1,7 @@
 """Public pages for Waleed's Library."""
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 from .. import templates
 from ..config import settings
@@ -55,3 +55,9 @@ async def design_system(request: Request, user=Depends(get_current_user_optional
         raise HTTPException(status_code=404, detail="Not found")
     sample = [book for book in CatalogService().get_books() if book.get("author")][:3]
     return templates.TemplateResponse("design.html", {"request": request, "user": user, "sample": sample})
+
+
+@router.get("/device")
+async def device_shortcut(code: str = ""):
+    """The address printed on a Kindle screen. Short to type; the real page lives under the account."""
+    return RedirectResponse(f"/account/devices{'?code=' + code if code else ''}", status_code=303)

@@ -964,3 +964,56 @@ def test_existing_sqlite_shelf_migrates_without_losing_progress(tmp_path: Path, 
     assert UserService().get_reading_status("u1", "book-1") == "reading"
     database._sqlite_connection.close()
     database._sqlite_connection = None
+
+
+def test_device_pairing_and_api_serve_the_kindle(client: TestClient, monkeypatch):
+    from app.routes import device_api
+
+    # The device asks for a code; nobody is signed in on it.
+    issued = client.post("/api/v1/device/code", json={"device_name": "Kindle Scribe"})
+    assert issued.status_code == 200
+    code, secret = issued.json()["code"], issued.json()["secret"]
+    assert len(code) == 6 and issued.json()["claim_url"].endswith("/device")
+    assert client.get("/api/v1/device/poll", params={"code": code, "secret": secret}).json()["status"] == "pending"
+    assert client.get("/api/v1/device/poll", params={"code": code, "secret": "wrong"}).json()["status"] == "expired"
+    assert client.get("/api/v1/me").status_code == 401
+    assert client.get("/device", follow_redirects=False).status_code == 303
+
+    # The reader claims it from a browser.
+    _register(client)
+    page = client.get(f"/account/devices?code={code[:3]}-{code[3:].lower()}")
+    assert page.status_code == 200 and "Kindle Scribe" in page.text
+    assert client.post("/account/devices", data={"code": f"{code[:3]}-{code[3:]}"}, follow_redirects=False).headers["location"] == "/account/devices?done=1"
+    client.cookies.clear()
+
+    # The device collects its token exactly once.
+    answer = client.get("/api/v1/device/poll", params={"code": code, "secret": secret}).json()
+    assert answer["status"] == "claimed" and answer["token"]
+    assert client.get("/api/v1/device/poll", params={"code": code, "secret": secret}).json()["status"] == "expired"
+    headers = {"Authorization": f"Bearer {answer['token']}"}
+
+    me = client.get("/api/v1/me", headers=headers).json()
+    assert me["user"]["display_name"] and me["collection"] >= 400
+    found = client.get("/api/v1/search", params={"q": "1984"}, headers=headers).json()["results"]
+    assert found and found[0]["title"] == "1984" and found[0]["availability"] == "pdf"
+    book = found[0]
+    assert client.post("/api/v1/progress", json={"book_id": book["id"], "page_number": 12, "page_count": 300}, headers=headers).json()["progress"]["percent"] == 4.0
+    shelf = client.get("/api/v1/library", headers=headers).json()["books"]
+    assert shelf[0]["id"] == book["id"] and shelf[0]["reading_status"] == "reading" and shelf[0]["page_number"] == 12
+    assert client.post(f"/api/v1/books/{book['id']}/status", json={"status": "read"}, headers=headers).json()["status"] == "read"
+    assert client.get(f"/api/v1/books/{book['id']}", headers=headers).json()["book"]["reading_status"] == "read"
+    assert client.post("/api/v1/progress", json={"book_id": "nope", "page_number": 1, "page_count": 1}, headers=headers).status_code == 404
+
+    # The Eye through the device: same finder, same limits, proxied downloads with the same checks.
+    async def fake_find(title, author):
+        return [{"title": "Dune PDF", "url": "https://books.example/dune.pdf", "final_url": "https://books.example/dune.pdf",
+                 "domain": "books.example", "page_count": 512, "score": 88, "viewable": True}]
+    monkeypatch.setattr(device_api, "find_readings", fake_find)
+    monkeypatch.setattr(settings, "SOURCE_FINDER_ENABLED", True)
+    device_api._eye_times.clear()
+    eye = client.post("/api/v1/eye", json={"title": "Dune", "author": "Frank Herbert"}, headers=headers).json()
+    assert eye["results"][0]["url"] == "https://books.example/dune.pdf"
+    assert client.get("/api/v1/eye/fetch", params={"url": "https://cdn.bookey.app/x.pdf"}, headers=headers).status_code == 400
+    assert client.get("/api/v1/eye/fetch", params={"url": "http://127.0.0.1/x.pdf"}, headers=headers).status_code == 400
+    sent = client.post("/api/v1/contribute", json={"title": "Dune", "author": "Frank Herbert", "links": ["https://books.example/dune.pdf"]}, headers=headers)
+    assert sent.status_code == 200 and sent.json()["status"] == "pending"

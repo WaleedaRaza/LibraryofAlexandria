@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from .. import templates
 from ..config import settings
 from ..db.database import get_supabase, is_sqlite_mode
+from ..services.device_service import DeviceService, format_code
 from ..services.profile_service import MAX_AVATAR_BYTES, ProfileService
 from .auth import get_current_user_optional, get_current_user_required
 
@@ -56,3 +57,20 @@ async def avatar(user=Depends(get_current_user_required)):
         if url:
             return RedirectResponse(url, headers={"Cache-Control": "private, no-store"})
     raise HTTPException(status_code=404, detail="Profile photo unavailable")
+
+
+@router.get("/devices", response_class=HTMLResponse)
+async def devices(request: Request, code: str = "", done: str = "", user=Depends(get_current_user_optional)):
+    """Pair a Kindle: the device shows a code, the reader types it here."""
+    if not user:
+        return RedirectResponse("/auth/login?next=/account/devices", status_code=303)
+    pending = DeviceService().pending(code) if code else None
+    return templates.TemplateResponse("devices.html", {"request": request, "user": user, "code": format_code(code) if code else "",
+        "pending": pending, "done": done == "1", "error": "That code is not waiting to be paired. Check it on the device." if code and not pending and not done else None})
+
+
+@router.post("/devices", response_class=HTMLResponse)
+async def pair_device(request: Request, code: str = Form(""), user=Depends(get_current_user_required)):
+    if DeviceService().claim(code, user):
+        return RedirectResponse("/account/devices?done=1", status_code=303)
+    return RedirectResponse(f"/account/devices?code={code}", status_code=303)

@@ -34,6 +34,17 @@ CREATE TABLE IF NOT EXISTS public.user_sessions (
 CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON public.user_sessions(user_id);
 ALTER TABLE public.user_sessions ENABLE ROW LEVEL SECURITY;
 
+CREATE TABLE IF NOT EXISTS public.device_codes (
+    code TEXT PRIMARY KEY,
+    secret_hash TEXT NOT NULL,
+    device_name TEXT NOT NULL,
+    user_id TEXT REFERENCES public.users(id) ON DELETE CASCADE,
+    claimed_token TEXT,
+    created_at BIGINT NOT NULL,
+    expires_at BIGINT NOT NULL
+);
+ALTER TABLE public.device_codes ENABLE ROW LEVEL SECURITY;
+
 CREATE TABLE IF NOT EXISTS public.saved_books (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,

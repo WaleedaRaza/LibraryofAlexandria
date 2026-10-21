@@ -132,7 +132,7 @@ async def startup_event():
 # Routes
 # ---------------------------------------------------------------------------
 
-from .routes import pages, reader, library, auth, desk, contributions, account, review, finder
+from .routes import pages, reader, library, auth, desk, contributions, account, review, finder, device_api
 
 app.include_router(pages.router)
 app.include_router(reader.router, prefix="/read", tags=["reader"])
@@ -142,6 +142,7 @@ app.include_router(finder.router, prefix="/library/find", tags=["finder"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(account.router, prefix="/account", tags=["account"])
 app.include_router(review.router, prefix="/review", tags=["review"])
+app.include_router(device_api.router, prefix="/api/v1", tags=["device api"])
 app.include_router(desk.router, tags=["local desk"])
 
 

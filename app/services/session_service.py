@@ -13,10 +13,10 @@ class SessionService:
     def _hash(token: str) -> str:
         return hashlib.sha256(token.encode()).hexdigest()
 
-    def create(self, user_id: str) -> str:
+    def create(self, user_id: str, *, max_age: int | None = None) -> str:
         token = secrets.token_urlsafe(32)
         record = {"token_hash": self._hash(token), "user_id": user_id,
-                  "expires_at": int(time.time()) + settings.SESSION_MAX_AGE}
+                  "expires_at": int(time.time()) + (max_age or settings.SESSION_MAX_AGE)}
         if is_sqlite_mode():
             db = get_db()
             with db:

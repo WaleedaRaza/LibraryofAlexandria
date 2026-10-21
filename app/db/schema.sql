@@ -152,6 +152,16 @@ CREATE TABLE IF NOT EXISTS source_job_items (
 CREATE INDEX IF NOT EXISTS idx_source_jobs_user ON source_jobs(user_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_source_job_items_job ON source_job_items(job_id, position);
 
+CREATE TABLE IF NOT EXISTS device_codes (
+    code TEXT PRIMARY KEY,
+    secret_hash TEXT NOT NULL,
+    device_name TEXT NOT NULL,
+    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+    claimed_token TEXT,
+    created_at INTEGER NOT NULL,
+    expires_at INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS schema_versions (
     version INTEGER PRIMARY KEY,
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -169,3 +179,5 @@ INSERT OR IGNORE INTO schema_versions (version, description)
 VALUES (24, 'LibXNDR: durable reader source-finder jobs');
 INSERT OR IGNORE INTO schema_versions (version, description)
 VALUES (25, 'LibXNDR: private citation-backed reading companion');
+INSERT OR IGNORE INTO schema_versions (version, description)
+VALUES (26, 'LibXNDR: device pairing for the Kindle plugin');

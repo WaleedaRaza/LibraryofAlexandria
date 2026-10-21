@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% block title %}Pair a device — LibXNDR{% endblock %}
+{% block content %}
+<section class="auth-shell"><div class="auth-card">
+  <p class="auth-label">{{ glyph('djed', 14) }} Pair a device</p>
+  <h1>Your library on a Kindle.</h1>
+  {% if done %}
+    <div class="auth-success">Paired. The device will sign in on its own within a few seconds.</div>
+    <a class="btn btn-primary" href="/library/my">Back to My library</a>
+  {% else %}
+    <p>Open LibXNDR on the device. It shows a six-letter code; type it here.</p>
+    {% if error %}<div class="auth-error" role="alert">{{ error }}</div>{% endif %}
+    <form action="/account/devices" method="post">
+      <label>Device code<input name="code" value="{{ code }}" required minlength="6" maxlength="7" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" placeholder="ABC-DEF" style="font-family: var(--font-ui); font-size: 1.4rem; letter-spacing: .2em; text-transform: uppercase;"></label>
+      {% if pending %}<p class="auth-switch">This code belongs to <strong>{{ pending.device_name }}</strong>.</p>{% endif %}
+      <button class="btn btn-primary" type="submit">{{ glyph('ankh', 16) }} Pair this device</button>
+    </form>
+    <p class="auth-switch">The device signs in as you. Signing out of LibXNDR on the device, or removing it from your account, ends its access.</p>
+  {% endif %}
+</div></section>
+{% endblock %}
