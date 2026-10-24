@@ -83,10 +83,12 @@ async def device_poll(code: str = "", secret: str = ""):
 async def me(user=Depends(device_user)):
     service = UserService()
     statuses = service.get_shelf_statuses(user["id"])
+    shown = {book_id: status for book_id, status in statuses.items()
+             if not book_id.startswith("sub_") or status != "want_to_read"}
     return {
         "user": {"display_name": user["display_name"], "username": user.get("username")},
-        "books": len(statuses),
-        "reading": sum(1 for value in statuses.values() if value == "reading"),
+        "books": len(shown),
+        "reading": sum(1 for value in shown.values() if value == "reading"),
         "collection": CatalogService().get_book_count(),
     }
 
@@ -113,13 +115,53 @@ async def search(q: str = "", limit: int = 24, user=Depends(device_user)):
 
 @router.get("/library", response_class=JSONResponse)
 async def library(user=Depends(device_user)):
-    books = UserService().get_saved_books(user["id"])
+    """The reader's shelf for a device, built with a handful of queries rather than one per book.
+
+    Submissions waiting in the review room also sit on their contributor's shelf. A device only shows
+    them once they are actually being read, so a reviewer with hundreds of queued imports still gets
+    a short, fast list.
+    """
+    service = UserService()
+    statuses = service.get_shelf_statuses(user["id"])
+    progress = {row["book_id"]: row for row in service.get_progress_for_user(user["id"])}
+    catalog = {book["id"]: book for book in CatalogService().get_books(limit=100000)}
+    wanted = [book_id for book_id in statuses
+              if book_id in catalog or statuses[book_id] != "want_to_read" or book_id in progress]
+    private_ids = [book_id for book_id in wanted if book_id not in catalog and book_id.startswith("sub_")]
+    private = _private_sources(private_ids, user)
+    books = []
+    for book_id in wanted:
+        item = catalog.get(book_id) or private.get(book_id)
+        if item:
+            books.append(_public_book(item, progress=progress.get(book_id), status=statuses[book_id]))
     order = {"reading": 0, "want_to_read": 1, "read": 2}
     books.sort(key=lambda item: (order.get(item.get("reading_status"), 3), (item.get("title") or "").casefold()))
-    return {"books": [
-        _public_book(book, progress={"page_number": book.get("page_number"), "percent": book.get("percent")},
-                     status=book.get("reading_status")) for book in books
-    ]}
+    return {"books": books[:300], "total": len(books)}
+
+
+def _private_sources(book_ids: list[str], user: dict) -> dict[str, dict]:
+    """Resolve submission sources for many ids with one query."""
+    import re
+    from ..db.database import get_db, get_supabase, is_sqlite_mode
+    from ..services.source_service import decode_submission, submission_sources
+
+    submission_ids = sorted({match.group(1) for book_id in book_ids
+                             if (match := re.fullmatch(r"(sub_[a-f0-9]{32})-(pdf|link)-(\d+)", book_id))})
+    if not submission_ids:
+        return {}
+    if is_sqlite_mode():
+        marks = ",".join("?" for _ in submission_ids)
+        rows = [dict(row) for row in get_db().execute(f"SELECT * FROM book_submissions WHERE id IN ({marks})", submission_ids)]
+    else:
+        rows = get_supabase().table("book_submissions").select("*").in_("id", submission_ids).execute().data or []
+    sources: dict[str, dict] = {}
+    for row in rows:
+        submission = decode_submission(row)
+        if submission["user_id"] != user["id"] and user.get("role") != "admin":
+            continue
+        for source in submission_sources(submission):
+            sources[source["id"]] = source
+    return sources
 
 
 @router.get("/books/{book_id}", response_class=JSONResponse)
