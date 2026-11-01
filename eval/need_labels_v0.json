@@ -1,0 +1,405 @@
+{
+ "_note": "Hand labels for the need type of each gold_v0 question (2026-11-01, drafted by Claude for Waleed to correct). First label is primary; a second label marks a question that honestly reads both ways and counts as agreement too.",
+ "types": [
+  "instruction",
+  "argument",
+  "consolation",
+  "definition",
+  "example",
+  "story"
+ ],
+ "labels": {
+  "q001": [
+   "story"
+  ],
+  "q002": [
+   "definition"
+  ],
+  "q003": [
+   "example"
+  ],
+  "q004": [
+   "story"
+  ],
+  "q005": [
+   "argument"
+  ],
+  "q006": [
+   "story"
+  ],
+  "q007": [
+   "example"
+  ],
+  "q008": [
+   "example"
+  ],
+  "q009": [
+   "example"
+  ],
+  "q010": [
+   "definition"
+  ],
+  "q011": [
+   "definition"
+  ],
+  "q012": [
+   "argument"
+  ],
+  "q013": [
+   "argument"
+  ],
+  "q014": [
+   "argument"
+  ],
+  "q015": [
+   "argument"
+  ],
+  "q016": [
+   "story"
+  ],
+  "q017": [
+   "definition"
+  ],
+  "q018": [
+   "argument"
+  ],
+  "q019": [
+   "definition"
+  ],
+  "q020": [
+   "argument"
+  ],
+  "q021": [
+   "instruction"
+  ],
+  "q022": [
+   "definition"
+  ],
+  "q023": [
+   "argument"
+  ],
+  "q024": [
+   "instruction"
+  ],
+  "q025": [
+   "definition"
+  ],
+  "q026": [
+   "argument"
+  ],
+  "q027": [
+   "argument"
+  ],
+  "q028": [
+   "argument"
+  ],
+  "q029": [
+   "argument"
+  ],
+  "q030": [
+   "definition"
+  ],
+  "q031": [
+   "definition"
+  ],
+  "q032": [
+   "argument"
+  ],
+  "q033": [
+   "argument"
+  ],
+  "q034": [
+   "definition"
+  ],
+  "q035": [
+   "definition"
+  ],
+  "q036": [
+   "definition"
+  ],
+  "q037": [
+   "instruction"
+  ],
+  "q038": [
+   "definition"
+  ],
+  "q039": [
+   "argument"
+  ],
+  "q040": [
+   "consolation",
+   "argument"
+  ],
+  "q041": [
+   "instruction"
+  ],
+  "q042": [
+   "definition"
+  ],
+  "q043": [
+   "argument"
+  ],
+  "q044": [
+   "argument",
+   "story"
+  ],
+  "q045": [
+   "argument"
+  ],
+  "q046": [
+   "argument"
+  ],
+  "q047": [
+   "argument"
+  ],
+  "q048": [
+   "argument"
+  ],
+  "q049": [
+   "argument"
+  ],
+  "q050": [
+   "definition"
+  ],
+  "q051": [
+   "definition"
+  ],
+  "q052": [
+   "argument"
+  ],
+  "q053": [
+   "argument"
+  ],
+  "q054": [
+   "definition"
+  ],
+  "q055": [
+   "definition",
+   "argument"
+  ],
+  "q056": [
+   "argument"
+  ],
+  "q057": [
+   "definition"
+  ],
+  "q058": [
+   "argument"
+  ],
+  "q059": [
+   "argument"
+  ],
+  "q060": [
+   "argument"
+  ],
+  "q061": [
+   "argument"
+  ],
+  "q062": [
+   "definition"
+  ],
+  "q063": [
+   "argument"
+  ],
+  "q064": [
+   "argument"
+  ],
+  "q065": [
+   "argument"
+  ],
+  "q066": [
+   "instruction",
+   "argument"
+  ],
+  "q067": [
+   "argument",
+   "example"
+  ],
+  "q068": [
+   "argument"
+  ],
+  "q069": [
+   "definition"
+  ],
+  "q070": [
+   "example",
+   "argument"
+  ],
+  "q071": [
+   "argument"
+  ],
+  "q072": [
+   "definition"
+  ],
+  "q073": [
+   "instruction",
+   "consolation"
+  ],
+  "q074": [
+   "instruction"
+  ],
+  "q075": [
+   "consolation",
+   "instruction"
+  ],
+  "q076": [
+   "consolation",
+   "instruction"
+  ],
+  "q077": [
+   "instruction",
+   "consolation"
+  ],
+  "q078": [
+   "consolation",
+   "argument"
+  ],
+  "q079": [
+   "instruction"
+  ],
+  "q080": [
+   "instruction",
+   "example"
+  ],
+  "q081": [
+   "instruction"
+  ],
+  "q082": [
+   "consolation",
+   "instruction"
+  ],
+  "q083": [
+   "instruction"
+  ],
+  "q084": [
+   "instruction"
+  ],
+  "q085": [
+   "instruction"
+  ],
+  "q086": [
+   "instruction"
+  ],
+  "q087": [
+   "definition"
+  ],
+  "q088": [
+   "definition"
+  ],
+  "q089": [
+   "instruction"
+  ],
+  "q090": [
+   "argument"
+  ],
+  "q091": [
+   "argument",
+   "instruction"
+  ],
+  "q092": [
+   "definition",
+   "argument"
+  ],
+  "q093": [
+   "argument"
+  ],
+  "q094": [
+   "example"
+  ],
+  "q095": [
+   "instruction"
+  ],
+  "q096": [
+   "argument",
+   "definition"
+  ],
+  "q097": [
+   "instruction"
+  ],
+  "q098": [
+   "definition"
+  ],
+  "q099": [
+   "definition"
+  ],
+  "q100": [
+   "story"
+  ],
+  "q101": [
+   "story"
+  ],
+  "q102": [
+   "argument",
+   "story"
+  ],
+  "q103": [
+   "story"
+  ],
+  "q104": [
+   "argument"
+  ],
+  "q105": [
+   "argument"
+  ],
+  "q106": [
+   "story"
+  ],
+  "q107": [
+   "argument",
+   "story"
+  ],
+  "q108": [
+   "story"
+  ],
+  "q109": [
+   "story"
+  ],
+  "q110": [
+   "story"
+  ],
+  "q111": [
+   "story"
+  ],
+  "q112": [
+   "argument"
+  ],
+  "q113": [
+   "instruction"
+  ],
+  "q114": [
+   "argument",
+   "instruction"
+  ],
+  "q115": [
+   "argument"
+  ],
+  "q116": [
+   "consolation",
+   "instruction"
+  ],
+  "q117": [
+   "argument"
+  ],
+  "q118": [
+   "argument"
+  ],
+  "q119": [
+   "definition"
+  ],
+  "q120": [
+   "instruction"
+  ],
+  "q121": [
+   "argument"
+  ],
+  "q122": [
+   "story"
+  ],
+  "q123": [
+   "argument"
+  ],
+  "q124": [
+   "story"
+  ]
+ }
+}
