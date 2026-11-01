@@ -23,6 +23,11 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import ablate  # noqa: E402  (same folder: bm25, Dense, rrf, rerank, post, match)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "taxonomy-pipeline"))
+try:
+    from src.pipeline2 import live as _live  # noqa: E402  heartbeat for the dashboard's "parsing now"
+except Exception:
+    _live = None
 
 NEEDS = ["instruction", "argument", "consolation", "definition", "example", "story"]
 LIBRARY = [
@@ -277,8 +282,13 @@ def cmd_score(a):
         if a.judge:
             base_for_judge = v.get("rewrites+bk+type+mix") or v["rewrites+bk+mix"]
             tj = time.time()
-            v["judge"] = judge(g["question"], base_for_judge[:30]) + base_for_judge[30:]
+            v["judge"] = judge(g["question"], base_for_judge[:10]) + base_for_judge[10:]     # recall@10 is 100/119: judge the ten
             judge_secs.append(time.time() - tj)
+            print(f"  {g['id']} {len(res) + 1}/{sum(1 for x in gold if x['gold'])}  judge {judge_secs[-1]:.0f}s  "
+                  f"failed {jstat['failed']}/{jstat['calls']}", flush=True)
+            if _live and a.db:
+                _live.beat(a.db, "judge", model=a.model, n=len(res) + 1, total=sum(1 for x in gold if x['gold']), question=g["question"][:160],
+                           secs=round(judge_secs[-1], 1), failed=jstat["failed"])
         row = {"id": g["id"], "type": g["type"], "need": p.get("need"), "book": g["gold"][0]["book"], "ranks": {}}
         for k, lst in v.items():
             row["ranks"][k] = next((i + 1 for i, u in enumerate(lst[:50]) if u in golds), None)
