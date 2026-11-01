@@ -12,8 +12,11 @@ _SPINE_TITLE = re.compile(r"^(PART|BOOK)\s+[IVXLC]+[.:]\s+[A-Z][^.]*$")   # 'PAR
 _SENTENCE_END = re.compile(r"[a-z][.?!]['\"\u2019\u201d]?$")   # 'certainly not.' is dialogue, not a running head
 _URL = re.compile(r"^(https?://|www\.)\S+$", re.I)
 _HEAD = re.compile(
-    r"^(BOOK|PART|CHAPTER|CHAP\.?|ACT|SCENE|SECTION|LETTER|ESSAY|PROP\.|PROPOSITION|DEFINITIONS?|AXIOMS?|"
-    r"POSTULATES?|APPENDIX|PREFACE|INTRODUCTION|FOREWORD|EPILOGUE|PROLOGUE|CONTENTS|NOTES)\b", re.I)
+    r"^((FIRST|SECOND|THIRD|FOURTH|FIFTH|SIXTH|SEVENTH|EIGHTH|NINTH|TENTH)\s+)?"
+    r"(BOOK|PART|CHAPTER|CHAP\.?|ACT|SCENE|SECTION|LETTER|ESSAY|DISCOURSE|LECTURE|TREATISE|PROP\.|PROPOSITION|"
+    r"DEFINITIONS?|AXIOMS?|POSTULATES?|APPENDIX|PREFACE|INTRODUCTION|FOREWORD|EPILOGUE|PROLOGUE|CONTENTS|NOTES)\b", re.I)
+# a bold or numbered caps line alone in its block, with no sentence end: 'I. THE THREE METAMORPHOSES.'
+_NUMBERED_CAPS = re.compile(r"^([IVXLC]+|\d{1,3})\.\s+[A-Z][A-Z' ,-]{3,}\.?$")
 
 
 def _key(text: str) -> str:
@@ -51,7 +54,9 @@ def run(lines: list[Line]) -> dict:
         ys = [l.y0 / l.page_h for l in ls]
         m = median(ys)
         steady = sum(abs(y - m) < 0.03 for y in ys) / len(ys)
-        if steady >= 0.8 and not _SENTENCE_END.search(k):
+        distinct = len({l.text.strip().lower() for l in ls}) / len(ls)
+        # 'Chapter I', 'Chapter II' ... each at the top of its first page share a key but are distinct heads
+        if steady >= 0.8 and not _SENTENCE_END.search(k) and not (distinct > 0.6 and _HEAD.match(ls[0].text.strip())):
             furniture_keys.add(k)
     # Furniture anywhere on the page: the same short line on a quarter of the pages at a steady height
     # (a footer printed above the bottom band, e.g. 'http://www.idph.net' at 0.81 in the Republic),
@@ -83,7 +88,10 @@ def run(lines: list[Line]) -> dict:
         elif (len(l.text) < 70 and l.text[:1].isupper()
               and (l.size >= bsize * 1.18 or (_HEAD.match(l.text) and (l.text.isupper() or len(l.text) < 40)))) \
                 or (len(l.text) <= 90 and _SPINE_LINE.match(l.text) and by_block[(l.page, l.block)] <= 2) \
-                or (len(l.text) <= 90 and _SPINE_TITLE.match(l.text.strip())):
+                or (len(l.text) <= 90 and _SPINE_TITLE.match(l.text.strip())) \
+                or (len(l.text) <= 60 and by_block[(l.page, l.block)] == 1 and l.text[:1].isupper()
+                    and not _SENTENCE_END.search(l.text.strip())
+                    and (l.bold or _NUMBERED_CAPS.match(l.text.strip()))):
             l.role = "heading"
         elif l.size < bsize * 0.88 and rel > 0.70:
             l.role = "note"

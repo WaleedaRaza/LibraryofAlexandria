@@ -14,17 +14,28 @@ import pymupdf
 from .model import Division, Para
 from .textnorm import match
 
-_DIV = re.compile(
-    r"^(?P<kind>BOOK|PART|CHAPTER|CHAP\.?|ACT|SCENE|LETTER|ESSAY|SECTION)\s+(?P<num>[IVXLC]+|\d+|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE|TEN)\b",
-    re.I)
+_KINDS = r"BOOK|PART|CHAPTER|CHAP\.?|ACT|SCENE|LETTER|ESSAY|SECTION|DISCOURSE|LECTURE|TREATISE"
+_NUMS = r"[IVXLC]+|\d+|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE|TEN"
+_ORD = {"FIRST": "1", "SECOND": "2", "THIRD": "3", "FOURTH": "4", "FIFTH": "5", "SIXTH": "6", "SEVENTH": "7",
+        "EIGHTH": "8", "NINTH": "9", "TENTH": "10"}
+_DIV = re.compile(r"^(?P<kind>" + _KINDS + r")\s+(?P<num>" + _NUMS + r")\b", re.I)
+_DIV_ORD = re.compile(r"^(?P<ord>" + "|".join(_ORD) + r")\s+(?P<kind>" + _KINDS + r")\b", re.I)
+_PAIRS = re.compile(r"\b(" + _KINDS + r")\s+(" + _NUMS + r")\b", re.I)
+_SENTENCE_LIKE = re.compile(r"[a-z][,;:]?$|[a-z][.?!]['\"\u2019\u201d]?\s*$")
+
+
+def _canon(label: str) -> str:
+    """'First Essay' -> 'Essay 1' so one pattern serves both orders."""
+    m = _DIV_ORD.match(label)
+    return f"{m.group('kind')} {_ORD[m.group('ord').upper()]}{label[m.end():]}" if m else label
 _APPARATUS = re.compile(
     r"^(INTRODUCTION|PREFACE|FOREWORD|TRANSLATOR|EDITOR|NOTES?\b|ENDNOTES|BIBLIOGRAPHY|INDEX\b|CONTENTS|SUM[AÁ]RIO|"
     r"ACKNOWLEDG|ABOUT THE|GLOSSARY|CHRONOLOGY|FURTHER READING|HOW TO SHARE|FREE EBOOKS)", re.I)
 _PREFACE = re.compile(r"^PREFACE\b", re.I)
 _SPINE = re.compile(r"^(PART|BOOK)\s+[IVXLC\d]+\b", re.I)
 _THE_END = re.compile(r"^(THE END|FINIS|END OF THE PROJECT GUTENBERG)\b", re.I)
-_LEVEL = {"part": 1, "book": 1, "act": 1, "chapter": 2, "chap": 2, "chap.": 2, "letter": 2, "essay": 2,
-          "scene": 3, "section": 3}
+_LEVEL = {"part": 1, "book": 1, "act": 1, "treatise": 1, "chapter": 2, "chap": 2, "chap.": 2, "letter": 2,
+          "essay": 2, "discourse": 2, "lecture": 2, "scene": 3, "section": 3}
 
 
 def _from_outline(doc: pymupdf.Document, text: str, paras: list[Para]) -> list[tuple[int, int, str]]:
@@ -44,7 +55,7 @@ def _from_outline(doc: pymupdf.Document, text: str, paras: list[Para]) -> list[t
 def _from_headings(paras: list[Para]) -> list[tuple[int, int, str]]:
     found = []
     for i, p in enumerate(paras):
-        t = p.text.strip()
+        t = _canon(p.text.strip())
         if not p.heading or len(t) > 120:
             continue
         m = _DIV.match(t)
@@ -62,6 +73,29 @@ def _from_headings(paras: list[Para]) -> list[tuple[int, int, str]]:
                 continue
             found.append((p.start, 1, t))
     return found
+
+
+def _from_generic(paras: list[Para]) -> list[tuple[int, int, str]]:
+    """Books whose headings carry no 'Chapter N': every short heading paragraph is a division (Siddhartha's
+    'THE SON OF THE BRAHMAN', the Manifesto's 'Bourgeois and Proletarians'). Stacked heading lines within
+    150 chars (a title over a subtitle) merge into one label; a heading followed by under 800 chars of text
+    is a title-page line, not a division."""
+    heads = [p for p in paras if p.heading and 3 <= len(p.text.strip()) <= 80 and p.text.strip()[:1].isupper()
+             and not _SENTENCE_LIKE.search(p.text.strip()) and not re.fullmatch(r"[\W\d]+", p.text.strip())]
+    merged: list[list] = []
+    for p in heads:
+        if merged and p.start - merged[-1][1] < 150:
+            merged[-1][1] = p.end
+            merged[-1][2] += " " + p.text.strip()
+        else:
+            merged.append([p.start, p.end, p.text.strip()])
+    out = []
+    for i, (start, end, label) in enumerate(merged):
+        nxt = merged[i + 1][0] if i + 1 < len(merged) else None
+        if nxt is not None and nxt - start < 800:
+            continue
+        out.append((start, 2, label[:120]))
+    return out
 
 
 def _mark_contents(heads: list[tuple[int, int, str]]) -> set[int]:
@@ -101,11 +135,12 @@ def _num(tok: str) -> int:
 
 
 def _div_key(label: str):
-    m = _DIV.match(match(label))
-    if not m:
+    """All (kind, number) pairs in a label: 'Part I, Chapter IV, ...' -> (('part', 1), ('chapter', 4))."""
+    lab = _canon(match(label))
+    if not _DIV.match(lab):
         return None
-    kind = m.group("kind").lower().rstrip(".")
-    return ("chapter" if kind == "chap" else kind, _num(m.group("num")))
+    pairs = tuple(("chapter" if k.lower().rstrip(".") == "chap" else k.lower().rstrip("."), _num(n)) for k, n in _PAIRS.findall(lab))
+    return pairs or None
 
 
 def _span(heads, i, n):
@@ -114,6 +149,12 @@ def _span(heads, i, n):
 
 def run(doc: pymupdf.Document, text: str, paras: list[Para]) -> list[Division]:
     heads = _from_outline(doc, text, paras) or _from_headings(paras)
+    if sum(1 for h in heads if _DIV.match(_canon(h[2])) or _SPINE.match(h[2])) < 3:
+        # no numbered spine: fall back to every heading paragraph, keeping any apparatus heads already found
+        generic = _from_generic(paras)
+        if len(generic) >= 2:
+            starts = {h[0] for h in generic}
+            heads = generic + [h for h in heads if h[0] not in starts and all(abs(h[0] - s) > 150 for s in starts)]
     heads.sort(key=lambda h: h[0])
     contents_idx = _mark_contents(heads)
     # the last heading of a contents run may be the real start of the book on the same page
@@ -152,7 +193,10 @@ def run(doc: pymupdf.Document, text: str, paras: list[Para]) -> list[Division]:
             contents_idx.update(i for i in idxs if _span(heads, i, len(text)) < 600)
 
     divs: list[Division] = []
-    first_start = heads[0][0] if heads else len(text)
+    if not heads:
+        # no headings at all (Gracian's maxims): the whole text is the book, not front matter
+        return [Division("d000", 1, "(body)", 0, len(text), "primary", 1, paras[0].page_start if paras else 1)]
+    first_start = heads[0][0]
     if first_start > 0:
         divs.append(Division("d000", 0, "(front)", 0, first_start, "front"))
     zone = "primary"
@@ -184,6 +228,12 @@ def run(doc: pymupdf.Document, text: str, paras: list[Para]) -> list[Division]:
                 ordinals[deeper] = 0
             d.ordinal = ordinals[level]
         divs.append(d)
+    # An 'Introduction' or 'Preface' that runs for a quarter of the book with no spine after it is the book
+    # itself under an editor's first heading (Varieties, Frankenstein): primary, not apparatus.
+    for d in divs:
+        if d.zone == "apparatus" and d.end - d.start > 0.25 * len(text) and not _BACKISH.match(match(d.label)) \
+                and not any(x.zone == "primary" and x.start >= d.end for x in divs):
+            d.zone = "primary"
     for d in divs:
         d.page = page_of(d.start)
     return divs
