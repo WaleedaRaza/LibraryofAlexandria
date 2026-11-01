@@ -1,0 +1,229 @@
+{
+ "note": "Step 8 corpus: the 8 pilot books plus these 32. PDFs are in the public bucket at books/<id>.pdf. Chosen for clean text layers and a spread of discourse modes; translators noted where the PDF says.",
+ "books": [
+  {
+   "id": "symposium-plato-v-2-10a5d695",
+   "label": "Plato, Symposium (with Apology and the Cave), Jowett",
+   "kind": "philosophy/dialogue",
+   "pages": 122,
+   "bytes": 2531907
+  },
+  {
+   "id": "metaphysics-aristotle-9054f206",
+   "label": "Aristotle, Metaphysics, W. D. Ross",
+   "kind": "philosophy/treatise",
+   "pages": 257,
+   "bytes": 1255262
+  },
+  {
+   "id": "beyond-good-and-evil-nietzsche-fe876d95",
+   "label": "Nietzsche, Beyond Good and Evil",
+   "kind": "philosophy/aphorism",
+   "pages": 116,
+   "bytes": 1176209
+  },
+  {
+   "id": "genealogy-of-morals-nietzsche-v-1-52b1e228",
+   "label": "Nietzsche, On the Genealogy of Morals, Ian Johnston",
+   "kind": "philosophy/essay",
+   "pages": 90,
+   "bytes": 529693
+  },
+  {
+   "id": "thus-spoke-zarathustra-nietzsche-v-1-1d5c9292",
+   "label": "Nietzsche, Thus Spoke Zarathustra",
+   "kind": "philosophy/parable",
+   "pages": 258,
+   "bytes": 977151
+  },
+  {
+   "id": "utilitarianism-john-stuart-mill-dup-2-d592bfb7",
+   "label": "J. S. Mill, Utilitarianism",
+   "kind": "philosophy/treatise",
+   "pages": 63,
+   "bytes": 844228
+  },
+  {
+   "id": "discourse-on-inequality-rousseau-v-2-58e05ead",
+   "label": "Rousseau, Discourse on Inequality, G. D. H. Cole",
+   "kind": "politics/treatise",
+   "pages": 54,
+   "bytes": 338956
+  },
+  {
+   "id": "social-contract-rousseau-v-1-5386b5af",
+   "label": "Rousseau, The Social Contract, G. D. H. Cole",
+   "kind": "politics/treatise",
+   "pages": 73,
+   "bytes": 432549
+  },
+  {
+   "id": "two-treatises-of-government-john-locke-8da00959",
+   "label": "Locke, Two Treatises of Government",
+   "kind": "politics/treatise",
+   "pages": 216,
+   "bytes": 597969
+  },
+  {
+   "id": "the-prince-machiavelli-v-3-500a1791",
+   "label": "Machiavelli, The Prince, W. K. Marriott",
+   "kind": "politics/counsel",
+   "pages": 83,
+   "bytes": 299107
+  },
+  {
+   "id": "discourses-epictetus-v-3-bcda0c72",
+   "label": "Machiavelli, Discourses on Livy (catalog mislabels it as Epictetus)",
+   "kind": "politics/commentary",
+   "pages": 255,
+   "bytes": 1864277
+  },
+  {
+   "id": "the-communist-manifesto-karl-marx-friedrich-engels-429d6987",
+   "label": "Marx and Engels, Communist Manifesto",
+   "kind": "politics/manifesto",
+   "pages": 45,
+   "bytes": 398578
+  },
+  {
+   "id": "smith-a-moral-sentiments-p-adam-smith-44b510d4",
+   "label": "Adam Smith, Theory of Moral Sentiments (MetaLibri)",
+   "kind": "philosophy/treatise",
+   "pages": 322,
+   "bytes": 1380106
+  },
+  {
+   "id": "marcus-aurelius-meditations-105f3c56",
+   "label": "Marcus Aurelius, Meditations, George Long (Gutenberg)",
+   "kind": "stoic/notebook",
+   "pages": 279,
+   "bytes": 1805730
+  },
+  {
+   "id": "letters-from-a-stoic-seneca-v-1-29bc6a7c",
+   "label": "Seneca, Letters from a Stoic, Robin Campbell (Penguin)",
+   "kind": "stoic/letters",
+   "pages": 122,
+   "bytes": 950709
+  },
+  {
+   "id": "discourses-epictetus-e29e7fc6",
+   "label": "Epictetus, Discourses, Elizabeth Carter",
+   "kind": "stoic/lectures",
+   "pages": 152,
+   "bytes": 477075
+  },
+  {
+   "id": "confessions-st-augustine-v-1-66024106",
+   "label": "Augustine, Confessions, Pusey",
+   "kind": "religion/autobiography",
+   "pages": 191,
+   "bytes": 633655
+  },
+  {
+   "id": "the-art-of-worldly-wisdom-baltasar-gracian-02a8e9d8",
+   "label": "Gracian, The Art of Worldly Wisdom, Joseph Jacobs",
+   "kind": "counsel/maxims",
+   "pages": 304,
+   "bytes": 450718
+  },
+  {
+   "id": "tao-te-ching-stephen-mitchell-dup2-bc9ac9c1",
+   "label": "Tao Te Ching, Stephen Mitchell",
+   "kind": "wisdom/verse",
+   "pages": 149,
+   "bytes": 973363
+  },
+  {
+   "id": "dhammapada-a-translation-thanissaro-bhikkhu-c4577b76",
+   "label": "Dhammapada, Thanissaro Bhikkhu",
+   "kind": "wisdom/verse",
+   "pages": 126,
+   "bytes": 790443
+  },
+  {
+   "id": "the-bhagavad-gita-guest-user-baa1e05d",
+   "label": "Bhagavad Gita with Sivananda's commentary",
+   "kind": "scripture/commentary",
+   "pages": 435,
+   "bytes": 5499127
+  },
+  {
+   "id": "hagakure-yamamoto-tsunetomo-1-e381f21c",
+   "label": "Yamamoto Tsunetomo, Hagakure",
+   "kind": "counsel/anecdote",
+   "pages": 176,
+   "bytes": 590285
+  },
+  {
+   "id": "the-varieties-of-religious-experience-william-james-27b1bda9",
+   "label": "William James, Varieties of Religious Experience",
+   "kind": "psychology/lectures",
+   "pages": 400,
+   "bytes": 1903965
+  },
+  {
+   "id": "public-opinion-walter-lippmann-ab3826ac",
+   "label": "Walter Lippmann, Public Opinion (1921)",
+   "kind": "politics/essay",
+   "pages": 266,
+   "bytes": 1052105
+  },
+  {
+   "id": "the-myth-of-sisyphus-camus-v-1-bd8db4a1",
+   "label": "Camus, The Myth of Sisyphus",
+   "kind": "philosophy/essay",
+   "pages": 97,
+   "bytes": 1521664
+  },
+  {
+   "id": "fear-and-trembling-johannes-de-silentio-337b0903",
+   "label": "Kierkegaard, Fear and Trembling",
+   "kind": "philosophy/religious",
+   "pages": 34,
+   "bytes": 338676
+  },
+  {
+   "id": "shelley-frankenstein-1818-mary-shelley-v-1-abae9f7b",
+   "label": "Mary Shelley, Frankenstein (1818)",
+   "kind": "fiction/novel",
+   "pages": 180,
+   "bytes": 515220
+  },
+  {
+   "id": "notes-from-underground-dostoevsky-v-1-8d005979",
+   "label": "Dostoevsky, Notes from Underground, Garnett",
+   "kind": "fiction/novella",
+   "pages": 85,
+   "bytes": 1122055
+  },
+  {
+   "id": "the-metamorphosis-kafka-v-2-35214d84",
+   "label": "Kafka, The Metamorphosis, Ian Johnston",
+   "kind": "fiction/novella",
+   "pages": 29,
+   "bytes": 947038
+  },
+  {
+   "id": "siddhartha-hermann-hesse-v-1-e84f0a38",
+   "label": "Hesse, Siddhartha (Gutenberg)",
+   "kind": "fiction/novel",
+   "pages": 108,
+   "bytes": 601146
+  },
+  {
+   "id": "the-death-of-ivan-leo-tolstoy-fef0ff20",
+   "label": "Tolstoy, The Death of Ivan Ilyich and other stories",
+   "kind": "fiction/stories",
+   "pages": 311,
+   "bytes": 1593182
+  },
+  {
+   "id": "persuasion-jane-austen-66a0474c",
+   "label": "Jane Austen, Persuasion",
+   "kind": "fiction/novel",
+   "pages": 304,
+   "bytes": 1363227
+  }
+ ]
+}
