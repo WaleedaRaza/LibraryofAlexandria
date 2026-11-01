@@ -93,10 +93,13 @@ def chat(url, model, user):
 def cmd_plan(a):
     gold = [json.loads(l) for l in Path(a.gold).read_text(encoding="utf-8").splitlines() if l.strip()]
     out = json.loads(Path(a.out).read_text(encoding="utf-8")) if Path(a.out).exists() else {}
-    t0 = time.time()
+    t0, done = time.time(), 0
     for g in gold:
         if g["id"] in out:
             continue
+        if a.limit and done >= a.limit:
+            break
+        done += 1
         for attempt in range(3):
             try:
                 p = chat(a.ollama, a.model, g["question"])
@@ -106,13 +109,14 @@ def cmd_plan(a):
         p["books"] = [LIBRARY[i - 1][0] for i in p.get("books", []) if isinstance(i, int) and 1 <= i <= len(LIBRARY)]
         out[g["id"]] = {"question": g["question"], **p}
         Path(a.out).write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"planned {len(out)} questions in {time.time() - t0:.0f}s ({(time.time() - t0) / max(len(gold), 1):.1f}s each)")
+    print(f"planned {done} new, {len(out)}/{len(gold)} total, {time.time() - t0:.0f}s ({(time.time() - t0) / max(done, 1):.1f}s each)")
 
 
 def cmd_need(a):
     plans = json.loads(Path(a.plans).read_text(encoding="utf-8"))
     labels = json.loads(Path(a.labels).read_text(encoding="utf-8"))["labels"]
     agree, conf, rows = 0, Counter(), []
+    labels = {q: l for q, l in labels.items() if q in plans}
     for qid, lab in sorted(labels.items()):
         got = plans.get(qid, {}).get("need")
         ok = got in lab
@@ -252,6 +256,7 @@ def main():
         s.add_argument("--plans", default="analysis/query_plans_v1.json")
         s.add_argument("--out", default="analysis/query_plans_v1.json" if name == "plan" else "analysis/rewrite_v1.json")
         s.add_argument("--db", default=None)
+        s.add_argument("--limit", type=int, default=0, help="plan: stop after this many new questions")
         s.add_argument("--judge", action="store_true", help="add the gemma listwise judge over the top 30 (step 6)")
     a = ap.parse_args()
     {"plan": cmd_plan, "need": cmd_need, "score": cmd_score}[a.cmd](a)
