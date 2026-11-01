@@ -26,3 +26,16 @@ python -m src.pipeline2.cli eval   --db data/p2.sqlite --gold ../eval/gold_v0.py
 Pilot score (8 books, 119 scored questions, lexical only): recall@10 69/119, recall@1 31/119, MRR 0.357,
 against the page-level BM25 baseline of 64/119 and 23/119. With qwen3-embedding:4b dense vectors and
 generated questions: 86/119 and 50/119 (before the rerank stage).
+
+## Explorer (local)
+
+```bash
+python -m src.pipeline2.explore --db data/p2.sqlite          # http://127.0.0.1:8765
+```
+
+Shelf (books, zones, parsing warnings), book view (division barcodes, text by unit, commentary voices,
+generated questions, nearest passages in other books), atlas (all units in 2D from the configured embedder's
+unit vectors; computed once into `unit_xy`, `--reproject` to redo), ask (S9 routing with per-retriever ranks and
+gold-anchor checks; dense and rerank are used when their servers answer), gold set browser. Needs numpy and
+the pipeline's own dependencies; no CDN. Writes only `unit_xy` and `gold_candidate` ("save as gold").
+Design: "LibXNDR: Reading Lenses, Explorer and the Whole App" (https://claude.ai/artifact/6bTDhrV9HxA7HcDqwmuA6q).

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LibXNDR Explorer</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="#/">LibXNDR <span>explorer</span></a>
+  <nav>
+    <a href="#/" data-nav="shelf">Shelf</a>
+    <a href="#/atlas" data-nav="atlas">Atlas</a>
+    <a href="#/gold" data-nav="gold">Gold set</a>
+  </nav>
+  <form id="askform" class="ask" autocomplete="off">
+    <input id="askq" type="search" placeholder="Ask the 8 books a question…" aria-label="Question">
+    <button type="submit">Ask</button>
+  </form>
+  <span id="status" class="status" title="Retrievers available"></span>
+</header>
+<main id="view"></main>
+<div id="tip" class="tip" hidden></div>
+<script src="/app.js"></script>
+</body>
+</html>
