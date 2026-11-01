@@ -19,7 +19,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 import numpy as np
 
-from . import project2d
+from . import pipeline_status, project2d
 from .s9_route import ZONE_WEIGHT, bm25, dense, route
 
 STATIC = Path(__file__).parent / "explorer"
@@ -237,6 +237,8 @@ def make_handler(ex: Explorer):
             try:
                 if p == "/api/status":
                     return self._json(ex.status())
+                if p == "/api/pipeline":
+                    return self._json(pipeline_status.status(ex.db))
                 if p == "/api/books":
                     return self._json(ex.books())
                 if p.startswith("/api/book/"):

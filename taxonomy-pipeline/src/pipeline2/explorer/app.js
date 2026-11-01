@@ -42,11 +42,13 @@ function route() {
   document.querySelectorAll("[data-nav]").forEach((a) => a.classList.toggle("on",
     (a.dataset.nav === "shelf" && (path === "/" || path.startsWith("/book"))) || path === "/" + a.dataset.nav));
   tip.hidden = true;
+  stopPipeline();
   if (path !== "/ask") $("#askq").value = qs.get("q") || "";
   if (path.startsWith("/book/")) return renderBook(decodeURIComponent(path.slice(6)), qs.get("u"), qs.get("q"));
   if (path === "/atlas") return renderAtlas(qs.get("q"));
   if (path === "/ask") return renderAsk(qs.get("q") || "");
   if (path === "/gold") return renderGold(qs.get("type"));
+  if (path === "/pipeline") return renderPipeline();
   return renderShelf();
 }
 

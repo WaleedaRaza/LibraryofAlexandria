@@ -113,3 +113,31 @@ table.gold th { font-size: 12px; color: var(--muted); font-weight: 600; }
   .atlas .stage { height: 70vh; }
 }
 .u .ev { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+/* pipeline */
+.pipehead { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; flex-wrap: wrap; }
+.pipegrid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 14px; }
+.pipeside { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.pipegrid .col { overflow: visible; }
+.pipegrid h2:first-child, .shelf .col h2:first-child { margin-top: 0; }
+.stats.wrap { flex-wrap: wrap; margin: 6px 0; }
+.steps { list-style: none; margin: 0; padding: 0; }
+.step { padding: 8px 10px; border-left: 3px solid var(--rule); margin-bottom: 6px; }
+.step.done { border-left-color: var(--hit-ink); }
+.step.running { border-left-color: var(--accent); background: var(--bg); }
+.step.failed, .step.stalled { border-left-color: var(--warn); background: var(--warn-bg); }
+.stephead { display: flex; justify-content: space-between; gap: 12px; }
+.stepstate { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.step.running .stepstate { color: var(--accent); font-weight: 600; }
+.step.failed .stepstate, .step.stalled .stepstate { color: var(--warn); font-weight: 600; }
+.pbar { height: 8px; border-radius: 4px; background: var(--rule); overflow: hidden; margin: 6px 0 3px; }
+.pbar i { display: block; height: 100%; background: var(--accent); transition: width .4s; }
+.mono { font-family: ui-monospace, Consolas, monospace; word-break: break-all; }
+table.pipe { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.pipe th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12px; }
+table.pipe th, table.pipe td { padding: 3px 8px 3px 0; border-bottom: 1px solid var(--rule); }
+table.pipe td + td, table.pipe th + th { text-align: right; font-variant-numeric: tabular-nums; }
+table.pipe .top { color: var(--hit-ink); font-weight: 600; }
+.pipelog { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 12px; max-height: 320px;
+  overflow: auto; font: 12px/1.5 ui-monospace, Consolas, monospace; white-space: pre-wrap; margin: 0; }
+@media (max-width: 800px) { .pipegrid { grid-template-columns: minmax(0, 1fr); } }
