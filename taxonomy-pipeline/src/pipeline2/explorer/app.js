@@ -15,6 +15,10 @@ const PALETTE = ["#3b6ea5", "#b5651d", "#4b8b3b", "#8e44ad", "#c0392b", "#16808a
 const state = { books: [], color: {}, title: {}, atlas: null, lastAsk: null };
 const norm = (s) => String(s).toLowerCase().replace(/[‘’]/g, "'").replace(/[“”]/g, '"')
   .replace(/[—–]/g, "-").replace(/(\w)-\s*\n\s*(\w)/g, "$1$2").replace(/\s+/g, " ").trim();
+const TYPE_COLOR = { instruction: "#2e8b57", argument: "#3b6ea5", consolation: "#8e44ad", definition: "#b8860b",
+  example: "#c0392b", story: "#d2691e", other: "var(--z-other)" };
+const TYPES = Object.keys(TYPE_COLOR);
+const unitColor = (u, byType) => byType && u.type ? TYPE_COLOR[u.type] || "var(--z-other)" : zoneColor(u);
 const zoneColor = (u) => u.voice === "commentary" ? "var(--z-comment)" : u.zone === "primary" ? "var(--z-author)"
   : u.zone === "apparatus" ? "var(--z-apparatus)" : "var(--z-other)";
 const short = (t) => (t || "").replace(/^The /, "").replace(/ By .*$| by .*$/i, "").slice(0, 46);
@@ -81,16 +85,20 @@ async function renderBook(eid, unitId, q) {
   const meta = state.books.find((x) => x.id === eid) || {};
   const byDiv = {};
   b.units.forEach((u) => (byDiv[u.div] = byDiv[u.div] || []).push(u));
+  const typed = b.units.some((u) => u.type);
+  let typeFilter = "";
   view.innerHTML = `<div class="book">
     <div class="col divs"><h1 style="font-size:18px">${esc(meta.title || eid)}</h1>
-      <div class="legend" style="margin:6px 0 10px"><span><i style="background:var(--z-author)"></i>author</span>
-      <span><i style="background:var(--z-comment)"></i>commentary</span><span><i style="background:var(--z-apparatus)"></i>apparatus</span></div>
+      ${typed ? `<div class="legend" style="margin:6px 0 4px">${TYPES.map((t) => `<span><i style="background:${TYPE_COLOR[t]}"></i>${t}</span>`).join("")}</div>
+      <label class="small">show only <select id="tfilter"><option value="">all types</option>${TYPES.map((t) => `<option>${t}</option>`).join("")}</select></label>`
+      : `<div class="legend" style="margin:6px 0 10px"><span><i style="background:var(--z-author)"></i>author</span>
+      <span><i style="background:var(--z-comment)"></i>commentary</span><span><i style="background:var(--z-apparatus)"></i>apparatus</span></div>`}
       ${b.divisions.map((d) => {
         const us = byDiv[d.id] || [];
         const words = us.reduce((a, u) => a + u.words, 0) || 1;
         return `<div class="div" data-div="${esc(d.id)}" title="${esc(d.label)}">
           <div class="z">${esc(d.zone)} · p${d.page ?? "?"} · ${us.length} units</div><div class="lab">${esc(d.label)}</div>
-          <div class="barcode">${us.map((u) => `<span style="flex:${Math.max(u.words, 8)};background:${zoneColor(u)}" title="${esc(u.ref)}"></span>`).join("")}</div></div>`;
+          <div class="barcode">${us.map((u) => `<span style="flex:${Math.max(u.words, 8)};background:${unitColor(u, typed)}" title="${esc((u.type ? u.type + " · " : "") + u.ref)}"></span>`).join("")}</div></div>`;
       }).join("")}
       ${b.gold.length ? `<h2>Gold questions (${b.gold.length})</h2>${b.gold.map((g) => `<div class="small" style="margin-bottom:6px">
         <span class="chip">${esc(g.type)}</span><a href="#/ask?q=${encodeURIComponent(g.question)}">${esc(g.question)}</a></div>`).join("")}` : ""}
@@ -105,13 +113,21 @@ async function renderBook(eid, unitId, q) {
     const terms = q ? termsOf(q) : [];
     $("#text").innerHTML = `<div class="divhead">${esc(d.label)} · ${esc(d.zone)}</div>` + units.map((u) => `
       <div class="u ${esc(u.zone)} ${u.voice === "commentary" ? "commentary" : ""}" data-id="${esc(u.id)}">
-      <span class="gut">${esc(u.id.split(":").pop())} · p${u.p0}${u.p1 !== u.p0 ? "–" + u.p1 : ""}${u.voice === "commentary" ? " · " + esc(u.voice_name || "commentary") : ""}</span><div class="ut">${highlight(u.text, terms)}</div></div>`).join("");
+      <span class="gut">${esc(u.id.split(":").pop())} · p${u.p0}${u.p1 !== u.p0 ? "–" + u.p1 : ""}${u.voice === "commentary" ? " · " + esc(u.voice_name || "commentary") : ""}${u.type ? ` · <b style="color:${TYPE_COLOR[u.type]}">${esc(u.type)}</b>${u.type2 ? " + " + esc(u.type2) : ""}` : ""}</span><div class="ut">${renderUnitText(u, terms)}</div></div>`).join("");
+    applyFilter();
     $("#text").querySelectorAll(".u").forEach((el) => el.addEventListener("click", () => selectUnit(el.dataset.id)));
     const target = selectId || (units[0] && units[0].id);
     if (selectId) { const el = $(`.u[data-id="${CSS.escape(selectId)}"]`); if (el) el.scrollIntoView({ block: "center" }); }
     else $("#textcol").scrollTop = 0;
     if (target && selectId) selectUnit(target);
   };
+  function applyFilter() {
+    $("#text").querySelectorAll(".u").forEach((el) => {
+      const u = el.querySelector(".gut b");
+      el.style.opacity = !typeFilter || (u && u.textContent === typeFilter) ? 1 : 0.25;
+    });
+  }
+  if (typed) $("#tfilter").addEventListener("change", (e) => { typeFilter = e.target.value; applyFilter(); });
   const selectUnit = async (uid) => {
     $("#text").querySelectorAll(".u").forEach((x) => x.classList.toggle("sel", x.dataset.id === uid));
     const u = await api("/api/unit/" + encodeURIComponent(uid));
@@ -136,6 +152,14 @@ async function renderBook(eid, unitId, q) {
   const start = unitId && b.units.find((x) => x.id === unitId);
   if (start) openDiv(start.div, start.id);
   else { const first = b.divisions.find((d) => d.zone === "primary"); if (first) openDiv(first.id); }
+}
+
+// the evidence span that pins the passage's type, underlined; query terms highlighted elsewhere
+function renderUnitText(u, terms) {
+  if (!u.ev) return highlight(u.text, terms);
+  const [s, e] = u.ev;
+  return highlight(u.text.slice(0, s), terms) + `<span class="ev" title="evidence for '${esc(u.type)}'">` +
+    highlight(u.text.slice(s, e), terms) + "</span>" + highlight(u.text.slice(e), terms);
 }
 
 function termsOf(q) {

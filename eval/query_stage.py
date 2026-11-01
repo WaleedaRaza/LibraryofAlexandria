@@ -13,6 +13,7 @@ Variants scored (all end with the cross-encoder over the fused top 30, as S9 doe
 from __future__ import annotations
 import argparse
 import json
+import sqlite3
 import sys
 import time
 from collections import Counter, defaultdict
@@ -55,6 +56,32 @@ SCHEMA = {"type": "object", "properties": {
     "rewrites": {"type": "array", "items": {"type": "string"}, "minItems": 3, "maxItems": 5},
     "books": {"type": "array", "items": {"type": "integer"}}},
     "required": ["need", "rewrites", "books"]}
+
+
+COMPAT = {("instruction", "consolation"), ("consolation", "instruction"), ("example", "story"), ("story", "example"),
+          ("argument", "definition"), ("definition", "argument")}
+
+
+def type_weight(need, lab):
+    """Boost a passage whose type matches the question's need; a little for a neighbouring type; damp 'other'."""
+    if not lab or not need:
+        return 1.0
+    t, t2 = lab
+    if t == "other":
+        return 0.6
+    if need in (t, t2):
+        return 1.3
+    if (need, t) in COMPAT:
+        return 1.1
+    return 1.0
+
+
+JUDGE_SYSTEM = ("You rank passages from classic books for a reader's question. Judge which passages themselves answer "
+                "the question (not passages that merely mention its words; an editor's summary is worse than the author's own "
+                "text). Reply with JSON only: the 10 best passage numbers, best first, each with a reason of at most 15 words.")
+JUDGE_SCHEMA = {"type": "object", "properties": {"ranking": {"type": "array", "maxItems": 10, "items": {
+    "type": "object", "properties": {"n": {"type": "integer"}, "reason": {"type": "string"}}, "required": ["n", "reason"]}}},
+    "required": ["ranking"]}
 
 
 def chat(url, model, user):
@@ -101,7 +128,6 @@ def cmd_need(a):
 
 
 def cmd_score(a):
-    import sqlite3
     con = sqlite3.connect(a.db)
     plans = json.loads(Path(a.plans).read_text(encoding="utf-8"))
     gold = [json.loads(l) for l in Path(a.gold).read_text(encoding="utf-8").splitlines() if l.strip()]
@@ -137,6 +163,29 @@ def cmd_score(a):
         head = sorted(scores, key=lambda u: -scores[u])
         return head + [u for u in ids if u not in scores]
 
+    labels = {}
+    try:
+        labels = {u: (t, t2) for u, t, t2 in con.execute("SELECT unit_id, type, type2 FROM unit_label")}
+    except sqlite3.OperationalError:
+        pass
+    judge_secs = []
+
+    def judge(q, ids):
+        listing = "\n\n".join(f"[{i + 1}] {ref[u][:60]}: {' '.join(text[u].split()[:90])}" for i, u in enumerate(ids))
+        body = {"model": a.model, "stream": False, "think": False, "options": {"temperature": 0, "num_ctx": 16384},
+                "format": JUDGE_SCHEMA, "messages": [{"role": "system", "content": JUDGE_SYSTEM},
+                                                     {"role": "user", "content": f"Question: {q}\n\nPassages:\n{listing}"}]}
+        try:
+            out = json.loads(ablate.post(f"{a.ollama}/api/chat", body)["message"]["content"])
+        except Exception:
+            return ids
+        picked = []
+        for r in out.get("ranking", []):
+            n = r.get("n") if isinstance(r, dict) else None
+            if isinstance(n, int) and 1 <= n <= len(ids) and ids[n - 1] not in picked:
+                picked.append(ids[n - 1])
+        return picked + [u for u in ids if u not in picked]
+
     res, t0 = [], time.time()
     for g in gold:
         if not g["gold"]:
@@ -157,11 +206,24 @@ def cmd_score(a):
         else:
             v["rewrites+bk"] = v["rewrites"]
         v["rewrites_norr"] = fr
+        if labels:
+            need = p.get("need")
+            sb = {u: sc * (1.0 if ed[u] in named or not named or g["type"] == "comparative" else 0.5) for u, sc in sr.items()}
+            st = {u: sc * type_weight(need, labels.get(u)) for u, sc in sb.items()}
+            v["rewrites+bk+type"] = order(st, fr)
+        if a.judge:
+            base_for_judge = v.get("rewrites+bk+type") or v["rewrites+bk"]
+            tj = time.time()
+            v["judge"] = judge(g["question"], base_for_judge[:30]) + base_for_judge[30:]
+            judge_secs.append(time.time() - tj)
         row = {"id": g["id"], "type": g["type"], "need": p.get("need"), "book": g["gold"][0]["book"], "ranks": {}}
         for k, lst in v.items():
             row["ranks"][k] = next((i + 1 for i, u in enumerate(lst[:50]) if u in golds), None)
         res.append(row)
     secs = (time.time() - t0) / max(len(res), 1)
+    if judge_secs:
+        js = sorted(judge_secs)
+        print(f"judge: median {js[len(js) // 2]:.1f}s, max {js[-1]:.1f}s per question")
     Path(a.out).write_text(json.dumps(res, indent=1), encoding="utf-8")
     ks = list(res[0]["ranks"])
     print(f"{len(res)} scored questions, {secs:.1f}s per question\n\n| variant | ranked first | top 10 |\n| --- | --- | --- |")
@@ -190,6 +252,7 @@ def main():
         s.add_argument("--plans", default="analysis/query_plans_v1.json")
         s.add_argument("--out", default="analysis/query_plans_v1.json" if name == "plan" else "analysis/rewrite_v1.json")
         s.add_argument("--db", default=None)
+        s.add_argument("--judge", action="store_true", help="add the gemma listwise judge over the top 30 (step 6)")
     a = ap.parse_args()
     {"plan": cmd_plan, "need": cmd_need, "score": cmd_score}[a.cmd](a)
 

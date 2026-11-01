@@ -112,3 +112,4 @@ table.gold th { font-size: 12px; color: var(--muted); font-weight: 600; }
   .atlas { grid-template-columns: 1fr; height: auto; }
   .atlas .stage { height: 70vh; }
 }
+.u .ev { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }

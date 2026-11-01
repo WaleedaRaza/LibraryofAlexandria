@@ -100,10 +100,13 @@ class Explorer:
             "SELECT id, level, label, start, end, zone, ordinal, page FROM division WHERE edition_id=? ORDER BY start", (eid,))]
         xy = dict(((u, (x, y)) for u, x, y in con.execute("SELECT unit_id, x, y FROM unit_xy WHERE model=?", (self.vec_model,))))
         units = []
+        lab = self.labels()
         for r in con.execute("SELECT u.id, u.division_id, u.zone, u.voice, u.voice_name, u.ref, u.start, u.end, "
                              "u.page_start, u.page_end, u.words, (SELECT count(*) FROM unit_question q WHERE q.unit_id=u.id) "
                              "FROM unit u WHERE u.edition_id=? ORDER BY u.start", (eid,)):
-            units.append(dict(zip(("id", "div", "zone", "voice", "voice_name", "ref", "start", "end", "p0", "p1", "words", "nq"), r)))
+            d = dict(zip(("id", "div", "zone", "voice", "voice_name", "ref", "start", "end", "p0", "p1", "words", "nq"), r))
+            d["type"] = lab.get(d["id"], (None,))[0]
+            units.append(d)
         gold = [g for g in self.gold if any(a["book"] == eid for a in g["gold"])]
         return {"id": eid, "divisions": divs, "units": units, "gold": gold, "has_xy": bool(xy)}
 
@@ -142,10 +145,25 @@ class Explorer:
                 break
         return out
 
+    def labels(self) -> dict:
+        """unit_id -> (type, type2, evidence start, evidence end); empty before the labelling step has run."""
+        try:
+            return {u: (t, t2, s, e) for u, t, t2, s, e in
+                    self.con().execute("SELECT unit_id, type, type2, start, end FROM unit_label")}
+        except sqlite3.OperationalError:
+            return {}
+
     def division_units(self, eid: str, div: str) -> list[dict]:
         rows = self.con().execute("SELECT id, zone, voice, voice_name, ref, page_start, page_end, text FROM unit "
                                   "WHERE edition_id=? AND division_id=? ORDER BY start", (eid, div)).fetchall()
-        return [dict(zip(("id", "zone", "voice", "voice_name", "ref", "p0", "p1", "text"), r)) for r in rows]
+        lab = self.labels()
+        out = []
+        for r in rows:
+            d = dict(zip(("id", "zone", "voice", "voice_name", "ref", "p0", "p1", "text"), r))
+            t, t2, s, e = lab.get(d["id"], (None, None, -1, -1))
+            d.update(type=t, type2=t2, ev=[s, e] if s is not None and s >= 0 else None)
+            out.append(d)
+        return out
 
     def atlas(self) -> list[list]:
         return self.con().execute("SELECT x.unit_id, u.edition_id, round(x.x, 4), round(x.y, 4), u.zone, u.voice "
