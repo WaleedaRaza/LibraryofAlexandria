@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import re
 import sqlite3
+from .edges import edges_for_unit
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -119,6 +120,7 @@ class Explorer:
         u = dict(zip(("id", "edition", "div", "zone", "voice", "voice_name", "ref", "start", "end", "p0", "p1", "words", "text"), r))
         u["questions"] = [q for (q,) in con.execute("SELECT question FROM unit_question WHERE unit_id=?", (uid,))]
         u["neighbours"] = self.neighbours(uid, 8)
+        u["edges"] = edges_for_unit(con, uid)
         prev_next = con.execute("SELECT (SELECT id FROM unit WHERE edition_id=? AND start<? ORDER BY start DESC LIMIT 1), "
                                 "(SELECT id FROM unit WHERE edition_id=? AND start>? ORDER BY start LIMIT 1)",
                                 (u["edition"], u["start"], u["edition"], u["start"])).fetchone()
