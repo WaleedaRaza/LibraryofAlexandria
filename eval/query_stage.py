@@ -197,6 +197,15 @@ def cmd_score(a):
         head = sorted(scores, key=lambda u: -scores[u])
         return head + [u for u in ids if u not in scores]
 
+    def combine(scores, ids, k=10):
+        """Reciprocal-rank mix of the retrieval order and the reranker order over the head (neither alone is trusted)."""
+        head = [u for u in ids if u in scores]
+        rr = sorted(head, key=lambda u: -scores[u])
+        pos = {u: i for i, u in enumerate(head)}
+        rpos = {u: i for i, u in enumerate(rr)}
+        mixed = sorted(head, key=lambda u: -(1 / (k + pos[u]) + 1 / (k + rpos[u])))
+        return mixed + [u for u in ids if u not in scores]
+
     labels = {}
     try:
         labels = {u: (t, t2) for u, t, t2 in con.execute("SELECT unit_id, type, type2 FROM unit_label")}
@@ -236,17 +245,20 @@ def cmd_score(a):
         v["rewrites"] = order(sr, fr)
         named = set(p.get("books", []))
         if named and g["type"] != "comparative":
-            v["rewrites+bk"] = order({u: s * (1.0 if ed[u] in named else 0.5) for u, s in sr.items()}, fr)
+            sbk = {u: s * (1.0 if ed[u] in named else 0.5) for u, s in sr.items()}
         else:
-            v["rewrites+bk"] = v["rewrites"]
+            sbk = sr
+        v["rewrites+bk"] = order(sbk, fr)
+        v["rewrites+bk+mix"] = combine(sbk, fr)
         v["rewrites_norr"] = fr
         if labels:
             need = p.get("need")
             sb = {u: sc * (1.0 if ed[u] in named or not named or g["type"] == "comparative" else 0.5) for u, sc in sr.items()}
             st = {u: sc * type_weight(need, labels.get(u)) for u, sc in sb.items()}
             v["rewrites+bk+type"] = order(st, fr)
+            v["rewrites+bk+type+mix"] = combine(st, fr)
         if a.judge:
-            base_for_judge = v.get("rewrites+bk+type") or v["rewrites+bk"]
+            base_for_judge = v.get("rewrites+bk+type+mix") or v["rewrites+bk+mix"]
             tj = time.time()
             v["judge"] = judge(g["question"], base_for_judge[:30]) + base_for_judge[30:]
             judge_secs.append(time.time() - tj)
