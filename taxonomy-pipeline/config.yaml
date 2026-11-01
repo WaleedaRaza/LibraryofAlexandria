@@ -37,3 +37,19 @@ pipeline1:
     concurrency: 1
     checkpoint_every: 1
     retry_on_failure: 2
+
+# Passage-level pipeline (src/pipeline2). Models are off by default; set provider to
+# "ollama" (local, http://localhost:11434) or "openai" (any OpenAI-compatible server:
+# LM Studio, llama.cpp, vLLM) to turn on S7 enrichment and dense retrieval.
+pipeline2:
+  embed:
+    provider: none            # ollama | openai | none
+    base_url: http://localhost:11434
+    model: nomic-embed-text   # ollama pull nomic-embed-text
+    query_prefix: "search_query: "
+    doc_prefix: "search_document: "
+  gen:
+    provider: none            # ollama | openai | none
+    base_url: http://localhost:11434
+    model: qwen2.5:7b-instruct   # ollama pull qwen2.5:7b-instruct
+    temperature: 0.0
