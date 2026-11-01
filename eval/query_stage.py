@@ -107,6 +107,14 @@ def cmd_plan(a):
             except Exception as e:
                 p = {"error": str(e)}
         p["books"] = [LIBRARY[i - 1][0] for i in p.get("books", []) if isinstance(i, int) and 1 <= i <= len(LIBRARY)]
+        # the need comes from the focused prompt (97/124 vs 91/124 for the combined one); keep the first guess as need_v0
+        try:
+            body = {"model": a.model, "stream": False, "think": False, "format": NEED_SCHEMA, "options": {"temperature": 0},
+                    "messages": [{"role": "system", "content": NEED_SYSTEM}, {"role": "user", "content": g["question"]}]}
+            p["need_v0"] = p.get("need")
+            p["need"] = json.loads(ablate.post(f"{a.ollama}/api/chat", body)["message"]["content"])["need"]
+        except Exception:
+            pass
         out[g["id"]] = {"question": g["question"], **p}
         Path(a.out).write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"planned {done} new, {len(out)}/{len(gold)} total, {time.time() - t0:.0f}s ({(time.time() - t0) / max(done, 1):.1f}s each)")
