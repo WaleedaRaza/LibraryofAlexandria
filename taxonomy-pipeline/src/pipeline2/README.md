@@ -14,12 +14,15 @@ python -m src.pipeline2.cli ingest --pdf-dir <dir of slug.pdf> --db data/p2.sqli
 python -m src.pipeline2.cli eval   --db data/p2.sqlite --gold ../eval/gold_v0.py -v
 python -m src.pipeline2.cli route  --db data/p2.sqlite "what does Hobbes say life is like without government"
 
-# with local models (set pipeline2.embed/gen provider: ollama in config.yaml)
-ollama pull nomic-embed-text && ollama pull qwen2.5:7b-instruct
-python -m src.pipeline2.cli enrich --db data/p2.sqlite
+# local models (config.yaml pipeline2 defaults): Ollama plus a /rerank server on :8088
+ollama pull qwen3-embedding:4b && ollama pull gemma4:12b
+python -m src.pipeline2.cli enrich --db data/p2.sqlite      # skips units with invalid model JSON; rerun to retry
 python -m src.pipeline2.cli embed  --db data/p2.sqlite
-python -m src.pipeline2.cli eval   --db data/p2.sqlite --gold ../eval/gold_v0.py --dense
+python -m src.pipeline2.cli eval   --db data/p2.sqlite --gold ../eval/gold_v0.py            # dense + rerank
+python -m src.pipeline2.cli eval   --db data/p2.sqlite --gold ../eval/gold_v0.py --no-rerank
+# without any models: add --no-dense --no-rerank, or set the providers to none
 ```
 
 Pilot score (8 books, 119 scored questions, lexical only): recall@10 69/119, recall@1 31/119, MRR 0.357,
-against the page-level BM25 baseline of 64/119 and 23/119.
+against the page-level BM25 baseline of 64/119 and 23/119. With qwen3-embedding:4b dense vectors and
+generated questions: 86/119 and 50/119 (before the rerank stage).

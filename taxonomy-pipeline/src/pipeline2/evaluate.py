@@ -20,7 +20,7 @@ def load_gold(path: str | Path):
     return mod.ITEMS
 
 
-def run(con, gold_path, k: int = 10, emb=None, verbose: bool = False, log=print) -> dict:
+def run(con, gold_path, k: int = 10, emb=None, verbose: bool = False, log=print, rerank=None) -> dict:
     items = load_gold(gold_path)
     units = con.execute("SELECT id, edition_id, page_start, page_end, text FROM unit").fetchall()
     norm = {u[0]: match(u[4]) for u in units}
@@ -40,13 +40,13 @@ def run(con, gold_path, k: int = 10, emb=None, verbose: bool = False, log=print)
     misses = []
     for q, kind, gold, decoys in items:
         if not gold:
-            hits = route(con, q, k=k, emb=emb)
+            hits = route(con, q, k=k, emb=emb, rerank=rerank)
             abstain_ok += not hits      # BM25 alone will rarely abstain; scored once a threshold exists
             continue
         if not any(g["book"] in have for g in gold):
             continue
         n += 1
-        hits = route(con, q, k=k, emb=emb)
+        hits = route(con, q, k=k, emb=emb, rerank=rerank)
         rank = next((i for i, h in enumerate(hits)
                      if any(g["book"] == h.edition_id and g["anchor"] in norm[h.unit_id] for g in gold)), None)
         key = "cross-book" if kind == "comparative" else gold[0]["book"]

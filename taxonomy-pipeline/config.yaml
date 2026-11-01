@@ -38,18 +38,25 @@ pipeline1:
     checkpoint_every: 1
     retry_on_failure: 2
 
-# Passage-level pipeline (src/pipeline2). Models are off by default; set provider to
-# "ollama" (local, http://localhost:11434) or "openai" (any OpenAI-compatible server:
-# LM Studio, llama.cpp, vLLM) to turn on S7 enrichment and dense retrieval.
+# Passage-level pipeline (src/pipeline2). Defaults are the local stack that scored best on the
+# 8-book pilot (86/119 recall@10, 50/119 recall@1 with qwen3-embedding:4b; bge-m3 77/48, nomic 77/39).
+# No local models? Set each provider to none, or run eval/route with --no-dense --no-rerank.
 pipeline2:
   embed:
-    provider: none            # ollama | openai | none
+    provider: ollama          # ollama | openai | none
     base_url: http://localhost:11434
-    model: nomic-embed-text   # ollama pull nomic-embed-text
-    query_prefix: "search_query: "
-    doc_prefix: "search_document: "
+    model: qwen3-embedding:4b # ollama pull qwen3-embedding:4b
+    query_prefix: "Instruct: Given a question, retrieve passages from books that answer it\nQuery: "
+    doc_prefix: ""            # qwen3-embedding takes the instruction on queries only; changing this needs a re-embed
   gen:
-    provider: none            # ollama | openai | none
+    provider: ollama          # ollama | openai | none
     base_url: http://localhost:11434
-    model: qwen2.5:7b-instruct   # ollama pull qwen2.5:7b-instruct
+    model: gemma4:12b         # ollama pull gemma4:12b
     temperature: 0.0
+    think: false              # thinking models put JSON in the wrong field otherwise
+  rerank:
+    provider: http            # http | none; cross-encoder over the top fused candidates
+    url: http://127.0.0.1:8088/rerank
+    model: bge-reranker-v2-m3
+    top: 30
+  # OCR for image-only pages (not wired in yet): glm-ocr:q8_0 with num_ctx 16384

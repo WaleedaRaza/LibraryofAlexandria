@@ -13,7 +13,7 @@ from pathlib import Path
 import click
 import yaml
 
-from .models import EmbedConfig, Embedder, GenConfig, Generator
+from .models import EmbedConfig, Embedder, GenConfig, Generator, RerankConfig, Reranker
 from .store import connect
 
 
@@ -28,6 +28,10 @@ def _embedder(cfg: dict) -> Embedder:
 
 def _generator(cfg: dict) -> Generator:
     return Generator(GenConfig(**cfg.get("gen", {})))
+
+
+def _reranker(cfg: dict) -> Reranker:
+    return Reranker(RerankConfig(**cfg.get("rerank", {})))
 
 
 @click.group()
@@ -90,12 +94,14 @@ def embed(cfg, db):
 @cli.command()
 @click.option("--db", required=True)
 @click.option("-k", default=5)
+@click.option("--rerank/--no-rerank", default=True)
 @click.argument("question")
 @click.pass_obj
-def route(cfg, db, k, question):
+def route(cfg, db, k, rerank, question):
     from .s9_route import route as do_route
-    emb = _embedder(cfg)
-    for h in do_route(connect(db), question, k=k, emb=emb if emb.enabled else None):
+    emb, rr = _embedder(cfg), _reranker(cfg)
+    for h in do_route(connect(db), question, k=k, emb=emb if emb.enabled else None,
+                      rerank=rr if (rerank and rr.enabled) else None):
         who = f" [{h.voice_name or h.voice}]" if h.voice != "author" else ""
         click.echo(f"{h.score:.4f} {h.edition_id[:30]} p{h.page_start}-{h.page_end} {h.zone} {h.ref[:40]}{who}\n    {h.text[:220]}\n")
 
@@ -106,11 +112,13 @@ def route(cfg, db, k, question):
 @click.option("-k", default=10)
 @click.option("-v", "verbose", is_flag=True)
 @click.option("--dense/--no-dense", default=True)
+@click.option("--rerank/--no-rerank", default=True)
 @click.pass_obj
-def eval_cmd(cfg, db, gold, k, verbose, dense):
+def eval_cmd(cfg, db, gold, k, verbose, dense, rerank):
     from .evaluate import run
-    emb = _embedder(cfg)
-    res = run(connect(db), gold, k=k, emb=emb if (dense and emb.enabled) else None, verbose=verbose, log=click.echo)
+    emb, rr = _embedder(cfg), _reranker(cfg)
+    res = run(connect(db), gold, k=k, emb=emb if (dense and emb.enabled) else None, verbose=verbose, log=click.echo,
+              rerank=rr if (rerank and rr.enabled) else None)
     for b, (h, n) in res["per_book"].items():
         click.echo(f"  {b[:40]:40} {h}/{n}")
     click.echo(f"recall@{k} {res['recall@k']}/{res['n']}  recall@1 {res['recall@1']}/{res['n']}  MRR {res['mrr']}  "

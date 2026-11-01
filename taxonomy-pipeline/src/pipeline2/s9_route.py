@@ -6,7 +6,7 @@ import math
 import re
 from dataclasses import dataclass
 
-from .models import Embedder
+from .models import Embedder, Reranker
 from .textnorm import search_copy
 
 STOP = set("""a an the of to and or is are was were be been in on at for with by as it its this that these those
@@ -80,7 +80,8 @@ def dense(con, emb: Embedder, question: str, k: int = 100) -> list[tuple[str, fl
     return list(best.items())
 
 
-def route(con, question: str, k: int = 10, emb: Embedder | None = None, zones: dict | None = None) -> list[Hit]:
+def route(con, question: str, k: int = 10, emb: Embedder | None = None, zones: dict | None = None,
+          rerank: Reranker | None = None) -> list[Hit]:
     zw = zones or ZONE_WEIGHT
     lists = [bm25(con, question)]
     if emb is not None and emb.enabled:
@@ -99,6 +100,12 @@ def route(con, question: str, k: int = 10, emb: Embedder | None = None, zones: d
         m = meta[uid]
         hits.append(Hit(uid, m[1], s * zw.get(m[2], 0.5), m[2], m[3], m[4], m[5], m[6], m[7], m[8]))
     hits.sort(key=lambda h: -h.score)
+    if rerank is not None and rerank.enabled and hits:
+        head, tail = hits[: rerank.cfg.top], hits[rerank.cfg.top:]
+        for h, s in zip(head, rerank.scores(question, [f"{h.ref}\n{h.text}" for h in head])):
+            h.score = s * zw.get(h.zone, 0.5)
+        head.sort(key=lambda h: -h.score)
+        hits = head + tail
     return hits[:k]
 
 
