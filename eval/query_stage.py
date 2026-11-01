@@ -221,15 +221,24 @@ def cmd_score(a):
         pass
     judge_secs = []
 
+    jstat = {"calls": 0, "failed": 0, "secs": 0.0}
+
     def judge(q, ids):
         listing = "\n\n".join(f"[{i + 1}] {ref[u][:60]}: {' '.join(text[u].split()[:90])}" for i, u in enumerate(ids))
-        body = {"model": a.model, "stream": False, "think": False, "options": {"temperature": 0, "num_ctx": 16384},
+        # ~2k prompt tokens; num_ctx must stay small: 16384 made Ollama reload gemma with a KV cache that no longer fit
+        # beside the embedding model, offloading layers to CPU and turning a 5 s call into a 5 min timeout
+        body = {"model": a.model, "stream": False, "think": False, "options": {"temperature": 0, "num_ctx": 4096},
                 "format": JUDGE_SCHEMA, "messages": [{"role": "system", "content": JUDGE_SYSTEM},
                                                      {"role": "user", "content": f"Question: {q}\n\nPassages:\n{listing}"}]}
+        t1 = time.time()
+        jstat["calls"] += 1
         try:
-            out = json.loads(ablate.post(f"{a.ollama}/api/chat", body)["message"]["content"])
-        except Exception:
+            out = json.loads(ablate.post(f"{a.ollama}/api/chat", body, timeout=120)["message"]["content"])
+        except Exception as e:
+            jstat["failed"] += 1
+            print(f"  judge failed ({time.time() - t1:.0f}s): {type(e).__name__}: {str(e)[:120]}", file=sys.stderr, flush=True)
             return ids
+        jstat["secs"] += time.time() - t1
         picked = []
         for r in out.get("ranking", []):
             n = r.get("n") if isinstance(r, dict) else None
@@ -277,7 +286,8 @@ def cmd_score(a):
     secs = (time.time() - t0) / max(len(res), 1)
     if judge_secs:
         js = sorted(judge_secs)
-        print(f"judge: median {js[len(js) // 2]:.1f}s, max {js[-1]:.1f}s per question")
+        print(f"judge: median {js[len(js) // 2]:.1f}s, max {js[-1]:.1f}s per question; "
+              f"{jstat['failed']}/{jstat['calls']} calls failed (a failed call keeps the input order)")
     Path(a.out).write_text(json.dumps(res, indent=1), encoding="utf-8")
     ks = list(res[0]["ranks"])
     print(f"{len(res)} scored questions, {secs:.1f}s per question\n\n| variant | ranked first | top 10 |\n| --- | --- | --- |")
