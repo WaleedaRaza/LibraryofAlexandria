@@ -248,6 +248,9 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
+    from . import live
+    a.model = live.model_for(a.db, "edges" if a.cmd == "judge" else "claims", a.model)
+    a.embed_model = live.model_for(a.db, "vectors", a.embed_model)
     con = sqlite3.connect(a.db)
     con.executescript(SCHEMA_SQL)
     {"claims": cmd_claims, "embed": cmd_embed, "pair": cmd_pair, "judge": cmd_judge, "sample": cmd_sample,

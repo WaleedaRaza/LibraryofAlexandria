@@ -6,7 +6,9 @@ A queue script reports each step in data/queue.log as `=== STEP n done, exit X, 
 the last `=== queue started` count, so a new run starts clean in the same log.
 """
 from __future__ import annotations
+import collections
 import json
+import os
 import re
 import sqlite3
 import subprocess
@@ -15,8 +17,10 @@ import time
 import urllib.request
 from pathlib import Path
 
+from . import live
+
 JOBS = r"queue\.ps1|query_stage|pipeline2\.(label|edges|cli|carry)"
-NO_WINDOW = 0x08000000
+NO_WINDOW = 0x08000000 if os.name == "nt" else 0
 SHADOW = ("_data", "_idx", "_content", "_docsize", "_config")
 PROCS_TTL = 5.0
 _procs = (0.0, [])
@@ -59,15 +63,37 @@ def _short(cmd: str) -> str:
     return (m.group(1) if m else cmd or "").replace("src.pipeline2.", "")[:160]
 
 
+GPU_FIELDS = "memory.used,memory.total,utilization.gpu,temperature.gpu,power.draw,power.limit,fan.speed,clocks.sm,name"
+_hist: collections.deque = collections.deque(maxlen=240)      # one sample every 3 s: 12 minutes
+_sampler_on = False
+
+
 def gpu() -> dict | None:
     try:
-        out = subprocess.run(["nvidia-smi", "--query-gpu=memory.used,memory.total,utilization.gpu",
-                              "--format=csv,noheader,nounits"], capture_output=True, text=True, timeout=5,
-                             creationflags=NO_WINDOW).stdout
-        used, total, util = [int(x) for x in out.split(",")[:3]]
-        return {"used_mb": used, "total_mb": total, "util": util}
+        out = subprocess.run(["nvidia-smi", f"--query-gpu={GPU_FIELDS}", "--format=csv,noheader,nounits"],
+                             capture_output=True, text=True, timeout=5, creationflags=NO_WINDOW).stdout
+        f = [x.strip() for x in out.strip().splitlines()[0].split(",")]
+        num = lambda x: None if x in ("", "[N/A]", "N/A") else float(x)
+        return {"used_mb": int(num(f[0])), "total_mb": int(num(f[1])), "util": int(num(f[2])), "temp_c": num(f[3]),
+                "power_w": num(f[4]), "power_limit_w": num(f[5]), "fan_pct": num(f[6]), "clock_mhz": num(f[7]), "name": f[8]}
     except Exception:
         return None
+
+
+def _sample():
+    while True:
+        g = gpu()
+        if g:
+            _hist.append((round(time.time()), g["util"], g["used_mb"], g["temp_c"], g["power_w"]))
+        time.sleep(3)
+
+
+def gpu_history() -> list:
+    global _sampler_on
+    if not _sampler_on:
+        _sampler_on = True
+        threading.Thread(target=_sample, daemon=True).start()
+    return list(_hist)
 
 
 def _get(url: str):
@@ -80,8 +106,33 @@ def _get(url: str):
 
 def services() -> dict:
     ps = _get("http://localhost:11434/api/ps")
-    return {"ollama": ps is not None, "models": [m["name"] for m in (ps or {}).get("models", [])],
+    models = [{"name": m["name"], "vram_gb": round((m.get("size_vram") or 0) / 1e9, 1), "size_gb": round((m.get("size") or 0) / 1e9, 1),
+               "ctx": m.get("context_length"), "expires": m.get("expires_at", "")[:19].replace("T", " ")} for m in (ps or {}).get("models", [])]
+    return {"ollama": ps is not None, "models": [m["name"] for m in models], "loaded": models,
             "reranker": _get("http://127.0.0.1:8088/health") is not None}
+
+
+def activity(path: Path) -> dict | None:
+    """What the typing job has written lately: the last committed labels and per-book coverage."""
+    if not path.exists():
+        return None
+    con = sqlite3.connect(f"file:{path.as_posix()}?mode=ro", uri=True, timeout=2)
+    try:
+        if not con.execute("SELECT 1 FROM sqlite_master WHERE name='unit_label'").fetchone():
+            return None
+        recent = [{"unit": u, "book": b, "ref": r, "type": t, "quote": (q or "")[:140], "pinned": st >= 0, "age_s": round(time.time() - c)}
+                  for u, b, r, t, q, st, c in con.execute(
+                      "SELECT l.unit_id, json_extract(e.data,'$.detected_title'), u.ref, l.type, l.quote, l.start, l.created FROM unit_label l "
+                      "JOIN unit u ON u.id=l.unit_id JOIN edition e ON e.id=u.edition_id WHERE l.model!='rule' ORDER BY l.created DESC LIMIT 8")]
+        books = [{"book": b, "units": n, "typed": d or 0} for b, n, d in con.execute(
+            "SELECT json_extract(e.data,'$.detected_title'), count(*), sum(l.unit_id IS NOT NULL) FROM unit u JOIN edition e ON e.id=u.edition_id "
+            "LEFT JOIN unit_label l ON l.unit_id=u.id GROUP BY u.edition_id ORDER BY e.id")]
+        rate = con.execute("SELECT count(*) FROM unit_label WHERE model!='rule' AND created > ?", (time.time() - 600,)).fetchone()[0]
+        return {"db": path.name, "recent": recent, "books": books, "per_10min": rate}
+    except sqlite3.Error:
+        return None
+    finally:
+        con.close()
 
 
 def db_stats(path: Path) -> dict | None:
@@ -172,7 +223,17 @@ def status(db_path: str) -> dict:
     alive = any("queue.ps1" in j["cmd"] for j in jobs)
     log = read_log(data / "queue.log", 4000)
     name, st = steps(data, root, alive, log)
-    dbs = [db_stats(p) for p in sorted(data.glob("p2_v*.sqlite"))]
+    paths = sorted(data.glob("p2_v*.sqlite"))
+    dbs = [db_stats(p) for p in paths]
+    acts = [a for a in (activity(p) for p in paths) if a and a["recent"]]
+    act = max(acts, key=lambda a: -a["recent"][0]["age_s"]) if acts else None
     return {"time": time.strftime("%H:%M:%S"), "name": name, "queue_alive": alive, "jobs": jobs, "steps": st,
-            "gpu": gpu(), "services": services(), "dbs": [d for d in dbs if d],
-            "scores": scores(root / "analysis"), "log": log[-25:]}
+            "gpu": gpu(), "gpu_history": gpu_history(), "services": services(), "dbs": [d for d in dbs if d],
+            "scores": scores(root / "analysis"), "log": log[-25:],
+            "live": live.live_jobs(db_path), "activity": act, "config": live.load_config(db_path),
+            "installed": live.installed(), "pulls": live.pulls(), "benches": live.benches(db_path)}
+
+
+def busy() -> bool:
+    """A GPU job is running: the queue, a labeller, a scorer. Benches wait for this to clear."""
+    return bool(processes())

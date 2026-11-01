@@ -19,7 +19,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 import numpy as np
 
-from . import pipeline_status, project2d
+from . import live, pipeline_status, project2d
 from .s9_route import ZONE_WEIGHT, bm25, dense, route
 
 STATIC = Path(__file__).parent / "explorer"
@@ -260,11 +260,19 @@ def make_handler(ex: Explorer):
                 return self._json({"error": f"{type(e).__name__}: {e}"}, 500)
 
         def do_POST(self):
-            if urlparse(self.path).path != "/api/gold":
-                return self._json({"error": "not found"}, 404)
+            p = urlparse(self.path).path
             n = int(self.headers.get("Content-Length", "0") or 0)
             try:
-                return self._json(ex.save_gold(json.loads(self.rfile.read(n) or b"{}")))
+                body = json.loads(self.rfile.read(n) or b"{}")
+                if p == "/api/gold":
+                    return self._json(ex.save_gold(body))
+                if p == "/api/pipeline/config":                      # model + workers per stage, for the next run
+                    return self._json(live.save_config(ex.db, body))
+                if p == "/api/pipeline/pull":                        # download a model (no GPU use)
+                    return self._json(live.pull(body.get("model", "")))
+                if p == "/api/pipeline/bench":                       # type 30 labelled passages with a candidate model
+                    return self._json(live.bench(ex.db, body.get("model", ""), int(body.get("n", 30)), busy=pipeline_status.busy, force=bool(body.get("force"))))
+                return self._json({"error": "not found"}, 404)
             except Exception as e:
                 return self._json({"error": f"{type(e).__name__}: {e}"}, 500)
 

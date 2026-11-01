@@ -12,7 +12,9 @@ import json
 import sqlite3
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
+from . import live
 from .textnorm import match
 
 TYPES = ["instruction", "argument", "consolation", "definition", "example", "story", "other"]
@@ -67,42 +69,65 @@ def _anchor(text: str, quote: str) -> tuple[int, int]:
     return lo, len(text)
 
 
-def run(con, url="http://localhost:11434", model="gemma4:12b", limit=None, log=print) -> int:
+def _label_one(url, model, row):
+    """One Ollama call (two tries when the quote does not anchor). Returns the unit_label row or None."""
+    uid, text, ref, voice, vname, zone, title = row
+    who = f" (speaker: commentator {vname})" if voice == "commentary" else ""
+    user = f"Book: {title}\nLocation: {ref}{who}\n\nPassage:\n{text[:3500]}"
+    out, s, e, err = None, -1, -1, None
+    for _ in range(2):
+        try:
+            body = {"model": model, "stream": False, "think": False, "format": SCHEMA, "options": {"temperature": 0},
+                    "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]}
+            out = json.loads(_post(f"{url}/api/chat", body)["message"]["content"])
+        except Exception as ex:
+            err = ex
+            continue
+        s, e = _anchor(text, out.get("evidence", ""))
+        if s >= 0:
+            break
+    if out is None:
+        return None, err
+    t2 = out.get("secondary")
+    return (uid, out.get("type"), None if t2 in (None, "none", out.get("type")) else t2,
+            float(out.get("confidence", 0) or 0), out.get("evidence", ""), s, e, model, time.time()), None
+
+
+def run(con, url="http://localhost:11434", model="gemma4:12b", limit=None, log=print, workers=1, db=None) -> int:
     con.executescript(SCHEMA_SQL)
     rows = con.execute("SELECT u.id, u.text, u.ref, u.voice, u.voice_name, u.zone, json_extract(e.data,'$.detected_title') "
                        "FROM unit u JOIN edition e ON e.id=u.edition_id WHERE u.id NOT IN (SELECT unit_id FROM unit_label) "
                        "ORDER BY u.id" + (f" LIMIT {int(limit)}" if limit else "")).fetchall()
-    t0, pinned = time.time(), 0
-    for n, (uid, text, ref, voice, vname, zone, title) in enumerate(rows, 1):
-        if zone in ("contents", "front"):
+    t0, pinned, n = time.time(), 0, 0
+    todo = []
+    for row in rows:
+        if row[5] in ("contents", "front"):
             con.execute("INSERT OR REPLACE INTO unit_label VALUES(?,?,?,?,?,?,?,?,?)",
-                        (uid, "other", None, 1.0, "", -1, -1, "rule", time.time()))
-            continue
-        who = f" (speaker: commentator {vname})" if voice == "commentary" else ""
-        user = f"Book: {title}\nLocation: {ref}{who}\n\nPassage:\n{text[:3500]}"
-        out, s, e = None, -1, -1
-        for _ in range(2):
-            try:
-                body = {"model": model, "stream": False, "think": False, "format": SCHEMA, "options": {"temperature": 0},
-                        "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]}
-                out = json.loads(_post(f"{url}/api/chat", body)["message"]["content"])
-            except Exception as ex:
-                log(f"  {uid}: {ex}")
-                continue
-            s, e = _anchor(text, out.get("evidence", ""))
-            if s >= 0:
-                break
-        if out is None:
-            continue
-        pinned += s >= 0
-        t2 = out.get("secondary")
-        con.execute("INSERT OR REPLACE INTO unit_label VALUES(?,?,?,?,?,?,?,?,?)",
-                    (uid, out.get("type"), None if t2 in (None, "none", out.get("type")) else t2,
-                     float(out.get("confidence", 0) or 0), out.get("evidence", ""), s, e, model, time.time()))
-        if n % 50 == 0:
-            con.commit()
-            log(f"  labelled {n}/{len(rows)}  {(time.time() - t0) / n:.1f}s each  pinned {pinned}")
+                        (row[0], "other", None, 1.0, "", -1, -1, "rule", time.time()))
+        else:
+            todo.append(row)
     con.commit()
+
+    def work(row):
+        if db:
+            live.beat(db, "types", model=model, unit=row[0], book=row[6], ref=row[2], text=row[1][:240], n=n, total=len(todo), workers=workers)
+        return row, _label_one(url, model, row)
+
+    # workers > 1 only pays when Ollama runs with OLLAMA_NUM_PARALLEL > 1; otherwise requests just queue
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        for row, (rec, err) in pool.map(work, todo):
+            n += 1
+            if rec is None:
+                log(f"  {row[0]}: {err}")
+                continue
+            pinned += rec[5] >= 0
+            con.execute("INSERT OR REPLACE INTO unit_label VALUES(?,?,?,?,?,?,?,?,?)", rec)
+            if n % 50 == 0:
+                con.commit()
+                log(f"  labelled {n}/{len(todo)}  {(time.time() - t0) / n:.1f}s each  pinned {pinned}")
+    con.commit()
+    if db:
+        live.beat(db, "types", model=model, n=n, total=len(todo), done=True)
     return len(rows)
 
 
@@ -110,11 +135,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", required=True)
     ap.add_argument("--ollama", default="http://localhost:11434")
-    ap.add_argument("--model", default="gemma4:12b")
+    ap.add_argument("--model", default=None, help="default: data/pipeline_config.json 'types' (the dashboard form)")
+    ap.add_argument("--workers", type=int, default=None, help="parallel requests; default from pipeline_config.json")
     ap.add_argument("--limit", type=int, default=None)
     a = ap.parse_args()
     con = sqlite3.connect(a.db)
-    n = run(con, a.ollama, a.model, a.limit)
+    model, workers = live.model_for(a.db, "types", a.model), live.workers_for(a.db, "types", a.workers)
+    print(f"typing with {model}, {workers} worker(s)")
+    n = run(con, a.ollama, model, a.limit, workers=workers, db=a.db)
     dist = con.execute("SELECT type, count(*), sum(start>=0) FROM unit_label GROUP BY type ORDER BY 2 DESC").fetchall()
     print(f"labelled {n} units; type, count, pinned: {dist}")
 
