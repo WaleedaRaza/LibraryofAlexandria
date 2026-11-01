@@ -19,7 +19,8 @@ _DIV = re.compile(
     re.I)
 _APPARATUS = re.compile(
     r"^(INTRODUCTION|PREFACE|FOREWORD|TRANSLATOR|EDITOR|NOTES?\b|ENDNOTES|BIBLIOGRAPHY|INDEX\b|CONTENTS|SUM[AÁ]RIO|"
-    r"ACKNOWLEDG|ABOUT THE|GLOSSARY|CHRONOLOGY|FURTHER READING)", re.I)
+    r"ACKNOWLEDG|ABOUT THE|GLOSSARY|CHRONOLOGY|FURTHER READING|HOW TO SHARE|FREE EBOOKS)", re.I)
+_PREFACE = re.compile(r"^PREFACE\b", re.I)
 _SPINE = re.compile(r"^(PART|BOOK)\s+[IVXLC\d]+\b", re.I)
 _THE_END = re.compile(r"^(THE END|FINIS|END OF THE PROJECT GUTENBERG)\b", re.I)
 _LEVEL = {"part": 1, "book": 1, "act": 1, "chapter": 2, "chap": 2, "chap.": 2, "letter": 2, "essay": 2,
@@ -50,10 +51,15 @@ def _from_headings(paras: list[Para]) -> list[tuple[int, int, str]]:
         if m:
             label = t
             # 'Chapter 2' followed by a title heading: join them
-            if i + 1 < len(paras) and paras[i + 1].heading and len(paras[i + 1].text) < 80 and not _DIV.match(paras[i + 1].text):
+            if i + 1 < len(paras) and paras[i + 1].heading and len(paras[i + 1].text) < 80 and not _DIV.match(paras[i + 1].text) \
+                    and not _PREFACE.match(paras[i + 1].text.strip()):
                 label = f"{t} {paras[i + 1].text.strip()}"
             found.append((p.start, _LEVEL.get(m.group("kind").lower(), 2), label))
         elif _APPARATUS.match(t) or _THE_END.match(t):
+            # 'PART II. ...' then 'Preface': the author's preface to that part belongs to the part; a new
+            # division here would swallow the whole part under the label 'Preface' (Spinoza, Ethics)
+            if found and _DIV.match(found[-1][2]) and _PREFACE.match(t) and p.start - found[-1][0] < 400:
+                continue
             found.append((p.start, 1, t))
     return found
 
@@ -110,6 +116,9 @@ def run(doc: pymupdf.Document, text: str, paras: list[Para]) -> list[Division]:
     heads = _from_outline(doc, text, paras) or _from_headings(paras)
     heads.sort(key=lambda h: h[0])
     contents_idx = _mark_contents(heads)
+    # the last heading of a contents run may be the real start of the book on the same page
+    # (Spinoza: contents, then 'PART I.' and 80k characters of Part I): a long span is not a contents entry
+    contents_idx = {i for i in contents_idx if _span(heads, i, len(text)) < 2000}
     # A division label that appears again later (BOOK VII in an introduction, chapter titles in a
     # contents list): the last copy is the real one. Earlier copies made of short lines are contents
     # entries; earlier copies inside running prose are mentions and stop being divisions.

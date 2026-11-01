@@ -8,6 +8,9 @@ from .model import Line
 
 _PAGENUM = re.compile(r"^\W*(\d{1,4}|[ivxlcdm]{1,7})\W*$", re.I)
 _SPINE_LINE = re.compile(r"^(PART|Part|BOOK|Book|CHAPTER|Chapter|ACT|Act)\s+([IVXLC]+|\d+)\b")
+_SPINE_TITLE = re.compile(r"^(PART|BOOK)\s+[IVXLC]+[.:]\s+[A-Z][^.]*$")   # 'PART II. On The Nature Of The Mind'
+_SENTENCE_END = re.compile(r"[a-z][.?!]['\"\u2019\u201d]?$")   # 'certainly not.' is dialogue, not a running head
+_URL = re.compile(r"^(https?://|www\.)\S+$", re.I)
 _HEAD = re.compile(
     r"^(BOOK|PART|CHAPTER|CHAP\.?|ACT|SCENE|SECTION|LETTER|ESSAY|PROP\.|PROPOSITION|DEFINITIONS?|AXIOMS?|"
     r"POSTULATES?|APPENDIX|PREFACE|INTRODUCTION|FOREWORD|EPILOGUE|PROLOGUE|CONTENTS|NOTES)\b", re.I)
@@ -48,7 +51,25 @@ def run(lines: list[Line]) -> dict:
         ys = [l.y0 / l.page_h for l in ls]
         m = median(ys)
         steady = sum(abs(y - m) < 0.03 for y in ys) / len(ys)
-        if steady >= 0.8:
+        if steady >= 0.8 and not _SENTENCE_END.search(k):
+            furniture_keys.add(k)
+    # Furniture anywhere on the page: the same short line on a quarter of the pages at a steady height
+    # (a footer printed above the bottom band, e.g. 'http://www.idph.net' at 0.81 in the Republic),
+    # or a bare URL repeated on 3+ pages.
+    occ_any: dict[str, list[Line]] = defaultdict(list)
+    for l in lines:
+        if len(l.text) <= 60 and by_block[(l.page, l.block)] <= 3:
+            occ_any[_key(l.text)].append(l)
+    for k, ls in occ_any.items():
+        pages = {l.page for l in ls}
+        if len(pages) >= 3 and _URL.match(ls[0].text.strip()):
+            furniture_keys.add(k)
+            continue
+        if len(pages) < max(10, n_pages // 4) or _SENTENCE_END.search(k):
+            continue
+        ys = [l.y0 / l.page_h for l in ls]
+        m = median(ys)
+        if sum(abs(y - m) < 0.02 for y in ys) / len(ys) >= 0.9:
             furniture_keys.add(k)
 
     counts = Counter()
@@ -61,7 +82,8 @@ def run(lines: list[Line]) -> dict:
             l.role = "pagenum"
         elif (len(l.text) < 70 and l.text[:1].isupper()
               and (l.size >= bsize * 1.18 or (_HEAD.match(l.text) and (l.text.isupper() or len(l.text) < 40)))) \
-                or (len(l.text) <= 90 and _SPINE_LINE.match(l.text) and by_block[(l.page, l.block)] <= 2):
+                or (len(l.text) <= 90 and _SPINE_LINE.match(l.text) and by_block[(l.page, l.block)] <= 2) \
+                or (len(l.text) <= 90 and _SPINE_TITLE.match(l.text.strip())):
             l.role = "heading"
         elif l.size < bsize * 0.88 and rel > 0.70:
             l.role = "note"
