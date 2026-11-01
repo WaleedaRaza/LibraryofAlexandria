@@ -112,6 +112,36 @@ def cmd_plan(a):
     print(f"planned {done} new, {len(out)}/{len(gold)} total, {time.time() - t0:.0f}s ({(time.time() - t0) / max(done, 1):.1f}s each)")
 
 
+NEED_SYSTEM = (
+    "Classify what kind of passage from a classic book would satisfy a reader's question. Reply with JSON only.\n"
+    "instruction: the reader asks what to do or how to act ('How do I...', 'Should I...', 'How can one...').\n"
+    "argument: the reader asks for a thinker's position, thesis or reasons: 'Why...', 'Is X Y?', 'What is the foundation "
+    "of...', 'What does X say about...', 'Who does X exclude...', 'What happens if...'. Most questions about what a "
+    "philosopher holds are argument, even when phrased 'What is...'.\n"
+    "consolation: comfort, or how to bear loss, death, illness or misfortune.\n"
+    "definition: ONLY when the reader asks what a named term means or what its kinds or parts are ('What is "
+    "conatus?', 'What are the three kinds of friendship?'). Not for a thinker's view or a claim.\n"
+    "example: the reader asks for an analogy, image, allegory or illustrative case ('What image...', 'What example...').\n"
+    "story: the reader asks what happens, what a character does or says, or for a scene or myth.")
+NEED_SCHEMA = {"type": "object", "properties": {"need": {"type": "string", "enum": NEEDS}}, "required": ["need"]}
+
+
+def cmd_reneed(a):
+    """Re-classify only the need with a focused prompt, keeping each plan's rewrites and books."""
+    plans = json.loads(Path(a.plans).read_text(encoding="utf-8"))
+    t0 = time.time()
+    for qid, p in plans.items():
+        body = {"model": a.model, "stream": False, "think": False, "format": NEED_SCHEMA, "options": {"temperature": 0},
+                "messages": [{"role": "system", "content": NEED_SYSTEM}, {"role": "user", "content": p["question"]}]}
+        try:
+            p["need_v0"] = p.get("need_v0", p.get("need"))
+            p["need"] = json.loads(ablate.post(f"{a.ollama}/api/chat", body)["message"]["content"])["need"]
+        except Exception as e:
+            print(f"  {qid}: {e}")
+    Path(a.out).write_text(json.dumps(plans, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"re-classified {len(plans)} needs in {time.time() - t0:.0f}s")
+
+
 def cmd_need(a):
     plans = json.loads(Path(a.plans).read_text(encoding="utf-8"))
     labels = json.loads(Path(a.labels).read_text(encoding="utf-8"))["labels"]
@@ -246,7 +276,7 @@ def main():
     root = Path(__file__).resolve().parent
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("plan", "need", "score"):
+    for name in ("plan", "need", "score", "reneed"):
         s = sub.add_parser(name)
         s.add_argument("--gold", default=str(root / "gold_v0.jsonl"))
         s.add_argument("--ollama", default="http://localhost:11434")
@@ -254,12 +284,12 @@ def main():
         s.add_argument("--rerank-url", default="http://127.0.0.1:8088/rerank")
         s.add_argument("--labels", default=str(root / "need_labels_v0.json"))
         s.add_argument("--plans", default="analysis/query_plans_v1.json")
-        s.add_argument("--out", default="analysis/query_plans_v1.json" if name == "plan" else "analysis/rewrite_v1.json")
+        s.add_argument("--out", default="analysis/query_plans_v1.json" if name in ("plan", "reneed") else "analysis/rewrite_v1.json")
         s.add_argument("--db", default=None)
         s.add_argument("--limit", type=int, default=0, help="plan: stop after this many new questions")
         s.add_argument("--judge", action="store_true", help="add the gemma listwise judge over the top 30 (step 6)")
     a = ap.parse_args()
-    {"plan": cmd_plan, "need": cmd_need, "score": cmd_score}[a.cmd](a)
+    {"plan": cmd_plan, "need": cmd_need, "score": cmd_score, "reneed": cmd_reneed}[a.cmd](a)
 
 
 if __name__ == "__main__":
