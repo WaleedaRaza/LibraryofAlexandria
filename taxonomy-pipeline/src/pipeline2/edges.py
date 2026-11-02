@@ -3,13 +3,17 @@
     python -m src.pipeline2.edges claims --db data/p2_v1.sqlite [--limit N]     # gemma: 1-3 claims per labelled passage
     python -m src.pipeline2.edges embed  --db ...                                 # qwen3 vectors for every claim
     python -m src.pipeline2.edges pair   --db ... [--k 4] [--min 0.6]             # cross-book candidate pairs by cosine
-    python -m src.pipeline2.edges judge  --db ... [--limit N]                     # gemma: same_idea / argues_against / example_of / none
+    python -m src.pipeline2.edges judge  --db ... [--limit N] [--rejudge]         # gemma: same_idea / argues_against / none
     python -m src.pipeline2.edges sample --db ... --n 200 --out analysis/edges_sample.md
     python -m src.pipeline2.edges stats  --db ...
 
 Every claim is pinned to an evidence quote in its passage (start/end offsets, -1 if the quote did not anchor).
 An edge is stored only when the judge names a relation other than none; "none" verdicts are kept in claim_pair so a
-rerun does not re-judge them. example_of is directed: src exemplifies dst.
+rerun does not re-judge them; `--rejudge` redoes pairs judged by an older prompt version (claim_pair.model carries
+"<model>@<JUDGE_VERSION>"). Judge v2 (2026-11-02) makes the model answer step by step (shared question, each
+author's answer, same/opposite) and keeps a relation only when it agrees with those answers; v1 called 89 of 159
+sampled same_idea edges wrong, mostly topic matches. Exemplifies edges were 0/6 and are no longer produced; old rows
+with those relations still display.
 """
 from __future__ import annotations
 import argparse
@@ -45,19 +49,28 @@ CLAIM_SYSTEM = (
     "Do not summarise the narrative, do not add your own view, do not merge two claims into one.\n"
     "evidence: copy 5 to 25 consecutive words exactly from the passage that carry the claim. Copy, do not paraphrase.\n"
     "If the passage makes no claim (a list, a heading, pure narration), return an empty list.")
+JUDGE_RELS = ["same_idea", "argues_against", "none"]   # exemplifies dropped: 0/6 right in the first 200-edge check
+JUDGE_VERSION = "v2"
 JUDGE_SCHEMA = {"type": "object", "properties": {
-    "relation": {"type": "string", "enum": RELS}, "confidence": {"type": "number"}, "reason": {"type": "string"}},
-    "required": ["relation", "confidence", "reason"]}
+    "shared_question": {"type": "string"}, "a_answer": {"type": "string"}, "b_answer": {"type": "string"},
+    "same_answer": {"type": "boolean"}, "opposite_answer": {"type": "boolean"},
+    "relation": {"type": "string", "enum": JUDGE_RELS}, "confidence": {"type": "number"}, "reason": {"type": "string"}},
+    "required": ["shared_question", "a_answer", "b_answer", "same_answer", "opposite_answer", "relation", "confidence", "reason"]}
 JUDGE_SYSTEM = (
-    "Two passages from different classic books are given, each with a claim drawn from it. Decide how claim A (from "
-    "passage A) relates to claim B (from passage B). Reply with JSON only.\n"
-    "same_idea: both assert substantially the same thing, allowing for different vocabulary and framing.\n"
-    "argues_against: one denies, refutes or recommends the opposite of what the other asserts, on the same question.\n"
-    "src_exemplifies_dst: A is a concrete case, image or story that illustrates the general point B makes.\n"
-    "dst_exemplifies_src: B is a concrete case, image or story that illustrates the general point A makes.\n"
-    "none: they share words or a topic but neither agree, oppose nor illustrate each other, or one is too vague to tell.\n"
-    "Be strict: shared topic is not same_idea; a different emphasis is not argues_against. Most pairs are none.\n"
-    "reason: at most 20 words, naming what the two passages actually say.")
+    "Two passages from different classic books are given, each with a claim drawn from it. Decide whether the two "
+    "claims answer the same question in the same way, in opposite ways, or not at all. Reply with JSON only.\n"
+    "Work in steps. shared_question: the one question both passages actually answer, at most 15 words; empty if they "
+    "answer different questions. a_answer, b_answer: each author's answer to that question, at most 15 words each, "
+    "faithful to the passage. same_answer: true only if the two answers are the same proposition. opposite_answer: "
+    "true only if one answer denies the other.\n"
+    "same_idea: author B would sign claim A as written, and A would sign B; the two sentences could stand in for "
+    "each other. The same subject with different definitions (two definitions of courage), a general rule and one "
+    "case of it, or two different truths about one thing are NOT same_idea.\n"
+    "argues_against: the answers are incompatible: one asserts what the other denies, on that same question. "
+    "A difference of emphasis, scope or vocabulary is NOT argues_against.\n"
+    "none: everything else, including pairs that only share a topic or words, and pairs where one claim is too "
+    "vague to pin down. Expect none for most pairs.\n"
+    "confidence: 0 to 1. reason: at most 20 words naming what the two passages say.")
 
 
 def _embed(url, model, texts):
@@ -152,7 +165,8 @@ def cmd_judge(con, a, log=print):
         "FROM claim_pair p JOIN unit_claim cs ON cs.id=p.src JOIN unit_claim cd ON cd.id=p.dst "
         "JOIN unit us ON us.id=cs.unit_id JOIN unit ud ON ud.id=cd.unit_id "
         "JOIN edition es ON es.id=us.edition_id JOIN edition ed ON ed.id=ud.edition_id "
-        "WHERE p.rel IS NULL ORDER BY p.cos DESC" + (f" LIMIT {int(a.limit)}" if a.limit else "")).fetchall()
+        + ("WHERE p.rel IS NULL OR p.model NOT LIKE '%@" + JUDGE_VERSION + "'" if a.rejudge else "WHERE p.rel IS NULL")
+        + " ORDER BY p.cos DESC" + (f" LIMIT {int(a.limit)}" if a.limit else "")).fetchall()
     t0, kept = time.time(), 0
     for n, (s, d, ca, cb, ta, tb, ra, rb, ba, bb) in enumerate(rows, 1):
         user = (f"Passage A ({ba}, {ra}):\n{ta[:1500]}\n\nClaim A: {ca}\n\n"
@@ -165,9 +179,23 @@ def cmd_judge(con, a, log=print):
             log(f"  pair {s}-{d}: {ex}")
             continue
         rel = out.get("relation", "none")
+        # the relation must agree with the step-by-step answers, else it is a topic match dressed up as a relation
+        if rel == "same_idea" and not (out.get("same_answer") and out.get("shared_question")):
+            rel = "none"
+        if rel == "argues_against" and not (out.get("opposite_answer") and out.get("shared_question")):
+            rel = "none"
+        if rel not in JUDGE_RELS:
+            rel = "none"
         kept += rel != "none"
+        reason = f"Q: {out.get('shared_question', '')} | A: {out.get('a_answer', '')} | B: {out.get('b_answer', '')} | {out.get('reason', '')}"[:400]
         con.execute("UPDATE claim_pair SET rel=?, reason=?, confidence=?, model=?, created=? WHERE src=? AND dst=?",
-                    (rel, out.get("reason", ""), float(out.get("confidence", 0) or 0), a.model, time.time(), s, d))
+                    (rel, reason, float(out.get("confidence", 0) or 0), f"{a.model}@{JUDGE_VERSION}", time.time(), s, d))
+        if a.db and n % 5 == 0:
+            try:
+                from . import live
+                live.beat(a.db, "edges", n=n, total=len(rows), edges=kept, pair=f"{s}-{d}", rel=rel)
+            except Exception:
+                pass
         if n % 25 == 0:
             con.commit()
             log(f"  judged {n}/{len(rows)}, {kept} edges, {(time.time() - t0) / n:.1f}s per pair")
@@ -239,8 +267,9 @@ def main():
     ap.add_argument("cmd", choices=["claims", "embed", "pair", "judge", "sample", "stats"])
     ap.add_argument("--db", required=True)
     ap.add_argument("--ollama", default="http://localhost:11434")
-    ap.add_argument("--model", default="gemma4:12b")
-    ap.add_argument("--embed-model", default="qwen3-embedding:4b")
+    ap.add_argument("--model", default=None, help="default: data/pipeline_config.json")
+    ap.add_argument("--embed-model", default=None)
+    ap.add_argument("--rejudge", action="store_true", help="judge: redo pairs judged by an older prompt version")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--k", type=int, default=4)
     ap.add_argument("--min", type=float, default=0.6)
