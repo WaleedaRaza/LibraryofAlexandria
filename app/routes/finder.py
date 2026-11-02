@@ -24,10 +24,12 @@ _quick_find_slots = asyncio.Semaphore(2)
 
 
 @router.get("", response_class=HTMLResponse)
-async def finder_home(request: Request, submitted: str = "", user=Depends(get_current_user_optional)):
+async def finder_home(request: Request, submitted: str = "", title: str = "", author: str = "",
+                      user=Depends(get_current_user_optional)):
     from .contributions import finder_context
 
-    return templates.TemplateResponse("finder.html", finder_context(request, user, submitted=submitted == "1"))
+    return templates.TemplateResponse("finder.html", finder_context(
+        request, user, submitted=submitted == "1", title=title.strip()[:160], author=author.strip()[:160]))
 
 
 @router.post("/quick", response_class=JSONResponse)

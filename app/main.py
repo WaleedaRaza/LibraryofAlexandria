@@ -29,6 +29,7 @@ app = FastAPI(
 templates_path = Path(__file__).parent.parent / "templates"
 templates = Jinja2Templates(directory=str(templates_path))
 templates.env.globals["asset_version"] = settings.ASSET_VERSION
+templates.env.globals["name_ten_enabled"] = lambda: settings.NAME_TEN_ENABLED
 
 # Static files
 static_path = Path(__file__).parent.parent / "static"
@@ -132,7 +133,7 @@ async def startup_event():
 # Routes
 # ---------------------------------------------------------------------------
 
-from .routes import pages, reader, library, auth, desk, contributions, account, review, finder, device_api
+from .routes import pages, reader, library, auth, desk, contributions, account, review, finder, device_api, name_ten
 
 app.include_router(pages.router)
 app.include_router(reader.router, prefix="/read", tags=["reader"])
@@ -143,6 +144,7 @@ app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(account.router, prefix="/account", tags=["account"])
 app.include_router(review.router, prefix="/review", tags=["review"])
 app.include_router(device_api.router, prefix="/api/v1", tags=["device api"])
+app.include_router(name_ten.router, prefix="/ten", tags=["name ten"])
 app.include_router(desk.router, tags=["local desk"])
 
 

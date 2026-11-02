@@ -162,6 +162,85 @@ CREATE TABLE IF NOT EXISTS device_codes (
     expires_at INTEGER NOT NULL
 );
 
+-- Name Ten (release 27): taste game, profile shelves, badges
+CREATE TABLE IF NOT EXISTS ten_game (
+    id INTEGER PRIMARY KEY,
+    kind TEXT NOT NULL CHECK (kind IN ('daily', 'free')),
+    prompt TEXT NOT NULL,
+    opens_on TEXT UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+INSERT OR IGNORE INTO ten_game (id, kind, prompt) VALUES (0, 'free', 'Your ten, no rules.');
+
+CREATE TABLE IF NOT EXISTS ten_play (
+    id TEXT PRIMARY KEY,
+    game_id INTEGER NOT NULL REFERENCES ten_game(id),
+    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+    anon_id TEXT,
+    combo_hash TEXT NOT NULL,
+    raw_score REAL NOT NULL,
+    score INTEGER NOT NULL CHECK (score BETWEEN 0 AND 100),
+    max_overlap INTEGER NOT NULL,
+    findings_json TEXT NOT NULL DEFAULT '{}',
+    verdict_json TEXT,
+    badges_json TEXT NOT NULL DEFAULT '[]',
+    share_slug TEXT UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CHECK (user_id IS NOT NULL OR anon_id IS NOT NULL)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_ten_one_daily_play
+    ON ten_play (game_id, user_id) WHERE game_id <> 0 AND user_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_ten_play_rank ON ten_play (game_id, raw_score);
+
+CREATE TABLE IF NOT EXISTS ten_play_item (
+    play_id TEXT NOT NULL REFERENCES ten_play(id) ON DELETE CASCADE,
+    position INTEGER NOT NULL CHECK (position BETWEEN 1 AND 10),
+    work_key TEXT NOT NULL,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL DEFAULT '',
+    book_id TEXT,
+    status TEXT NOT NULL CHECK (status IN ('library', 'finder', 'unverified')),
+    PRIMARY KEY (play_id, position)
+);
+CREATE INDEX IF NOT EXISTS idx_ten_item_work ON ten_play_item (work_key, play_id);
+
+CREATE TABLE IF NOT EXISTS ten_work_stat (
+    work_key TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL DEFAULT '',
+    list_count INTEGER NOT NULL DEFAULT 0,
+    prior_popularity REAL
+);
+
+CREATE TABLE IF NOT EXISTS ten_pair_stat (
+    work_a TEXT NOT NULL,
+    work_b TEXT NOT NULL,
+    list_count INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (work_a, work_b),
+    CHECK (work_a < work_b)
+);
+
+CREATE TABLE IF NOT EXISTS shelf_item (
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    position INTEGER NOT NULL CHECK (position BETWEEN 1 AND 10),
+    work_key TEXT NOT NULL,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL DEFAULT '',
+    book_id TEXT,
+    proof_state TEXT NOT NULL DEFAULT 'declared'
+        CHECK (proof_state IN ('declared', 'sampled', 'read', 'argued')),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, position)
+);
+
+CREATE TABLE IF NOT EXISTS user_badge (
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    badge_key TEXT NOT NULL,
+    play_id TEXT REFERENCES ten_play(id) ON DELETE SET NULL,
+    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, badge_key, earned_at)
+);
+
 CREATE TABLE IF NOT EXISTS schema_versions (
     version INTEGER PRIMARY KEY,
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -181,3 +260,5 @@ INSERT OR IGNORE INTO schema_versions (version, description)
 VALUES (25, 'LibXNDR: private citation-backed reading companion');
 INSERT OR IGNORE INTO schema_versions (version, description)
 VALUES (26, 'LibXNDR: device pairing for the Kindle plugin');
+INSERT OR IGNORE INTO schema_versions (version, description)
+VALUES (27, 'LibXNDR: Name Ten game, profile shelves and badges');
