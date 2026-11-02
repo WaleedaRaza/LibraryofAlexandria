@@ -887,3 +887,16 @@ form { display: grid; gap: 1rem; }
   .pyramid-solid { animation: none; transform: rotateX(-14deg) rotateY(32deg); }
   .pyramid-ground { animation: none; }
 }
+
+/* "How to use LibXNDR" guide on the reading board */
+.use-guide { margin: 1.2rem 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-raised); }
+.use-guide summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem; min-height: 48px; padding: .4rem 1rem; color: var(--ink); font-family: var(--font-ui); font-size: .85rem; cursor: pointer; }
+.use-guide summary > span:first-child { display: inline-flex; align-items: center; gap: .5em; }
+.use-guide-hint { color: var(--gold); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
+.use-guide-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1px; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); background: var(--line); }
+.use-guide-steps li { display: grid; align-content: start; gap: .5rem; padding: 1rem; background: var(--bg-raised); }
+.use-guide-number { color: var(--gold); font-family: var(--font-ui); font-size: .72rem; letter-spacing: .1em; }
+.use-guide-steps h2 { font-size: 1.35rem; }
+.use-guide-steps p { margin: 0; color: var(--ink-dim); font-size: .9rem; line-height: 1.5; }
+.use-guide-steps strong { color: var(--ink); font-weight: 500; }
+.use-guide-steps a { color: var(--turquoise); font-family: var(--font-ui); font-size: .85rem; }

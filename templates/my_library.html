@@ -17,9 +17,37 @@
 
   <nav class="shelf-view-nav" aria-label="Your library views">
     <a href="/library/my" aria-current="page">{{ glyph('lotus', 14) }} Reading board</a>
-    <a href="/library/my/memory">{{ glyph('feather', 14) }} Highlights &amp; notes <span>{{ stats.highlights }}</span></a>
+    <a href="/library/my/memory">{{ glyph('feather', 14) }} Highlights, notes &amp; companion <span>{{ stats.highlights }}</span></a>
     <a href="/library/find/runs">{{ glyph('ibis', 14) }} Source runs</a>
   </nav>
+
+  <details class="use-guide" {% if stats.highlights < 3 %}open{% endif %}>
+    <summary><span>{{ glyph('scroll', 14) }} How to get the most out of LibXNDR</span><span class="use-guide-hint">{{ 'Start here' if stats.highlights < 3 else 'Show the guide' }}</span></summary>
+    <ol class="use-guide-steps">
+      <li>
+        <span class="use-guide-number">01</span>
+        <h2>Open a book</h2>
+        <p>Find something in the collection, or ask the eye to look for a book that isn't here yet. Your place is saved on every device.</p>
+        {% if continue_book %}<a href="/read/{{ continue_book.id }}">Continue {{ continue_book.title }} ↗</a>{% else %}<a href="/library">Browse the collection ↗</a>{% endif %}
+      </li>
+      <li>
+        <span class="use-guide-number">02</span>
+        <h2>Keep a passage</h2>
+        <p>Select any line in the reader and press <strong>Keep this passage</strong>. It goes into your notebook, where you can write a private note beside it.</p>
+      </li>
+      <li>
+        <span class="use-guide-number">03</span>
+        <h2>Talk to that passage</h2>
+        <p>Open <strong>Discuss this passage</strong> and ask anything, by typing or with <strong>Speak</strong>. The companion reads the page around it, your note and your other passages in the book. Keep a good answer with <strong>Add to my note</strong>.</p>
+      </li>
+      <li>
+        <span class="use-guide-number">04</span>
+        <h2>Ask across everything</h2>
+        <p>Your companion knows every passage you kept, every note, your past conversations and your reading board. Ask it what connects them, or what to read next.</p>
+        <a href="/library/my/memory#memory-companion-thread">Ask your companion ↗</a>
+      </li>
+    </ol>
+  </details>
 
   {% if books %}
   <div class="reading-board">

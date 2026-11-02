@@ -36,7 +36,7 @@
                     <label>Private note<textarea class="note-input" maxlength="20000" placeholder="What do you want to remember?">{{ highlight.note or '' }}</textarea></label>
                     <button class="save-note" type="button">Save note</button>
                     <details class="passage-chat" {% if highlight.messages %}open{% endif %}><summary>Discuss this passage</summary>
-                        <div class="chat-messages">{% for message in highlight.messages %}<p class="{{ message.role }}"><span>{{ 'You' if message.role == 'user' else 'Companion' }}</span>{{ message.content }}</p>{% endfor %}</div>
+                        <div class="chat-messages">{% for message in highlight.messages %}<p class="{{ message.role }}"><span>{{ 'You' if message.role == 'user' else 'Companion' }}</span>{{ message.content }}{% if message.role == 'assistant' %}<button type="button" class="add-to-note">Add to my note</button>{% endif %}</p>{% endfor %}</div>
                         <form class="chat-form"><label>Ask about this passage<textarea name="question" required minlength="2" maxlength="2000" placeholder="What does this mean here?"></textarea></label><button type="submit">Ask the reading companion</button></form>
                     </details>
                     <button class="delete-highlight" type="button">Delete highlight</button>

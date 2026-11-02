@@ -151,6 +151,70 @@
     renderPage(Math.max(1, Math.min(state.pdf.numPages, Number(number) || 1)));
   };
 
+  const pageTexts = new Map();
+  const pageText = async (number) => {
+    if (!state.pdf) return '';
+    if (pageTexts.has(number)) return pageTexts.get(number);
+    try {
+      const page = await state.pdf.getPage(Number(number));
+      const content = await page.getTextContent();
+      const text = content.items.map((item) => item.str).join(' ').replace(/\s+/g, ' ').trim().slice(0, 12000);
+      pageTexts.set(number, text);
+      return text;
+    } catch (_) {
+      return '';
+    }
+  };
+
+  const renderMessages = (container, messages) => {
+    container.replaceChildren(...messages.map((message) => {
+      const item = document.createElement('p');
+      item.className = message.role;
+      const who = document.createElement('span');
+      who.textContent = message.role === 'user' ? 'You' : 'Companion';
+      item.append(who, document.createTextNode(message.content));
+      if (message.role === 'assistant') {
+        const keep = document.createElement('button');
+        keep.type = 'button';
+        keep.className = 'add-to-note';
+        keep.textContent = 'Add to my note';
+        item.append(keep);
+      }
+      return item;
+    }));
+  };
+
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const enhanceChatForm = (form) => {
+    if (!Recognition || form.querySelector('.dictate')) return;
+    const mic = document.createElement('button');
+    mic.type = 'button';
+    mic.className = 'dictate';
+    mic.textContent = 'Speak';
+    mic.setAttribute('aria-pressed', 'false');
+    mic.setAttribute('aria-label', 'Speak your question');
+    let listening = null;
+    mic.addEventListener('click', () => {
+      if (listening) { listening.stop(); return; }
+      const recognition = new Recognition();
+      recognition.lang = document.documentElement.lang || 'en-US';
+      recognition.interimResults = true;
+      const field = form.elements.question;
+      const before = field.value ? `${field.value.trim()} ` : '';
+      recognition.onresult = (event) => {
+        field.value = before + Array.from(event.results).map((result) => result[0].transcript).join('');
+      };
+      recognition.onend = () => { listening = null; mic.textContent = 'Speak'; mic.setAttribute('aria-pressed', 'false'); };
+      recognition.onerror = recognition.onend;
+      listening = recognition;
+      mic.textContent = 'Listening… tap to stop';
+      mic.setAttribute('aria-pressed', 'true');
+      recognition.start();
+    });
+    form.querySelector('button[type="submit"]').before(mic);
+  };
+  document.querySelectorAll('.chat-form').forEach(enhanceChatForm);
+
   const makeEntry = (highlight) => {
     const article = document.createElement('article');
     article.className = 'highlight-entry';
@@ -183,6 +247,7 @@
     remove.className = 'delete-highlight';
     remove.textContent = 'Delete highlight';
     article.append(jump, quote, label, save, chat, remove);
+    enhanceChatForm(chat.querySelector('.chat-form'));
     return article;
   };
 
@@ -237,6 +302,23 @@
     const entry = event.target.closest('.highlight-entry');
     if (!entry) return;
     if (event.target.closest('.highlight-jump')) goTo(entry.dataset.page);
+    if (event.target.closest('.add-to-note')) {
+      const button = event.target.closest('.add-to-note');
+      const answer = button.parentElement.childNodes[1]?.textContent?.trim() || '';
+      const field = entry.querySelector('.note-input');
+      field.value = field.value.trim() ? `${field.value.trim()}\n\n${answer}` : answer;
+      button.disabled = true;
+      try {
+        await api(`/read/${bookId}/highlights/${entry.dataset.id}/note`, {
+          method: 'POST', body: JSON.stringify({ text: field.value }),
+        });
+        button.textContent = 'Added to note';
+      } catch (error) {
+        button.textContent = error.message;
+        button.disabled = false;
+      }
+      return;
+    }
     if (event.target.closest('.save-note')) {
       const button = event.target.closest('.save-note');
       button.disabled = true;
@@ -271,18 +353,12 @@
     button.disabled = true;
     button.textContent = 'Reading the passage…';
     try {
+      const highlight = state.highlights.find((item) => item.id === entry.dataset.id);
+      const page = highlight ? Number(highlight.page_number) : Number(entry.dataset.page);
       const data = await api(`/read/${bookId}/highlights/${entry.dataset.id}/chat`, {
-        method: 'POST', body: JSON.stringify({ question }),
+        method: 'POST', body: JSON.stringify({ question, page_text: await pageText(page) }),
       });
-      const container = entry.querySelector('.chat-messages');
-      container.replaceChildren(...data.messages.map((message) => {
-        const item = document.createElement('p');
-        item.className = message.role;
-        const who = document.createElement('span');
-        who.textContent = message.role === 'user' ? 'You' : 'Companion';
-        item.append(who, document.createTextNode(message.content));
-        return item;
-      }));
+      renderMessages(entry.querySelector('.chat-messages'), data.messages);
       form.reset();
     } catch (error) {
       button.textContent = error.message;
