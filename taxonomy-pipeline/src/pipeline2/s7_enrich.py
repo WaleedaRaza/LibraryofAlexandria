@@ -19,7 +19,24 @@ SYSTEM = ("You index passages of books so readers can find them. Reply with JSON
           "that this passage directly answers. Do not quote the passage. Do not invent content.")
 
 
+def stop_file(con):
+    """data/live/stop.enrich next to the DB: create it to make a running enrich finish its current unit and exit
+    cleanly (progress is committed; rerun resumes). Lets anyone yield the GPU without killing the process."""
+    import os
+    for _, name, path in con.execute("PRAGMA database_list"):
+        if name == "main" and path:
+            return os.path.join(os.path.dirname(path), "live", "stop.enrich")
+    return None
+
+
 def run(con, gen: Generator, edition_id: str | None = None, limit: int | None = None, log=print) -> int:
+    import os
+    stop = stop_file(con)
+    db_path = os.path.dirname(os.path.dirname(stop)) if stop else None
+    try:
+        from . import live
+    except Exception:
+        live = None
     q = "SELECT u.id, u.text, u.ref, u.voice, u.voice_name, json_extract(e.data,'$.detected_title') " \
         "FROM unit u JOIN edition e ON e.id=u.edition_id " \
         "WHERE u.zone='primary' AND u.id NOT IN (SELECT unit_id FROM unit_question WHERE model=?)"
@@ -30,6 +47,13 @@ def run(con, gen: Generator, edition_id: str | None = None, limit: int | None = 
     rows = con.execute(q + (f" LIMIT {int(limit)}" if limit else ""), args).fetchall()
     skipped = 0
     for n, (uid, text, ref, voice, vname, title) in enumerate(rows, 1):
+        if stop and os.path.exists(stop):
+            con.commit()
+            os.remove(stop)
+            log(f"  stop file seen after {n - 1}/{len(rows)}; progress committed, rerun enrich to continue")
+            break
+        if live and db_path and n % 5 == 0:
+            live.beat(os.path.join(db_path, "x.sqlite"), "enrich", n=n, total=len(rows), unit=uid, book=title, ref=ref)
         speaker = f" (speaker: {vname}, a commentator)" if voice == "commentary" else ""
         try:
             out = gen.json(SYSTEM, f"Book: {title}\nLocation: {ref}{speaker}\n\nPassage:\n{text[:4000]}", SCHEMA)
