@@ -100,13 +100,39 @@ def test_typed_titles_share_the_catalog_work_key(client: TestClient):
     work = CatalogService().get_works()[0]
     picked = resolve(f"  {work['title'].upper()} ", work["author"])
     assert picked["status"] == "library"
-    assert picked["work_key"] == work["id"]
+    assert picked["work_key"] == work_key(work["title"], work["author"])
     assert picked["book_id"]
     assert resolve("A Book Nobody Wrote", "Nobody")["status"] == "unverified"
     assert resolve("A Book Nobody Wrote", "Nobody", verified=True)["status"] == "finder"
     assert work_key("The Republic", "Plato") == work_key("the republic", "PLATO")
     with pytest.raises(ValueError):
         resolve("   ", "x")
+
+
+def test_one_book_written_many_ways_is_one_key():
+    karamazov = {work_key("The Brothers Karamazov", "Fyodor Dostoyevsky"),
+                 work_key("Brothers Karamazov", "Dostoevsky"),
+                 work_key("The Brothers Karamazov Book Pdf", "F. Dostoevsky"),
+                 work_key("The Brothers Karamazov: A Novel in Four Parts", "Dostoevsky")}
+    assert len(karamazov) == 1
+    assert work_key("Blood Meridian Pdf", "Cormac Mc Carthy") == work_key("Blood Meridian", "Cormac McCarthy")
+    assert work_key("The Republic", "Plato") != work_key("The Republic", "Cicero")
+    assert work_key("A", "") != work_key("The", "")
+
+
+def test_catalog_slips_are_tidied():
+    from app.services.name_ten.identity import tidy
+
+    assert tidy("Prince by Nicolo Machiavelli", "The") == ("The Prince", "Nicolo Machiavelli")
+    assert tidy("Beloved by Toni Morrison", "Toni Morrison") == ("Beloved", "Toni Morrison")
+    assert tidy("Stand by Me", "Stephen King") == ("Stand by Me", "Stephen King")
+
+
+def test_a_title_typed_without_author_finds_the_library_copy(client: TestClient):
+    reset_index()
+    work = CatalogService().get_works()[0]
+    picked = resolve(work["title"], "")
+    assert picked["status"] == "library" and picked["author"] == work["author"]
 
 
 # --- storage and the full play ---------------------------------------------

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% from "partials/pyramid_loader.html" import pyramid %}
+{% block title %}Name ten — LibXNDR{% endblock %}
+{% block content %}
+<section class="ten-shell" id="ten" data-free-game="{{ free_play }}" data-daily-game="{{ daily.id if daily and not daily_done else '' }}" data-signed-in="{{ 'true' if user else 'false' }}">
+  <header class="ten-head">
+    <p class="collection-eyebrow">{{ glyph('scroll', 14) }} Name ten</p>
+    <h1>Ten books. Any order.</h1>
+    <p class="ten-lede">Name the ten that are yours. We score how rarely those ten turn up <em>together</em>, against every list named here before yours. Famous books are fine. Copying a list is not.</p>
+  </header>
+
+  <div class="ten-games" role="tablist" aria-label="Which game">
+    {% if daily and not daily_done %}
+    <button type="button" role="tab" class="ten-game" data-game="{{ daily.id }}" aria-selected="true">
+      <span>Today · No. {{ daily.id }}</span><strong>{{ daily.prompt }}</strong>
+    </button>
+    {% elif daily_done %}
+    <p class="ten-game-done">You named your ten for today's game. Free play is open all day.</p>
+    {% endif %}
+    <button type="button" role="tab" class="ten-game" data-game="{{ free_play }}" aria-selected="{{ 'false' if daily and not daily_done else 'true' }}">
+      <span>Free play</span><strong>Your ten, no rules.</strong>
+    </button>
+  </div>
+
+  <form class="ten-form" id="ten-form" autocomplete="off" novalidate>
+    <ol class="ten-slots">
+      {% for n in range(1, 11) %}
+      <li class="ten-slot" data-slot="{{ n }}">
+        <span class="ten-slot-number">{{ '%02d' % n }}</span>
+        <div class="ten-slot-field">
+          <label class="sr-only" for="ten-slot-{{ n }}">Book {{ n }}</label>
+          <input id="ten-slot-{{ n }}" type="text" maxlength="300" placeholder="{{ 'Start typing a title' if n == 1 else '' }}" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ten-options-{{ n }}">
+          <span class="ten-slot-author" aria-live="polite"></span>
+          <ul class="ten-options" id="ten-options-{{ n }}" role="listbox" hidden></ul>
+        </div>
+        <button type="button" class="ten-clear" aria-label="Clear book {{ n }}" hidden>×</button>
+      </li>
+      {% endfor %}
+    </ol>
+    <div class="ten-actions">
+      <p class="ten-count" id="ten-count" aria-live="polite">0 of 10</p>
+      <button class="btn btn-primary" id="ten-submit" type="submit" disabled>{{ glyph('eye', 16) }} Ponder my ten</button>
+    </div>
+    <p class="form-feedback error" id="ten-error" role="alert" hidden></p>
+  </form>
+
+  <div class="ten-pondering" id="ten-pondering" hidden>
+    {{ pyramid('inline', 'Pondering your ten') }}
+    <p id="ten-pondering-line">Reading your ten…</p>
+  </div>
+
+  <section class="ten-result" id="ten-result" hidden aria-live="polite">
+    <div class="ten-score">
+      <span class="ten-score-number" id="ten-score"></span>
+      <p id="ten-score-line"></p>
+    </div>
+    <ul class="ten-findings" id="ten-findings"></ul>
+    <ol class="ten-result-list" id="ten-result-list"></ol>
+    <div class="ten-result-actions">
+      <button class="btn" type="button" id="ten-again">Name another ten</button>
+      {% if not user %}<a href="/auth/register?next=/ten">Keep this list on your profile: create an account</a>{% endif %}
+    </div>
+  </section>
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/name_ten.js?v={{ asset_version }}" defer></script>{% endblock %}

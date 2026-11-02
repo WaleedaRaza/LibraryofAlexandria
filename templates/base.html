@@ -45,6 +45,9 @@
       {% if user %}
         <a class="topbar-link" href="/library/my" {% if path.startswith('/library/my') %}aria-current="page"{% endif %}><span class="nav-wide">My library</span><span class="nav-compact">Mine</span></a>
       {% endif %}
+      {% if name_ten_enabled is defined and name_ten_enabled() %}
+        <a class="topbar-link" href="/ten" {% if path.startswith('/ten') %}aria-current="page"{% endif %}><span class="nav-wide">Name ten</span><span class="nav-compact">Ten</span></a>
+      {% endif %}
       <a class="topbar-eye" href="/library/find" title="The eye: search the web for PDFs" aria-label="The eye: search the web for PDFs" {% if path.startswith('/library/find') %}aria-current="page"{% endif %}>{{ glyph('eye', 22) }}</a>
       {% if user %}
         <a class="topbar-account" href="/account" aria-label="Your account">{% if user.avatar_key %}<img src="/account/avatar?v={{ user.avatar_key|urlencode }}" alt="">{% else %}<span aria-hidden="true">{{ user.display_name[:1]|upper }}</span>{% endif %}</a>

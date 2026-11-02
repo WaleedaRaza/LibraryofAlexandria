@@ -210,3 +210,57 @@ def get_play(play_id: str) -> dict | None:
         ).execute().data or []
     play["items"] = items
     return play
+
+
+def set_popularity(rows: list[dict]) -> None:
+    """Record Open Library popularity for books, without touching their list counts."""
+    rows = [{key: row[key] for key in ("work_key", "title", "author", "prior_popularity")}
+            for row in rows if row.get("prior_popularity") is not None]
+    if not rows:
+        return
+    if is_sqlite_mode():
+        db = get_db()
+        with db:
+            db.executemany(
+                "INSERT INTO ten_work_stat(work_key,title,author,list_count,prior_popularity) "
+                "VALUES(:work_key,:title,:author,0,:prior_popularity) "
+                "ON CONFLICT(work_key) DO UPDATE SET prior_popularity = excluded.prior_popularity",
+                rows,
+            )
+        return
+    get_supabase().table("ten_work_stat").upsert(rows, on_conflict="work_key").execute()
+
+
+def claim_anonymous(anon_id: str, user_id: str) -> int:
+    """Move plays made before signing in onto the account. A second play of the
+    same daily game stays anonymous, so the one-ranked-play rule holds."""
+    if is_sqlite_mode():
+        db = get_db()
+        with db:
+            cursor = db.execute(
+                "UPDATE OR IGNORE ten_play SET user_id = ?, anon_id = NULL WHERE anon_id = ? AND user_id IS NULL",
+                (user_id, anon_id),
+            )
+        return cursor.rowcount
+    database = get_supabase()
+    plays = database.table("ten_play").select("id").eq("anon_id", anon_id).is_("user_id", "null").execute().data or []
+    moved = 0
+    for play in plays:
+        try:
+            database.table("ten_play").update({"user_id": user_id, "anon_id": None}).eq("id", play["id"]).execute()
+            moved += 1
+        except Exception as exc:
+            if "duplicate key" not in str(exc) and "idx_ten_one_daily_play" not in str(exc):
+                raise
+    return moved
+
+
+def played(game_id: int, user_id: str) -> str | None:
+    """The id of this reader's ranked play of a daily game, if they made one."""
+    if is_sqlite_mode():
+        row = get_db().execute("SELECT id FROM ten_play WHERE game_id = ? AND user_id = ? LIMIT 1",
+                               (game_id, user_id)).fetchone()
+        return row[0] if row else None
+    rows = get_supabase().table("ten_play").select("id").eq("game_id", game_id).eq("user_id", user_id).limit(
+        1).execute().data
+    return rows[0]["id"] if rows else None
