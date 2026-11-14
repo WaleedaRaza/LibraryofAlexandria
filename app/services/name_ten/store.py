@@ -264,3 +264,23 @@ def played(game_id: int, user_id: str) -> str | None:
     rows = get_supabase().table("ten_play").select("id").eq("game_id", game_id).eq("user_id", user_id).limit(
         1).execute().data
     return rows[0]["id"] if rows else None
+
+
+def save_verdict(play_id: str, verdict: dict, badges: list[dict], user_id: str | None) -> None:
+    """Store the judge's words and the badges; signed-in players also keep the badges on their profile."""
+    keys = [badge["key"] for badge in badges]
+    if is_sqlite_mode():
+        db = get_db()
+        with db:
+            db.execute("UPDATE ten_play SET verdict_json = ?, badges_json = ? WHERE id = ?",
+                       (json.dumps(verdict), json.dumps(badges), play_id))
+            if user_id:
+                db.executemany("INSERT OR IGNORE INTO user_badge(user_id, badge_key, play_id) VALUES(?,?,?)",
+                               [(user_id, key, play_id) for key in keys])
+        return
+    database = get_supabase()
+    database.table("ten_play").update({"verdict_json": verdict, "badges_json": badges}).eq("id", play_id).execute()
+    if user_id and keys:
+        database.table("user_badge").insert(
+            [{"user_id": user_id, "badge_key": key, "play_id": play_id} for key in keys]
+        ).execute()

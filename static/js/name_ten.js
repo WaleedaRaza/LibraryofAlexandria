@@ -198,8 +198,23 @@
   function render(data) {
     document.getElementById('ten-score').textContent = data.score;
     document.getElementById('ten-score-line').textContent = data.early
-      ? `One of the first ${data.lists_before + 1} lists named here. Scores settle once a couple hundred people have played; yours is frozen now.`
+      ? `${data.lists_before === 0 ? 'The first list named here.' : `One of the first ${data.lists_before + 1} lists named here.`} Scores settle once a couple hundred people have played; yours is frozen now.`
       : `Rarer together than ${data.score} in 100 of the ${data.ranked_against} lists named before yours.`;
+
+    const verdict = data.verdict || null;
+    document.getElementById('ten-verdict-box').hidden = !verdict;
+    if (verdict) {
+      document.getElementById('ten-epithet').textContent = verdict.epithet || '';
+      document.getElementById('ten-verdict').textContent = verdict.verdict || '';
+    }
+    const badgeList = document.getElementById('ten-badges');
+    badgeList.replaceChildren();
+    (data.badges || []).forEach((badge) => {
+      const row = el('li', null, `ten-badge ten-badge-${badge.key}`);
+      row.append(el('strong', badge.name), el('span', badge.line));
+      badgeList.append(row);
+    });
+    badgeList.hidden = !(data.badges || []).length;
 
     const findings = document.getElementById('ten-findings');
     findings.replaceChildren();

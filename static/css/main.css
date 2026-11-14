@@ -954,3 +954,11 @@ form { display: grid; gap: 1rem; }
   .ten-options { left: -2.6rem; right: -2.6rem; }
   .ten-score { grid-template-columns: minmax(0, 1fr); }
 }
+.ten-verdict { display: grid; gap: .5rem; }
+.ten-epithet { margin: 0; color: var(--gold); font-family: var(--font-display); font-size: clamp(2rem, 6vw, 2.8rem); line-height: 1; text-shadow: var(--glow-gold); }
+.ten-verdict-text { margin: 0; padding: 0; color: var(--ink); font-size: 1.12rem; line-height: 1.65; }
+.ten-badges { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.ten-badge { display: grid; gap: .3rem; padding: .8rem 1rem; border: 1px solid var(--gold-deep); border-radius: var(--radius); background: linear-gradient(180deg, rgba(227, 179, 65, .08), transparent); }
+.ten-badge strong { color: var(--gold-lit); font-family: var(--font-ui); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
+.ten-badge span { color: var(--ink-dim); font-size: .88rem; line-height: 1.45; }
+.ten-findings li { font-size: .95rem; color: var(--ink-dim); }

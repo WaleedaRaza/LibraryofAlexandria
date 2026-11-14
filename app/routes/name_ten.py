@@ -20,7 +20,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from .. import templates
 from ..config import settings
 from ..services import name_ten
-from ..services.name_ten import lookup, store
+from ..services.name_ten import badges as badge_rules, judge, lookup, store
 from .auth import get_current_user_optional
 
 router = APIRouter()
@@ -30,6 +30,8 @@ ANON_ID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]
 PLAY_LIMIT = (30, 3600)       # plays per player per hour
 SEARCH_LIMIT = (120, 60)      # searches per visitor per minute
 _times: dict[str, list[float]] = defaultdict(list)
+_judge_slots = asyncio.Semaphore(4)
+JUDGE_TIMEOUT = 9.0
 
 
 def _require_enabled() -> None:
@@ -132,6 +134,8 @@ def _public_result(play: dict) -> dict:
         "rarest_pair": facts.get("rarest_pair"),
         "most_common": facts.get("most_common"),
         "missing_eleventh": facts.get("missing_eleventh"),
+        "verdict": play.get("verdict_json"),
+        "badges": play.get("badges_json") or [],
         "items": [{key: item.get(key) for key in ("position", "title", "author", "status", "book_id")}
                   for item in play["items"]],
     }
@@ -169,7 +173,25 @@ async def submit(request: Request, user=Depends(get_current_user_optional)):
         raise HTTPException(status_code=409, detail=str(exc))
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+    play["badges_json"] = badge_rules.earned(play["findings_json"], play["items"])
+    play["verdict_json"] = await _judge(play)
+    try:
+        await asyncio.to_thread(store.save_verdict, play["id"], play["verdict_json"], play["badges_json"],
+                                user["id"] if user else None)
+    except Exception as exc:  # the score is saved; a lost verdict is not worth failing the play
+        logger.warning("Saving Name Ten verdict failed (%s)", type(exc).__name__)
     return _public_result(play)
+
+
+async def _judge(play: dict) -> dict:
+    """The judge gets a few seconds while the page ponders; after that the plain verdict stands in."""
+    async with _judge_slots:
+        try:
+            return await asyncio.wait_for(asyncio.to_thread(judge.verdict, play, play["badges_json"]),
+                                          JUDGE_TIMEOUT)
+        except Exception as exc:
+            logger.info("Name Ten judge fell back (%s)", type(exc).__name__)
+            return judge.template(play, play["badges_json"])
 
 
 @router.post("/claim", response_class=JSONResponse)
