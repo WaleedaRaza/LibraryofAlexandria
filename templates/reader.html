@@ -16,7 +16,7 @@
             <label for="page-number">Page</label><input id="page-number" type="number" min="1" value="{{ progress.page_number }}"><span>of <strong id="page-count">—</strong></span>
             <button id="next-page" type="button" aria-label="Next page">→</button>
         </div>
-        <div class="reader-actions"><button id="zoom-out" type="button" aria-label="Zoom out">−</button><span id="zoom-value">100%</span><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="toggle-notebook" type="button" aria-expanded="true">{{ glyph('feather', 16) }} Notebook <span>{{ highlights|length }}</span></button></div>
+        <div class="reader-actions"><button id="zoom-out" type="button" aria-label="Zoom out">−</button><span id="zoom-value">100%</span><button id="zoom-in" type="button" aria-label="Zoom in">+</button><a id="open-flow" class="flow-link" href="/read/{{ book.id }}/flow?page={{ progress.page_number }}" title="Flow mode: one word at a time, read aloud if you like">Flow</a><button id="toggle-notebook" type="button" aria-expanded="true">{{ glyph('feather', 16) }} Notebook <span>{{ highlights|length }}</span></button></div>
     </header>
     <main class="reader-workspace">
         <section class="pdf-workspace" aria-label="PDF reader">

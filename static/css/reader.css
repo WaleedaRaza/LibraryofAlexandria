@@ -85,3 +85,5 @@
   .page-controls { gap: .3rem; }
   .pdf-workspace { padding-inline: 0; }
 }
+.reader-actions .flow-link { min-height: 40px; display: inline-flex; align-items: center; padding: 0 .8rem; color: var(--bg); background: var(--gold); border: 1px solid var(--gold); border-radius: var(--radius); font-family: var(--font-ui); font-size: .85rem; font-weight: 500; }
+.reader-actions .flow-link:hover { box-shadow: var(--glow-gold); }

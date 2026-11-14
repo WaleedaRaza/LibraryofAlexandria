@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Flow · {{ book.title }} — LibXNDR{% endblock %}
+{% block body_class %}flow-page{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/flow.css?v={{ asset_version }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
+{% endblock %}
+{% block content %}
+<div class="flow-shell" data-book-id="{{ book.id }}" data-pdf-url="{{ pdf_url }}" data-start-page="{{ start_page }}">
+  <canvas id="flow-bg" class="flow-bg" aria-hidden="true"></canvas>
+  <header class="flow-top">
+    <a class="flow-back" id="flow-back" href="/read/{{ book.id }}?page={{ start_page }}" aria-label="Back to the page reader">← Pages</a>
+    <div class="flow-title"><strong>{{ book.title }}</strong><span>{{ book.author }}</span></div>
+    <div class="flow-where"><label for="flow-page-input">Page</label><input id="flow-page-input" type="number" min="1" value="{{ start_page }}"><span>of <b id="flow-page-count">—</b></span></div>
+  </header>
+
+  <main class="flow-stage" id="flow-stage">
+    <p class="flow-context" id="flow-context" aria-hidden="true"></p>
+    <div class="flow-word" id="flow-word" aria-live="off">
+      <span class="w-left"></span><span class="w-pivot"></span><span class="w-right"></span>
+    </div>
+    <div class="flow-reticle" aria-hidden="true"></div>
+    <p class="flow-status" id="flow-status">Opening the book…</p>
+    <button class="flow-tap" id="flow-tap" type="button" aria-label="Play or pause"></button>
+  </main>
+
+  <footer class="flow-dock">
+    <div class="flow-progress" aria-hidden="true"><i id="flow-progress-bar"></i></div>
+    <div class="flow-controls">
+      <button id="flow-back-sentence" type="button" title="Back one sentence (←)" aria-label="Back one sentence">⟲</button>
+      <button id="flow-play" class="flow-play" type="button" title="Play / pause (space)" aria-label="Play">▶</button>
+      <button id="flow-skip-sentence" type="button" title="Skip sentence (→)" aria-label="Skip sentence">⟳</button>
+      <label class="flow-speed"><span><b id="flow-wpm-value">350</b> wpm</span><input id="flow-wpm" type="range" min="120" max="1000" step="10" value="350" aria-label="Words per minute"></label>
+      <div class="flow-seg" role="group" aria-label="Mode">
+        <button type="button" data-mode="flash" aria-pressed="true" title="Silent, one word at a time">Flash</button>
+        <button type="button" data-mode="listen" aria-pressed="false" title="Read aloud, words follow the voice (L)">Listen</button>
+      </div>
+      <button id="flow-keep" type="button" title="Keep this sentence in your notebook (K)">Keep</button>
+      <button id="flow-more" type="button" aria-expanded="false" aria-controls="flow-settings">⋯</button>
+    </div>
+    <div class="flow-settings" id="flow-settings" hidden>
+      <label>Background
+        <select id="flow-bg-select">
+          <option value="runner">Runner</option>
+          <option value="tunnel">Tunnel</option>
+          <option value="rain">Glyph rain</option>
+          <option value="none">None</option>
+        </select>
+      </label>
+      <label>Words at once
+        <select id="flow-chunk"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+      </label>
+      <label>Voice <select id="flow-voice"></select></label>
+      <label class="flow-check"><input id="flow-show-context" type="checkbox" checked> Show the sentence</label>
+    </div>
+    <p class="flow-stats" id="flow-stats" aria-live="polite"></p>
+  </footer>
+  <div class="flow-toast" id="flow-toast" role="status" hidden></div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/flow_reader.js?v={{ asset_version }}"></script>{% endblock %}

@@ -19,6 +19,7 @@
         {% if source_url %}<a class="btn btn-primary" href="{{ source_url }}" target="_blank" rel="noopener noreferrer">{{ glyph('eye', 16) }} Open source ↗</a>{% endif %}
       {% else %}
         <a class="btn btn-primary" href="/read/{{ book.id }}">{{ glyph('scroll', 16) }} {{ 'Resume reading' if progress and progress.page_number and progress.page_number > 1 else 'Read now' }}</a>
+        <a class="btn" href="/read/{{ book.id }}/flow" title="One word at a time, read aloud if you like">{{ glyph('eye', 16) }} Flow mode</a>
       {% endif %}
       {% if user and not is_draft %}
         <form action="{{ '/library/unsave/' if is_saved else '/library/save/' }}{{ book.id }}" method="post"><button class="btn {{ 'btn-gold' if is_saved }}" type="submit">{{ glyph('ankh', 16) }} {{ 'Saved · remove' if is_saved else 'Save' }}</button></form>
