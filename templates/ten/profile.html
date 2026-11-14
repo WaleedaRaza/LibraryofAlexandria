@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% block title %}{{ reader.display_name }}'s ten — LibXNDR{% endblock %}
+{% block head %}
+  <meta property="og:title" content="{{ reader.display_name }}'s ten books">
+  <meta property="og:description" content="{{ ten|map(attribute='title')|join(' · ')|truncate(190) }}">
+{% endblock %}
+{% block content %}
+<section class="ten-shell ten-profile">
+  <header class="ten-head">
+    <p class="collection-eyebrow">{{ glyph('scroll', 14) }} @{{ reader.username }}</p>
+    <h1>{{ reader.display_name }}'s ten</h1>
+  </header>
+  <ol class="ten-result-list">
+    {% for item in ten %}
+    <li class="ten-item">
+      <div><strong>{{ item.title }}</strong><span>{{ item.author }}{% if is_self %} · <em class="ten-proof ten-proof-{{ item.proof_state }}">{{ item.proof_label }}</em>{% endif %}</span></div>
+      {% if item.book_id %}<a href="/library/book/{{ item.book_id|urlencode }}">In the library</a>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% if is_self %}<p class="ten-note">Only you see how far you've gone with each book. Everyone sees the ten and the badges.</p>{% endif %}
+  {% if badges %}
+  <ul class="ten-badges">{% for badge in badges %}<li class="ten-badge"><strong>{{ badge.name }}{% if badge.count > 1 %} ×{{ badge.count }}{% endif %}</strong><span>{{ badge.line }}</span></li>{% endfor %}</ul>
+  {% endif %}
+  <div class="ten-result-actions">
+    <a class="btn btn-primary" href="/ten">{{ glyph('eye', 16) }} {% if is_self %}Play again{% else %}Name your ten{% endif %}</a>
+  </div>
+</section>
+{% endblock %}

@@ -26,6 +26,7 @@ from ..services.name_ten import badges as badge_rules, card, judge, lookup, stor
 from .auth import get_current_user_optional
 
 router = APIRouter()
+profiles = APIRouter()  # /u/{username}, mounted at the site root
 logger = logging.getLogger(__name__)
 
 ANON_ID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
@@ -289,3 +290,81 @@ async def public_card(slug: str, size: str = "wide"):
             _cards.pop(next(iter(_cards)))
         _cards[(slug, size)] = png
     return Response(png, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+
+
+# --- my ten ------------------------------------------------------------------
+
+PROOF_LABELS = {"declared": "named", "sampled": "opened here", "read": "read here"}
+
+
+def proof_states(user_id: str, items: list[dict]) -> list[dict]:
+    """How far the reader has gone with each book on these shelves: named, opened, or read."""
+    from ..services.user_service import UserService
+
+    service = UserService()
+    statuses = service.get_shelf_statuses(user_id)
+    marked = {row.get("book_id") for row in service.get_highlights(user_id)}
+    shaped = []
+    for item in items:
+        status = statuses.get(item.get("book_id"))
+        proof = "read" if status == "read" else "sampled" if status == "reading" or item.get("book_id") in marked \
+            else "declared"
+        shaped.append({**item, "proof_state": proof, "proof_label": PROOF_LABELS[proof]})
+    return shaped
+
+
+async def _owned_play(play_id: str, user) -> dict:
+    if not user:
+        raise HTTPException(status_code=401, detail="Sign in to keep your ten.")
+    play = await asyncio.to_thread(store.get_play, play_id[:64])
+    if not play or play.get("user_id") != user["id"]:
+        raise HTTPException(status_code=404, detail="Not found")
+    return play
+
+
+@router.post("/play/{play_id}/keep", response_class=JSONResponse)
+async def keep(play_id: str, user=Depends(get_current_user_optional)):
+    """Make this list the reader's ten. It shows on their public page at /u/{username}."""
+    _require_enabled()
+    play = await _owned_play(play_id, user)
+    await asyncio.to_thread(store.keep_ten, user["id"], play["items"])
+    return {"profile": f"/u/{user['username']}" if user.get("username") else "/account"}
+
+
+@router.post("/play/{play_id}/find", response_class=JSONResponse)
+async def find_missing(play_id: str, user=Depends(get_current_user_optional)):
+    """Send the books the library does not hold to the Finder as one run."""
+    _require_enabled()
+    from ..services.finder_job_service import FinderJobService
+
+    play = await _owned_play(play_id, user)
+    missing = [{"title": item["title"], "author": item.get("author") or ""}
+               for item in play["items"] if item.get("status") != "library"]
+    if not missing:
+        return {"job": None}
+    try:
+        job_id = await asyncio.to_thread(FinderJobService().create, user["id"], missing)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    return {"job": f"/library/find/{job_id}"}
+
+
+@profiles.get("/u/{username}", response_class=HTMLResponse)
+async def profile(username: str, request: Request, user=Depends(get_current_user_optional)):
+    """A reader's public page: their ten and the badges they have earned. Exists only once they keep a ten."""
+    _require_enabled()
+    reader = await asyncio.to_thread(store.user_by_username, username[:24])
+    ten = await asyncio.to_thread(store.get_ten, reader["id"]) if reader else []
+    if not reader or not ten:
+        raise HTTPException(status_code=404, detail="Not found")
+    counts = await asyncio.to_thread(store.badge_counts, reader["id"])
+    earned = [{"key": key, "name": name, "line": line, "count": counts[key]}
+              for key, (name, line) in badge_rules.BADGES.items() if counts.get(key)]
+    return templates.TemplateResponse("ten/profile.html", {
+        "request": request,
+        "user": user,
+        "reader": reader,
+        "ten": await asyncio.to_thread(proof_states, reader["id"], ten),
+        "badges": earned,
+        "is_self": bool(user and user["id"] == reader["id"]),
+    })

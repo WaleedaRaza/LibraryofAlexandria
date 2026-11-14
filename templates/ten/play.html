@@ -62,6 +62,14 @@
     <ul class="ten-badges" id="ten-badges" hidden></ul>
     <ul class="ten-findings" id="ten-findings"></ul>
     <ol class="ten-result-list" id="ten-result-list"></ol>
+    <div class="ten-own" id="ten-own">
+      {% if user %}
+      <button class="btn" type="button" data-own="keep">Make this my ten</button>
+      <button class="btn" type="button" data-own="find" hidden>Find the missing books</button>
+      {% else %}
+      <a class="btn" href="/auth/register?next=/ten">Keep this as your ten: create an account</a>
+      {% endif %}
+    </div>
     <div class="ten-share" id="ten-share">
       <p>Nothing here is public until you share it.</p>
       <div class="ten-result-actions">
@@ -73,7 +81,6 @@
     </div>
     <div class="ten-result-actions">
       <button class="btn" type="button" id="ten-again">Name another ten</button>
-      {% if not user %}<a href="/auth/register?next=/ten">Keep this list on your profile: create an account</a>{% endif %}
     </div>
   </section>
 </section>

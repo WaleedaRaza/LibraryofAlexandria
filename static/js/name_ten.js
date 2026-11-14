@@ -197,6 +197,14 @@
 
   function render(data) {
     currentPlay = data.play_id;
+    root.querySelectorAll('[data-own]').forEach((button) => { button.disabled = false; });
+    const keepButton = root.querySelector('[data-own="keep"]');
+    if (keepButton) {
+      keepButton.textContent = 'Make this my ten';
+      const old = keepButton.parentElement.querySelector('a');
+      if (old) old.remove();
+    }
+    if (findButton) findButton.hidden = !data.items.some((item) => item.status !== 'library');
     shared = null;
     shareStatus.textContent = '';
     document.getElementById('ten-score').textContent = data.score;
@@ -316,8 +324,12 @@
           if (popup) { popup.opener = null; popup.location = links.x_intent; } else window.location = links.x_intent;
           shareStatus.textContent = 'Your result is public at its link now.';
         } else if (kind === 'copy') {
-          await navigator.clipboard.writeText(links.url);
-          shareStatus.textContent = 'Link copied.';
+          try {
+            await navigator.clipboard.writeText(links.url);
+            shareStatus.textContent = 'Link copied.';
+          } catch (_) {
+            shareStatus.textContent = `Your link: ${links.url}`;
+          }
         } else {
           const a = document.createElement('a');
           a.href = links.image;
@@ -330,6 +342,30 @@
       } catch (error) {
         if (popup) popup.close();
         shareStatus.textContent = error.message || 'Could not share. Try again.';
+      }
+    });
+  });
+
+  // --- my ten, and the Finder for books the library lacks (signed in only) ---
+  const findButton = root.querySelector('[data-own="find"]');
+  root.querySelectorAll('[data-own]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const kind = button.dataset.own;
+      button.disabled = true;
+      try {
+        const response = await fetch(`/ten/play/${encodeURIComponent(currentPlay)}/${kind}`, { method: 'POST' });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || 'That did not work. Try again.');
+        if (kind === 'keep') {
+          button.textContent = 'This is your ten';
+          const view = link(data.profile, 'See your page');
+          button.after(view);
+        } else if (data.job) {
+          window.location = data.job;
+        }
+      } catch (error) {
+        button.disabled = false;
+        shareStatus.textContent = error.message;
       }
     });
   });

@@ -20,7 +20,17 @@ logger = logging.getLogger(__name__)
 async def account(request: Request, saved: str = "", user=Depends(get_current_user_optional)):
     if not user:
         return RedirectResponse("/auth/login?next=/account", status_code=303)
-    return templates.TemplateResponse("account.html", {"request": request, "user": user, "saved": saved == "1"})
+    ten = []
+    if settings.NAME_TEN_ENABLED:
+        from ..services.name_ten import store as ten_store
+        from .name_ten import proof_states
+
+        try:
+            ten = proof_states(user["id"], ten_store.get_ten(user["id"]))
+        except Exception:
+            logger.warning("Could not load the reader's ten")
+    return templates.TemplateResponse("account.html", {"request": request, "user": user, "saved": saved == "1",
+                                                       "ten": ten})
 
 
 @router.post("", response_class=HTMLResponse)
