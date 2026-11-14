@@ -88,3 +88,4 @@
   .page-controls { gap: .3rem; }
   .pdf-workspace { padding-inline: 0; }
 }
+.text-layer span.found-passage { background: rgba(43, 179, 163, .32); box-shadow: 0 0 0 2px rgba(43, 179, 163, .18); }

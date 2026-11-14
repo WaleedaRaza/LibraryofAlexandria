@@ -337,6 +337,10 @@ async def browse_library(
 async def my_library(request: Request, user=Depends(get_current_user_optional)):
     if not user:
         return RedirectResponse("/auth/login?next=/library/my", status_code=303)
+    from ..services import onboarding
+
+    if onboarding.needs_welcome(user, request.cookies.get(onboarding.WELCOMED_COOKIE)):
+        return RedirectResponse("/welcome", status_code=303)
     service = UserService()
     books = service.get_saved_books(user["id"])
     columns = [
@@ -361,6 +365,7 @@ async def my_library(request: Request, user=Depends(get_current_user_optional)):
             "books": books,
             "columns": columns,
             "continue_book": continue_book,
+            "first_steps": onboarding.first_steps(user, request.cookies.get(onboarding.STEPS_COOKIE)),
             "stats": service.get_stats(user["id"]),
             "shelf": shelf,
             "total_books": shelf["total_books"],
@@ -452,6 +457,12 @@ async def reading_memory_chat(request: Request, user=Depends(get_current_user_re
     return {"success": True, "message": message}
 
 
+def _suggested_questions(book_id: str) -> list[str]:
+    from ..services.onboarding import suggested_questions
+
+    return suggested_questions(book_id)
+
+
 @router.get("/book/{book_id}", response_class=HTMLResponse)
 async def book_detail(
     request: Request, book_id: str, preview_links: str | None = None,
@@ -493,6 +504,7 @@ async def book_detail(
             "is_draft": book.get("visibility") == "draft",
             "preview_links": include_drafts,
             "other_editions": other_editions,
+            "suggested_questions": _suggested_questions(book_id),
         },
     )
 

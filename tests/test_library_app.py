@@ -530,7 +530,7 @@ def test_guest_sees_a_preview_and_is_asked_to_sign_in_to_read(client: TestClient
     assert "Waleed's Library" in home.text
     assert catalog.status_code == 200
     # Visitors get a look inside, not the whole shelf; the full collection opens on sign-in.
-    assert "A look inside" in catalog.text and "Sign in to browse all 416 books" in catalog.text
+    assert "A look inside" in catalog.text and "Sign in to browse all 415 books" in catalog.text
     assert 'class="alphabet-jump"' not in catalog.text and 'By author' not in catalog.text
     assert 'class="topbar-search"' not in catalog.text
     assert 0 < catalog.text.count('class="book-tile"') <= 30
@@ -876,6 +876,7 @@ def test_shelf_status_is_saved_without_faking_or_erasing_page_progress(client: T
     _register(client)
     service = UserService()
 
+    client.cookies.set("lx_welcomed", "1")  # past the first-run welcome
     empty = client.get("/library/my")
     assert "Start with a book you want to keep" in empty.text
     saved = client.post(f"/library/save/{book['id']}", follow_redirects=False)

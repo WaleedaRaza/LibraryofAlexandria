@@ -34,6 +34,15 @@
       </div>
     </div>
     {% endif %}
+    {% if not is_link and not is_draft %}
+    <form class="ask-book ask-book--preview" data-ask-book="{{ book.id }}">
+      <p class="eyebrow">{{ glyph('feather', 14) }} Ask this book</p>
+      {% if suggested_questions %}<div class="ask-suggestions">{% for q in suggested_questions %}<button type="button" class="ask-chip" data-ask-question="{{ q }}">{{ q }}</button>{% endfor %}</div>{% endif %}
+      <label class="sr-only" for="ask-{{ book.id }}">Ask {{ book.title }} a question</label>
+      <div class="ask-row"><input id="ask-{{ book.id }}" name="question" type="text" maxlength="300" placeholder="Ask it anything. You get the passage and the page." autocomplete="off" required><button class="btn" type="submit">Ask</button></div>
+      <div class="ask-result" data-ask-result aria-live="polite"></div>
+    </form>
+    {% endif %}
     {% if highlights %}<a class="preview-memory" href="/library/my/memory?book={{ book.id }}">{{ glyph('feather', 16) }} Your highlights ({{ highlights|length }}) →</a>{% endif %}
     {% if is_link %}<p class="preview-note">This edition stays at its original public address. LibXNDR does not copy the file, so the in-app highlighter and reading companion are not available for it yet.</p>{% endif %}
     {% if other_editions %}

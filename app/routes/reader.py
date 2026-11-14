@@ -6,6 +6,7 @@ import time
 from collections import defaultdict
 
 import httpx
+from urllib.parse import quote
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from starlette.background import BackgroundTask
@@ -26,8 +27,17 @@ _passage_chat_times: dict[str, list[float]] = defaultdict(list)
 _passage_chat_slots = asyncio.Semaphore(3)
 
 
+def _start(progress: dict | None, page: int | None) -> dict:
+    """Where the reader opens: a linked page (from an answer) wins over the saved place."""
+    progress = dict(progress or {"page_number": 1, "percent": 0})
+    if page and page > 0:
+        progress["page_number"] = min(page, 100000)
+    return progress
+
+
 @router.get("/{book_id}", response_class=HTMLResponse)
-async def read_book(request: Request, book_id: str, user=Depends(get_current_user_optional)):
+async def read_book(request: Request, book_id: str, page: int | None = None, find: str = "",
+                    user=Depends(get_current_user_optional)):
     book = readable_book(book_id, user)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -35,7 +45,8 @@ async def read_book(request: Request, book_id: str, user=Depends(get_current_use
         return RedirectResponse(f"/library/book/{book_id}", status_code=303)
     if not user:
         # Reading is for members. Visitors see the preview and a sign-in prompt instead.
-        return RedirectResponse(f"/auth/login?next=/read/{book_id}", status_code=303)
+        target = str(request.url.path) + (f"?{request.url.query}" if request.url.query else "")
+        return RedirectResponse(f"/auth/login?next={quote(target, safe='/')}", status_code=303)
     service = UserService()
     service.save_book(user["id"], book_id)
     highlights = service.get_highlights(user["id"], book_id) if user else []
@@ -48,7 +59,8 @@ async def read_book(request: Request, book_id: str, user=Depends(get_current_use
             "user": user,
             "book": book,
             "pdf_url": AssetService().browser_pdf_url(book),
-            "progress": (service.get_progress(user["id"], book_id) if user else None) or {"page_number": 1, "percent": 0},
+            "progress": _start(service.get_progress(user["id"], book_id) if user else None, page),
+            "find": " ".join(find.split())[:160],
             "highlights": highlights,
         },
     )

@@ -60,6 +60,7 @@
   <main class="product-main">{% block content %}{% endblock %}</main>
   <dialog class="book-dialog" id="book-dialog" aria-label="Book preview"><div class="preview-loading">{{ pyramid('inline', 'Opening the book') }}</div></dialog>
   <script src="/static/js/shell.js?v={{ asset_version }}" defer></script>
+  <script src="/static/js/ask_book.js?v={{ asset_version }}" defer></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

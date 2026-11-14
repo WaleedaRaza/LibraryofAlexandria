@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% block title %}Welcome — LibXNDR{% endblock %}
+{% block content %}
+<section class="welcome" data-welcome>
+  <header class="welcome-head">
+    <p class="eyebrow">{{ glyph('sun', 14) }} Welcome{% if user.display_name %}, {{ user.display_name }}{% endif %}</p>
+    <h1>Three minutes. Four things this library does that others don't.</h1>
+    <p class="welcome-lede">Pick a few books, ask one of them a question and get the actual passage back, then send the eye after a book that isn't here yet. Skip anything; it all stays on your reading board.</p>
+  </header>
+
+  <ol class="welcome-steps">
+    <li class="welcome-step" id="shelf" data-step="shelf">
+      <div class="welcome-step-head"><span class="welcome-number">01</span><div><h2>Pick a door</h2><p>What pulls you? Choose one or more, then keep the books you'd actually open.</p></div></div>
+      <div class="door-row" role="group" aria-label="Doors into the collection">
+        {% for door in doors %}
+        <button class="door" type="button" data-door="{{ door.key }}" aria-pressed="{{ 'true' if loop.first else 'false' }}"><strong>{{ door.label }}</strong><span>{{ door.line }}</span></button>
+        {% endfor %}
+      </div>
+      <div class="starter-grid" data-starter-grid>
+        {% for door in doors %}{% for book in door.books %}
+        <label class="starter-book" data-door-book="{{ door.key }}">
+          <input type="checkbox" value="{{ book.id }}" data-title="{{ book.title }}" data-author="{{ book.author }}" data-questions='{{ book.questions|tojson }}'>
+          <img src="/library/book/{{ book.id }}/cover" alt="" loading="lazy">
+          <span class="starter-title">{{ book.title }}</span>
+          <span class="starter-author">{{ book.author }}</span>
+        </label>
+        {% endfor %}{% endfor %}
+      </div>
+      <div class="welcome-actions">
+        <button class="btn btn-primary" type="button" data-save-shelf disabled>{{ glyph('ankh', 16) }} Put <b data-picked-count>0</b> on my reading board</button>
+        <span class="welcome-status" data-shelf-status role="status"></span>
+      </div>
+    </li>
+
+    <li class="welcome-step" id="ask" data-step="ask">
+      <div class="welcome-step-head"><span class="welcome-number">02</span><div><h2>Ask a book something</h2><p>The answer is a passage from the book, with its page. Not a summary from somebody's memory of it. Open it and you land on the line.</p></div></div>
+      <div class="ask-book-picker" role="tablist" aria-label="Which book to ask" data-ask-picker></div>
+      <form class="ask-book" data-ask-book="" data-ask-welcome>
+        <div class="ask-suggestions" data-ask-suggestions></div>
+        <label class="sr-only" for="welcome-question">Your question</label>
+        <div class="ask-row"><input id="welcome-question" name="question" type="text" maxlength="300" placeholder="Ask anything this book might answer" autocomplete="off" required><button class="btn btn-primary" type="submit">Ask</button></div>
+        <div class="ask-result" data-ask-result aria-live="polite"></div>
+      </form>
+    </li>
+
+    <li class="welcome-step" id="eye" data-step="eye">
+      <div class="welcome-step-head"><span class="welcome-number">03</span><div><h2>Send the eye {{ glyph('eye', 20) }}</h2><p>Name a book you love. If it's here, we'll take you to it. If it isn't, the eye searches the open web for a readable PDF, checks the edition, and you can add it for the next reader.</p></div></div>
+      {% if finder_enabled %}
+      <form class="eye-try" data-eye-try>
+        <label class="sr-only" for="eye-title">Title</label><input id="eye-title" name="title" type="text" maxlength="160" placeholder="Title, e.g. The Denial of Death" required>
+        <label class="sr-only" for="eye-author">Author</label><input id="eye-author" name="author" type="text" maxlength="160" placeholder="Author (optional)">
+        <button class="btn" type="submit">{{ glyph('eye', 16) }} Look</button>
+      </form>
+      <div class="eye-result" data-eye-result aria-live="polite"></div>
+      {% else %}
+      <p class="welcome-note">The eye is resting right now. <a href="/library/find">Read how it works ↗</a></p>
+      {% endif %}
+    </li>
+
+    <li class="welcome-step" id="next" data-step="next">
+      <div class="welcome-step-head"><span class="welcome-number">04</span><div><h2>Then make it yours</h2><p>Open a book, keep a passage, and talk to it. The companion reads the page with you and knows what you've kept.</p></div></div>
+      {% include "partials/first_steps.html" %}
+      <div class="welcome-actions">
+        <a class="btn btn-primary" href="/library/my">{{ glyph('lotus', 16) }} Go to my reading board</a>
+        {% if name_ten_enabled is defined and name_ten_enabled() %}<a class="btn btn-gold" href="/ten">Play Name ten ↗</a>{% endif %}
+        <a class="btn btn-quiet" href="/library">Browse all {{ total_books if total_books is defined else '' }} books</a>
+      </div>
+    </li>
+  </ol>
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/welcome.js?v={{ asset_version }}" defer></script>{% endblock %}
