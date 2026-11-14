@@ -284,3 +284,24 @@ def save_verdict(play_id: str, verdict: dict, badges: list[dict], user_id: str |
         database.table("user_badge").insert(
             [{"user_id": user_id, "badge_key": key, "play_id": play_id} for key in keys]
         ).execute()
+
+
+def share_slug(play_id: str, slug: str) -> str:
+    """Give a play its public slug once; later calls return the slug it already has."""
+    if is_sqlite_mode():
+        db = get_db()
+        with db:
+            db.execute("UPDATE ten_play SET share_slug = ? WHERE id = ? AND share_slug IS NULL", (slug, play_id))
+        return db.execute("SELECT share_slug FROM ten_play WHERE id = ?", (play_id,)).fetchone()[0]
+    database = get_supabase()
+    database.table("ten_play").update({"share_slug": slug}).eq("id", play_id).is_("share_slug", "null").execute()
+    rows = database.table("ten_play").select("share_slug").eq("id", play_id).limit(1).execute().data
+    return rows[0]["share_slug"]
+
+
+def play_by_slug(slug: str) -> dict | None:
+    if is_sqlite_mode():
+        row = get_db().execute("SELECT id FROM ten_play WHERE share_slug = ?", (slug,)).fetchone()
+        return get_play(row[0]) if row else None
+    rows = get_supabase().table("ten_play").select("id").eq("share_slug", slug).limit(1).execute().data
+    return get_play(rows[0]["id"]) if rows else None

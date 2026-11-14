@@ -962,3 +962,7 @@ form { display: grid; gap: 1rem; }
 .ten-badge strong { color: var(--gold-lit); font-family: var(--font-ui); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
 .ten-badge span { color: var(--ink-dim); font-size: .88rem; line-height: 1.45; }
 .ten-findings li { font-size: .95rem; color: var(--ink-dim); }
+.ten-share { display: grid; gap: .6rem; padding: 1rem; border: 1px dashed var(--line-strong); border-radius: var(--radius); }
+.ten-share > p { margin: 0; color: var(--ink-dim); font-size: .9rem; }
+.ten-share-status { min-height: 1.2em; color: var(--turquoise); font-family: var(--font-ui); font-size: .82rem; }
+.ten-public .ten-head { margin-bottom: -.6rem; }

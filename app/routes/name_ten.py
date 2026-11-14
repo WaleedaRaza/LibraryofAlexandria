@@ -10,17 +10,19 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
+import secrets
 import time
+from urllib.parse import urlencode
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from .. import templates
 from ..config import settings
 from ..services import name_ten
-from ..services.name_ten import badges as badge_rules, judge, lookup, store
+from ..services.name_ten import badges as badge_rules, card, judge, lookup, store
 from .auth import get_current_user_optional
 
 router = APIRouter()
@@ -208,3 +210,82 @@ async def claim(request: Request, user=Depends(get_current_user_optional)):
     if not anon_id:
         return {"claimed": 0}
     return {"claimed": store.claim_anonymous(anon_id, user["id"])}
+
+
+# --- sharing ---------------------------------------------------------------
+
+SLUG = re.compile(r"^[A-Za-z0-9_-]{8,16}$")
+_cards: dict[tuple[str, str], bytes] = {}
+
+
+def _base_url(request: Request) -> str:
+    return (settings.PUBLIC_BASE_URL or str(request.base_url)).rstrip("/")
+
+
+def _owns(play: dict, user, anon_id: str | None) -> bool:
+    if user and play.get("user_id") == user["id"]:
+        return True
+    return bool(anon_id) and play.get("anon_id") == anon_id
+
+
+@router.post("/play/{play_id}/share", response_class=JSONResponse)
+async def share(play_id: str, request: Request, user=Depends(get_current_user_optional)):
+    """Make a result public at /ten/p/{slug}. Only the player can, and nothing is public until they do."""
+    _require_enabled()
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+    anon_id = _anon(payload.get("anon_id") if isinstance(payload, dict) else None)
+    play = await asyncio.to_thread(store.get_play, play_id[:64])
+    if not play or not _owns(play, user, anon_id):
+        raise HTTPException(status_code=404, detail="Not found")
+    slug = await asyncio.to_thread(store.share_slug, play["id"], secrets.token_urlsafe(8))
+    url = f"{_base_url(request)}/ten/p/{slug}"
+    verdict = play.get("verdict_json") or {}
+    text = f"{verdict.get('epithet') or 'My ten'}. My ten books scored {play['score']} on Name Ten. Name yours:"
+    return {
+        "url": url,
+        "image": f"{url}/card.png?size=tall",
+        "x_intent": "https://x.com/intent/post?" + urlencode({"text": text, "url": url}),
+    }
+
+
+def _public_play(slug: str) -> dict:
+    play = store.play_by_slug(slug) if SLUG.match(slug) else None
+    if not play:
+        raise HTTPException(status_code=404, detail="Not found")
+    return play
+
+
+@router.get("/p/{slug}", response_class=HTMLResponse)
+async def public_result(slug: str, request: Request, user=Depends(get_current_user_optional)):
+    _require_enabled()
+    play = await asyncio.to_thread(_public_play, slug)
+    verdict = play.get("verdict_json") or {}
+    url = f"{_base_url(request)}/ten/p/{slug}"
+    return templates.TemplateResponse("ten/public.html", {
+        "request": request,
+        "user": user,
+        "play": play,
+        "verdict": verdict,
+        "badges": play.get("badges_json") or [],
+        "score_line": card.score_line(play),
+        "page_url": url,
+        "card_url": f"{url}/card.png",
+        "items": sorted(play["items"], key=lambda item: item["position"]),
+    })
+
+
+@router.get("/p/{slug}/card.png")
+async def public_card(slug: str, size: str = "wide"):
+    _require_enabled()
+    size = size if size in card.SIZES else "wide"
+    png = _cards.get((slug, size))
+    if png is None:
+        play = await asyncio.to_thread(_public_play, slug)
+        png = await asyncio.to_thread(card.render, play, size)
+        if len(_cards) > 256:
+            _cards.pop(next(iter(_cards)))
+        _cards[(slug, size)] = png
+    return Response(png, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "partials/glyph.html" import glyph %}
+{% block title %}{{ verdict.epithet or 'A reader' }} · Name ten — LibXNDR{% endblock %}
+{% block head %}
+  {% set description = (verdict.verdict or 'Ten books, scored on how rarely they turn up together.')|truncate(190) %}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LibXNDR">
+  <meta property="og:title" content="{{ verdict.epithet or 'A reader' }}: {{ play.score }} on Name Ten">
+  <meta property="og:description" content="{{ description }}">
+  <meta property="og:url" content="{{ page_url }}">
+  <meta property="og:image" content="{{ card_url }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ verdict.epithet or 'A reader' }}: {{ play.score }} on Name Ten">
+  <meta name="twitter:description" content="{{ description }}">
+  <meta name="twitter:image" content="{{ card_url }}">
+{% endblock %}
+{% block content %}
+<section class="ten-shell ten-public">
+  <header class="ten-head">
+    <p class="collection-eyebrow">{{ glyph('scroll', 14) }} Name ten · someone's ten</p>
+  </header>
+  <section class="ten-result">
+    <div class="ten-score">
+      <span class="ten-score-number">{{ play.score }}</span>
+      <p>{{ score_line|capitalize }}.</p>
+    </div>
+    {% if verdict.verdict %}
+    <div class="ten-verdict">
+      {% if verdict.epithet %}<p class="ten-epithet">{{ verdict.epithet }}</p>{% endif %}
+      <blockquote class="ten-verdict-text">{{ verdict.verdict }}</blockquote>
+    </div>
+    {% endif %}
+    {% if badges %}
+    <ul class="ten-badges">{% for badge in badges %}<li class="ten-badge"><strong>{{ badge.name }}</strong><span>{{ badge.line }}</span></li>{% endfor %}</ul>
+    {% endif %}
+    <ol class="ten-result-list">
+      {% for item in items %}
+      <li class="ten-item is-{{ item.status }}">
+        <div><strong>{{ item.title }}</strong><span>{{ item.author }}</span></div>
+        {% if item.status == 'library' and item.book_id %}<a href="/library/book/{{ item.book_id|urlencode }}">Read it here</a>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+    <div class="ten-result-actions">
+      <a class="btn btn-primary" href="/ten">{{ glyph('eye', 16) }} Name your ten</a>
+    </div>
+  </section>
+</section>
+{% endblock %}
