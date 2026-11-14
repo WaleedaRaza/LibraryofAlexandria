@@ -284,3 +284,71 @@ def save_verdict(play_id: str, verdict: dict, badges: list[dict], user_id: str |
         database.table("user_badge").insert(
             [{"user_id": user_id, "badge_key": key, "play_id": play_id} for key in keys]
         ).execute()
+
+
+def share_slug(play_id: str, slug: str) -> str:
+    """Give a play its public slug once; later calls return the slug it already has."""
+    if is_sqlite_mode():
+        db = get_db()
+        with db:
+            db.execute("UPDATE ten_play SET share_slug = ? WHERE id = ? AND share_slug IS NULL", (slug, play_id))
+        return db.execute("SELECT share_slug FROM ten_play WHERE id = ?", (play_id,)).fetchone()[0]
+    database = get_supabase()
+    database.table("ten_play").update({"share_slug": slug}).eq("id", play_id).is_("share_slug", "null").execute()
+    rows = database.table("ten_play").select("share_slug").eq("id", play_id).limit(1).execute().data
+    return rows[0]["share_slug"]
+
+
+def play_by_slug(slug: str) -> dict | None:
+    if is_sqlite_mode():
+        row = get_db().execute("SELECT id FROM ten_play WHERE share_slug = ?", (slug,)).fetchone()
+        return get_play(row[0]) if row else None
+    rows = get_supabase().table("ten_play").select("id").eq("share_slug", slug).limit(1).execute().data
+    return get_play(rows[0]["id"]) if rows else None
+
+
+SHELF_FIELDS = ("position", "work_key", "title", "author", "book_id")
+
+
+def keep_ten(user_id: str, items: list[dict]) -> None:
+    """Make a list the reader's ten, replacing the one they had."""
+    rows = [{"user_id": user_id, **{field: item.get(field) for field in SHELF_FIELDS}} for item in items]
+    if is_sqlite_mode():
+        db = get_db()
+        with db:
+            db.execute("DELETE FROM shelf_item WHERE user_id = ?", (user_id,))
+            db.executemany(
+                "INSERT INTO shelf_item(user_id,position,work_key,title,author,book_id) "
+                "VALUES(:user_id,:position,:work_key,:title,:author,:book_id)", rows)
+        return
+    database = get_supabase()
+    database.table("shelf_item").delete().eq("user_id", user_id).execute()
+    database.table("shelf_item").insert(rows).execute()
+
+
+def get_ten(user_id: str) -> list[dict]:
+    if is_sqlite_mode():
+        return [dict(row) for row in get_db().execute(
+            "SELECT * FROM shelf_item WHERE user_id = ? ORDER BY position", (user_id,))]
+    return get_supabase().table("shelf_item").select("*").eq("user_id", user_id).order("position").execute().data or []
+
+
+def badge_counts(user_id: str) -> dict[str, int]:
+    if is_sqlite_mode():
+        rows = get_db().execute("SELECT badge_key, count(*) AS n FROM user_badge WHERE user_id = ? GROUP BY badge_key",
+                                (user_id,)).fetchall()
+        return {row[0]: row[1] for row in rows}
+    rows = get_supabase().table("user_badge").select("badge_key").eq("user_id", user_id).execute().data or []
+    counts: dict[str, int] = {}
+    for row in rows:
+        counts[row["badge_key"]] = counts.get(row["badge_key"], 0) + 1
+    return counts
+
+
+def user_by_username(username: str) -> dict | None:
+    fields = "id,display_name,username,avatar_key"
+    if is_sqlite_mode():
+        row = get_db().execute(f"SELECT {fields} FROM users WHERE lower(username) = lower(?)", (username,)).fetchone()
+        return dict(row) if row else None
+    rows = get_supabase().table("users").select(fields).eq("username", username).limit(1).execute().data
+    return rows[0] if rows else None

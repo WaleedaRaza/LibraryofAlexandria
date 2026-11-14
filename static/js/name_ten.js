@@ -196,6 +196,17 @@
   const findHref = (item) => `/library/find?title=${encodeURIComponent(item.title)}&author=${encodeURIComponent(item.author || '')}`;
 
   function render(data) {
+    currentPlay = data.play_id;
+    root.querySelectorAll('[data-own]').forEach((button) => { button.disabled = false; });
+    const keepButton = root.querySelector('[data-own="keep"]');
+    if (keepButton) {
+      keepButton.textContent = 'Make this my ten';
+      const old = keepButton.parentElement.querySelector('a');
+      if (old) old.remove();
+    }
+    if (findButton) findButton.hidden = !data.items.some((item) => item.status !== 'library');
+    shared = null;
+    shareStatus.textContent = '';
     document.getElementById('ten-score').textContent = data.score;
     document.getElementById('ten-score-line').textContent = data.early
       ? `${data.lists_before === 0 ? 'The first list named here.' : `One of the first ${data.lists_before + 1} lists named here.`} Scores settle once a couple hundred people have played; yours is frozen now.`
@@ -285,6 +296,78 @@
       stop();
       pondering.hidden = true;
     }
+  });
+
+  // --- sharing: makes the result public only when the player asks ---
+  let currentPlay = null;
+  let shared = null;
+  const shareStatus = document.getElementById('ten-share-status');
+  async function shareLinks() {
+    if (shared) return shared;
+    const response = await fetch(`/ten/play/${encodeURIComponent(currentPlay)}/share`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ anon_id: signedIn ? null : anonId }),
+    });
+    if (!response.ok) throw new Error('Could not make a link. Try again.');
+    shared = await response.json();
+    return shared;
+  }
+  root.querySelectorAll('[data-share]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const kind = button.dataset.share;
+      // Open the window inside the click so popup blockers allow it, then point it at X.
+      const popup = kind === 'x' ? window.open('', '_blank') : null;
+      try {
+        const links = await shareLinks();
+        if (kind === 'x') {
+          if (popup) { popup.opener = null; popup.location = links.x_intent; } else window.location = links.x_intent;
+          shareStatus.textContent = 'Your result is public at its link now.';
+        } else if (kind === 'copy') {
+          try {
+            await navigator.clipboard.writeText(links.url);
+            shareStatus.textContent = 'Link copied.';
+          } catch (_) {
+            shareStatus.textContent = `Your link: ${links.url}`;
+          }
+        } else {
+          const a = document.createElement('a');
+          a.href = links.image;
+          a.download = 'my-ten.png';
+          document.body.append(a);
+          a.click();
+          a.remove();
+          shareStatus.textContent = 'Card saved. It is sized for posting as an image.';
+        }
+      } catch (error) {
+        if (popup) popup.close();
+        shareStatus.textContent = error.message || 'Could not share. Try again.';
+      }
+    });
+  });
+
+  // --- my ten, and the Finder for books the library lacks (signed in only) ---
+  const findButton = root.querySelector('[data-own="find"]');
+  root.querySelectorAll('[data-own]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const kind = button.dataset.own;
+      button.disabled = true;
+      try {
+        const response = await fetch(`/ten/play/${encodeURIComponent(currentPlay)}/${kind}`, { method: 'POST' });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || 'That did not work. Try again.');
+        if (kind === 'keep') {
+          button.textContent = 'This is your ten';
+          const view = link(data.profile, 'See your page');
+          button.after(view);
+        } else if (data.job) {
+          window.location = data.job;
+        }
+      } catch (error) {
+        button.disabled = false;
+        shareStatus.textContent = error.message;
+      }
+    });
   });
 
   document.getElementById('ten-again').addEventListener('click', () => {

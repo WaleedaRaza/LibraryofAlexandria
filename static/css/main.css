@@ -1068,3 +1068,14 @@ form { display: grid; gap: 1rem; }
   .eye-try { grid-template-columns: 1fr; }
   .starter-grid { grid-template-columns: repeat(2, 1fr); }
 }
+.ten-share { display: grid; gap: .6rem; padding: 1rem; border: 1px dashed var(--line-strong); border-radius: var(--radius); }
+.ten-share > p { margin: 0; color: var(--ink-dim); font-size: .9rem; }
+.ten-share-status { min-height: 1.2em; color: var(--turquoise); font-family: var(--font-ui); font-size: .82rem; }
+.ten-public .ten-head { margin-bottom: -.6rem; }
+.ten-proof { font-style: normal; color: var(--ink-faint); }
+.ten-proof-sampled { color: var(--turquoise); }
+.ten-proof-read { color: var(--gold); }
+.ten-note { margin: 0; color: var(--ink-faint); font-family: var(--font-ui); font-size: .78rem; }
+.ten-own { display: flex; flex-wrap: wrap; gap: .6rem; }
+.ten-own { align-items: center; }
+.ten-own a:not(.btn) { color: var(--turquoise); font-family: var(--font-ui); font-size: .85rem; }

@@ -146,6 +146,7 @@ app.include_router(account.router, prefix="/account", tags=["account"])
 app.include_router(review.router, prefix="/review", tags=["review"])
 app.include_router(device_api.router, prefix="/api/v1", tags=["device api"])
 app.include_router(name_ten.router, prefix="/ten", tags=["name ten"])
+app.include_router(name_ten.profiles, tags=["name ten"])
 app.include_router(desk.router, tags=["local desk"])
 
 

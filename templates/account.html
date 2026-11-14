@@ -18,13 +18,26 @@
     <form class="account-form" action="/account" method="post" enctype="multipart/form-data">
       <div class="section-heading"><span>01 / Profile</span><h2>How you appear.</h2></div>
       <label>Display name<input name="display_name" required maxlength="80" autocomplete="name" value="{{ form_name if form_name is defined else user.display_name }}"></label>
-      <label>Username<input name="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,23}" autocomplete="username" value="{{ form_username if form_username is defined else (user.username or '') }}" placeholder="your.name"><small>3–24 characters. Letters, numbers, dots, hyphens, and underscores.</small></label>
+      <label>Username<input name="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9][A-Za-z0-9._\-]{2,23}" autocomplete="username" value="{{ form_username if form_username is defined else (user.username or '') }}" placeholder="your.name"><small>3–24 characters. Letters, numbers, dots, hyphens, and underscores.</small></label>
       <label>Profile photo<input type="file" name="photo" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG, or WebP · up to 5 MB. Cropped to a square.</small></label>
       {% if user.avatar_key %}<label class="check-label"><input type="checkbox" name="remove_photo" value="true"> Remove current photo</label>{% endif %}
       <button class="btn btn-primary" type="submit">{{ glyph('ankh', 16) }} Save profile</button>
     </form>
+    {% if name_ten_enabled is defined and name_ten_enabled() %}
+    <section class="account-ten">
+      <div class="section-heading"><span>02 / Your ten</span><h2>The books that are yours.</h2></div>
+      {% if ten %}
+      <ol class="ten-result-list">
+        {% for item in ten %}<li class="ten-item"><div><strong>{{ item.title }}</strong><span>{{ item.author }} · <em class="ten-proof ten-proof-{{ item.proof_state }}">{{ item.proof_label }}</em></span></div></li>{% endfor %}
+      </ol>
+      <p>{% if user.username %}Public at <a href="/u/{{ user.username }}">/u/{{ user.username }}</a>. {% else %}Choose a username above to give it a public page. {% endif %}<a href="/ten">Name a new ten</a></p>
+      {% else %}
+      <p>You haven't kept a ten yet. <a href="/ten">Name ten books</a> and press "Make this my ten".</p>
+      {% endif %}
+    </section>
+    {% endif %}
     <section class="account-access">
-      <div class="section-heading"><span>02 / Account</span><h2>Yours to keep.</h2></div>
+      <div class="section-heading"><span>{{ "03" if name_ten_enabled is defined and name_ten_enabled() else "02" }} / Account</span><h2>Yours to keep.</h2></div>
       <p class="account-email">{{ user.email }}</p>
       <p>Your reading list, highlights, notes, and conversations are private. Books you add are reviewed by Waleed.</p>
       {% if user.role == 'admin' %}<a class="account-review-link" href="/review">Open the review room ↗</a>{% endif %}

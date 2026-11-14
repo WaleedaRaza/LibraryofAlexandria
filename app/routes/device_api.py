@@ -179,11 +179,34 @@ async def _close(response: httpx.Response, client: httpx.AsyncClient) -> None:
     await client.aclose()
 
 
-async def _stream_pdf(url: str, filename: str, *, headers: dict | None = None) -> StreamingResponse:
-    client = httpx.AsyncClient(follow_redirects=True, timeout=httpx.Timeout(120, connect=15),
+MAX_REDIRECTS = 5
+
+
+async def _stream_pdf(url: str, filename: str, *, headers: dict | None = None,
+                      untrusted: bool = False) -> StreamingResponse:
+    """Stream a PDF to the device. For a URL from the open web (untrusted), every
+    redirect hop is checked against private and internal addresses before it is
+    followed, so a public page cannot bounce the server onto its own network."""
+    client = httpx.AsyncClient(follow_redirects=not untrusted, timeout=httpx.Timeout(120, connect=15),
                                headers={"User-Agent": "LibXNDR-Device/1.0"})
     try:
-        upstream = await client.send(client.build_request("GET", url, headers=headers or {}), stream=True)
+        current = url
+        for _ in range(MAX_REDIRECTS + 1):
+            if untrusted:
+                await _validate_public_url(current)
+            upstream = await client.send(client.build_request("GET", current, headers=headers or {}), stream=True)
+            if not (untrusted and upstream.is_redirect):
+                break
+            location = upstream.headers.get("location", "")
+            await upstream.aclose()
+            current = str(httpx.URL(current).join(location))
+            if not current.startswith(("https://", "http://")):
+                raise ValueError("redirect to a non-web address")
+        else:
+            raise ValueError("too many redirects")
+    except ValueError as exc:
+        await client.aclose()
+        raise HTTPException(status_code=400, detail="That link leads somewhere the server will not fetch") from exc
     except Exception as exc:
         await client.aclose()
         raise HTTPException(status_code=503, detail="This PDF could not be fetched just now") from exc
@@ -227,8 +250,7 @@ async def book_file(book_id: str, user=Depends(device_user)):
         source = item.get("source_url") or ""
         if not source.startswith(("https://", "http://")):
             raise HTTPException(status_code=404, detail="This book has no file to send")
-        await _validate_public_url(source)
-        return await _stream_pdf(source, filename)
+        return await _stream_pdf(source, filename, untrusted=True)
     assets = AssetService()
     local = assets.local_pdf(item)
     if local:
@@ -320,7 +342,7 @@ async def eye_fetch(url: str, user=Depends(device_user)):
     name = (urlparse(url).path.rsplit("/", 1)[-1] or "book.pdf")[:120]
     if not name.lower().endswith(".pdf"):
         name += ".pdf"
-    return await _stream_pdf(url, name)
+    return await _stream_pdf(url, name, untrusted=True)
 
 
 @router.post("/contribute", response_class=JSONResponse)

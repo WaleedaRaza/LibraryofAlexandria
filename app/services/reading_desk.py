@@ -522,7 +522,11 @@ async def _validate_public_url(url: str) -> None:
     infos = await asyncio.to_thread(socket.getaddrinfo, parsed.hostname, parsed.port or 443, type=socket.SOCK_STREAM)
     for info in infos:
         address = ipaddress.ip_address(info[4][0])
-        if address.is_private or address.is_loopback or address.is_link_local or address.is_reserved or address.is_multicast or address.is_unspecified:
+        mapped = getattr(address, "ipv4_mapped", None)
+        if mapped is not None:
+            address = mapped  # ::ffff:127.0.0.1 is 127.0.0.1
+        if (not address.is_global or address.is_private or address.is_loopback or address.is_link_local
+                or address.is_reserved or address.is_multicast or address.is_unspecified):
             raise ValueError("private network destination blocked")
 
 
