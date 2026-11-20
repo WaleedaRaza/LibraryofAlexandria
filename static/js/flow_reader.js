@@ -427,6 +427,7 @@
 
   /* ---------- background ---------- */
   const canvas = $('flow-bg');
+  const dock = document.querySelector('.flow-dock');
   const ctx = canvas.getContext('2d');
   let bgW = 0; let bgH = 0;
   function resize() {
@@ -586,7 +587,10 @@
       draw(dt, speed) {
         this.x += dt * 0.12 * speed;
         const t = performance.now() / 1000;
-        const bank = bgH * 0.7; const river = bgH * 0.84;
+        // Keep the river and its glyph band above the control dock, whatever its height.
+        const floor = Math.min(bgH, (dock && dock.offsetTop) || bgH);
+        const fh = Math.max(22, Math.min(40, floor * 0.05)); const band = fh * 1.7;
+        const river = floor - band - 6; const bank = river - Math.max(60, floor * 0.15);
         const sky = ctx.createLinearGradient(0, 0, 0, bank);
         sky.addColorStop(0, '#05060f'); sky.addColorStop(0.65, '#16122a'); sky.addColorStop(1, '#3a2418');
         ctx.fillStyle = sky; ctx.fillRect(0, 0, bgW, bank);
@@ -645,11 +649,11 @@
         ctx.beginPath(); ctx.moveTo(bx - 2, by - 72); ctx.lineTo(bx + 44, by - 10); ctx.lineTo(bx - 2, by - 12); ctx.fill();
         ctx.fillStyle = '#0d0a07'; ctx.fillRect(0, river, bgW, bgH - river);
         ctx.strokeStyle = 'rgba(168,121,27,.8)'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(0, river + 3); ctx.lineTo(bgW, river + 3); ctx.moveTo(0, bgH - 4); ctx.lineTo(bgW, bgH - 4); ctx.stroke();
-        const fh = Math.min(40, (bgH - river) * 0.6); const fx = this.x * 1.0; const cell = fh * 1.3;
+        ctx.beginPath(); ctx.moveTo(0, river + 3); ctx.lineTo(bgW, river + 3); ctx.moveTo(0, river + band - 3); ctx.lineTo(bgW, river + band - 3); ctx.stroke();
+        const fx = this.x * 1.0; const cell = fh * 1.3;
         const ff = Math.floor(fx / cell);
         ctx.strokeStyle = '#e3b341'; ctx.lineWidth = Math.max(1.5, fh / 16); ctx.lineCap = 'round';
-        for (let g = ff; g < ff + bgW / cell + 2; g += 1) glyph(g, g * cell - fx + cell / 2, river + (bgH - river + fh) / 2, fh);
+        for (let g = ff; g < ff + bgW / cell + 2; g += 1) glyph(g, g * cell - fx + cell / 2, river + (band + fh) / 2, fh);
       },
     },
 
