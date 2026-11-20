@@ -1018,3 +1018,19 @@ def test_device_pairing_and_api_serve_the_kindle(client: TestClient, monkeypatch
     assert client.get("/api/v1/eye/fetch", params={"url": "http://127.0.0.1/x.pdf"}, headers=headers).status_code == 400
     sent = client.post("/api/v1/contribute", json={"title": "Dune", "author": "Frank Herbert", "links": ["https://books.example/dune.pdf"]}, headers=headers)
     assert sent.status_code == 200 and sent.json()["status"] == "pending"
+
+
+def test_flow_mode_is_for_members_and_opens_at_a_page(client: TestClient):
+    book = CatalogService().get_books(limit=1)[0]
+    guest = client.get(f"/read/{book['id']}/flow", follow_redirects=False)
+    assert guest.status_code == 303 and guest.headers["location"] == f"/auth/login?next=/read/{book['id']}/flow"
+    assert client.get("/read/no-such-book/flow").status_code == 404
+
+    _register(client)
+    flow = client.get(f"/read/{book['id']}/flow?page=7")
+    assert flow.status_code == 200
+    assert 'data-start-page="7"' in flow.text and "/static/js/flow_reader.js" in flow.text
+    # Without a page it resumes where the reader left off.
+    client.post(f"/read/{book['id']}/progress", json={"page_number": 4, "page_count": 20})
+    assert 'data-start-page="4"' in client.get(f"/read/{book['id']}/flow").text
+    assert 'id="open-flow"' in client.get(f"/read/{book['id']}").text

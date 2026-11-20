@@ -66,6 +66,32 @@ async def read_book(request: Request, book_id: str, page: int | None = None, fin
     )
 
 
+@router.get("/{book_id}/flow", response_class=HTMLResponse)
+async def flow_book(request: Request, book_id: str, page: int = 0, user=Depends(get_current_user_optional)):
+    """Flow mode: the book one word at a time (RSVP), optionally read aloud."""
+    book = readable_book(book_id, user)
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    if book.get("availability") == "external_link":
+        return RedirectResponse(f"/library/book/{book_id}", status_code=303)
+    if not user:
+        return RedirectResponse(f"/auth/login?next=/read/{book_id}/flow", status_code=303)
+    service = UserService()
+    service.save_book(user["id"], book_id)
+    progress = service.get_progress(user["id"], book_id) or {"page_number": 1}
+    start_page = page if 1 <= page <= 100000 else int(progress.get("page_number") or 1)
+    return templates.TemplateResponse(
+        "flow.html",
+        {
+            "request": request,
+            "user": user,
+            "book": book,
+            "pdf_url": AssetService().browser_pdf_url(book),
+            "start_page": start_page,
+        },
+    )
+
+
 async def _close_pdf_proxy(response: httpx.Response, client: httpx.AsyncClient) -> None:
     await response.aclose()
     await client.aclose()
