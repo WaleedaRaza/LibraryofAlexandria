@@ -34,7 +34,7 @@
     write(value) { try { localStorage.setItem(STORE, JSON.stringify(value)); } catch (_) {} },
   };
   const settings = Object.assign(
-    { wpm: 350, mode: 'flash', bg: reducedMotion ? 'none' : 'runner', chunk: 1, voice: '', context: true },
+    { wpm: 350, mode: 'flash', bg: reducedMotion ? 'none' : 'nile', chunk: 1, voice: '', context: true },
     store.read(),
   );
   const saveSettings = () => store.write(settings);
