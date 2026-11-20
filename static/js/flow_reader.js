@@ -34,7 +34,7 @@
     write(value) { try { localStorage.setItem(STORE, JSON.stringify(value)); } catch (_) {} },
   };
   const settings = Object.assign(
-    { wpm: 350, mode: 'flash', bg: reducedMotion ? 'none' : 'runner', chunk: 1, voice: '', context: true },
+    { wpm: 350, mode: 'flash', bg: reducedMotion ? 'none' : 'nile', chunk: 1, voice: '', context: true },
     store.read(),
   );
   const saveSettings = () => store.write(settings);
@@ -440,6 +440,58 @@
 
   const hash = (n) => { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); };
 
+  // Simple hieroglyph strokes, drawn at (x, y) with height h. Our own shapes, not traced from any source.
+  const GLYPHS = [
+    (x, y, h) => { // ankh
+      ctx.beginPath(); ctx.ellipse(x, y - h * 0.72, h * 0.16, h * 0.22, 0, 0, Math.PI * 2);
+      ctx.moveTo(x - h * 0.3, y - h * 0.48); ctx.lineTo(x + h * 0.3, y - h * 0.48);
+      ctx.moveTo(x, y - h * 0.5); ctx.lineTo(x, y); ctx.stroke();
+    },
+    (x, y, h) => { // eye
+      ctx.beginPath(); ctx.moveTo(x - h * 0.45, y - h * 0.55);
+      ctx.quadraticCurveTo(x, y - h * 0.9, x + h * 0.45, y - h * 0.55);
+      ctx.quadraticCurveTo(x, y - h * 0.3, x - h * 0.45, y - h * 0.55);
+      ctx.moveTo(x + h * 0.06, y - h * 0.58); ctx.arc(x, y - h * 0.58, h * 0.07, 0, Math.PI * 2);
+      ctx.moveTo(x - h * 0.05, y - h * 0.42); ctx.lineTo(x - h * 0.12, y - h * 0.08);
+      ctx.moveTo(x + h * 0.12, y - h * 0.42); ctx.quadraticCurveTo(x + h * 0.3, y - h * 0.1, x + h * 0.14, y - h * 0.05);
+      ctx.stroke();
+    },
+    (x, y, h) => { // water
+      ctx.beginPath(); ctx.moveTo(x - h * 0.45, y - h * 0.3);
+      for (let i = 1; i <= 6; i += 1) ctx.lineTo(x - h * 0.45 + i * h * 0.15, y - h * (i % 2 ? 0.42 : 0.3));
+      ctx.stroke();
+    },
+    (x, y, h) => { // reed
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - h * 0.8);
+      ctx.quadraticCurveTo(x + h * 0.28, y - h * 0.7, x + h * 0.06, y - h * 0.45); ctx.stroke();
+    },
+    (x, y, h) => { // sun disk
+      ctx.beginPath(); ctx.arc(x, y - h * 0.5, h * 0.22, 0, Math.PI * 2);
+      ctx.moveTo(x + h * 0.04, y - h * 0.5); ctx.arc(x, y - h * 0.5, h * 0.04, 0, Math.PI * 2); ctx.stroke();
+    },
+    (x, y, h) => { // djed pillar
+      ctx.beginPath(); ctx.moveTo(x - h * 0.08, y); ctx.lineTo(x - h * 0.08, y - h * 0.9);
+      ctx.moveTo(x + h * 0.08, y); ctx.lineTo(x + h * 0.08, y - h * 0.9);
+      for (let i = 0; i < 4; i += 1) { ctx.moveTo(x - h * 0.2, y - h * (0.62 + i * 0.08)); ctx.lineTo(x + h * 0.2, y - h * (0.62 + i * 0.08)); }
+      ctx.stroke();
+    },
+    (x, y, h) => { // bird
+      ctx.beginPath(); ctx.moveTo(x - h * 0.3, y - h * 0.1);
+      ctx.quadraticCurveTo(x - h * 0.1, y - h * 0.55, x + h * 0.18, y - h * 0.6);
+      ctx.lineTo(x + h * 0.32, y - h * 0.55);
+      ctx.moveTo(x + h * 0.02, y - h * 0.35); ctx.lineTo(x - h * 0.02, y);
+      ctx.moveTo(x + h * 0.1, y - h * 0.35); ctx.lineTo(x + h * 0.14, y); ctx.stroke();
+    },
+  ];
+  const glyph = (n, x, y, h) => GLYPHS[Math.floor(hash(n) * GLYPHS.length)](x, y, h);
+
+  function pyramid(cx, base, half, tall, lit, shade) {
+    ctx.fillStyle = shade;
+    ctx.beginPath(); ctx.moveTo(cx - half, base); ctx.lineTo(cx, base - tall); ctx.lineTo(cx + half, base); ctx.fill();
+    ctx.fillStyle = lit;
+    ctx.beginPath(); ctx.moveTo(cx - half, base); ctx.lineTo(cx, base - tall); ctx.lineTo(cx - half * 0.12, base); ctx.fill();
+  }
+
   const BACKGROUNDS = {
     none: { draw() { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, bgW, bgH); } },
 
@@ -525,6 +577,124 @@
           ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(bgW, y); ctx.stroke();
         }
         ctx.globalAlpha = 1;
+      },
+    },
+
+    // The Nile at night: pyramids drifting past, a felucca on moonlit water, a frieze of glyphs underfoot.
+    nile: {
+      x: 0,
+      draw(dt, speed) {
+        this.x += dt * 0.12 * speed;
+        const t = performance.now() / 1000;
+        const bank = bgH * 0.7; const river = bgH * 0.84;
+        const sky = ctx.createLinearGradient(0, 0, 0, bank);
+        sky.addColorStop(0, '#05060f'); sky.addColorStop(0.65, '#16122a'); sky.addColorStop(1, '#3a2418');
+        ctx.fillStyle = sky; ctx.fillRect(0, 0, bgW, bank);
+        for (let i = 0; i < 90; i += 1) {
+          const sx = (hash(i) * bgW * 1.5 - this.x * 0.02) % bgW; const sy = hash(i + 50) * bank * 0.7;
+          ctx.fillStyle = `rgba(243,239,228,${0.25 + 0.5 * Math.abs(Math.sin(t * (0.5 + hash(i + 9)) + i))})`;
+          ctx.fillRect(sx < 0 ? sx + bgW : sx, sy, 1.6, 1.6);
+        }
+        const mx = bgW * 0.78; const my = bank * 0.26; const mr = Math.min(bgW, bgH) * 0.06;
+        const halo = ctx.createRadialGradient(mx, my, mr, mx, my, mr * 5);
+        halo.addColorStop(0, 'rgba(242,207,109,.22)'); halo.addColorStop(1, 'rgba(242,207,109,0)');
+        ctx.fillStyle = halo; ctx.fillRect(0, 0, bgW, bank);
+        ctx.fillStyle = '#f2e3b0'; ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI * 2); ctx.fill();
+        [[0.06, 0.2, '#4a3220', '#22160f', 520], [0.16, 0.32, '#7a5328', '#2b1b10', 700]].forEach(([depth, tall, lit, shade, gap], li) => {
+          gap *= Math.min(1, bgW / 900) * 0.6 + 0.4; const off = this.x * depth; const first = Math.floor(off / gap);
+          for (let p = first - 1; p < first + bgW / gap + 2; p += 1) {
+            if (hash(p * 3 + li) < 0.3) continue;
+            const h = Math.min(bgH, bgW * 1.1) * tall * (0.6 + hash(p + li * 77) * 0.4);
+            const cx = p * gap - off + hash(p * 5) * gap * 0.4;
+            pyramid(cx, bank, h * 0.95, h, lit, shade);
+            if (li === 1 && hash(p * 11) > 0.5) pyramid(cx + h * 1.1, bank, h * 0.6, h * 0.62, lit, shade);
+          }
+        });
+        ctx.fillStyle = '#120c08';
+        ctx.beginPath(); ctx.moveTo(0, bank);
+        for (let px = 0; px <= bgW; px += 20) ctx.lineTo(px, bank - 6 - 6 * Math.sin((px + this.x * 0.4) / 90));
+        ctx.lineTo(bgW, bank + 4); ctx.lineTo(0, bank + 4); ctx.fill();
+        const palms = this.x * 0.45; const pg = 260; const pf = Math.floor(palms / pg);
+        ctx.strokeStyle = '#0b0805'; ctx.fillStyle = '#0b0805'; ctx.lineWidth = 4;
+        for (let p = pf - 1; p < pf + bgW / pg + 2; p += 1) {
+          if (hash(p * 13) < 0.45) continue;
+          const px = p * pg - palms; const ph = 70 + hash(p) * 60; const sway = Math.sin(t * 0.8 + p) * 4;
+          ctx.beginPath(); ctx.moveTo(px, bank); ctx.quadraticCurveTo(px + 10, bank - ph / 2, px + sway, bank - ph); ctx.stroke();
+          for (let f = 0; f < 6; f += 1) {
+            const a = -Math.PI / 2 + (f - 2.5) * 0.55;
+            ctx.beginPath(); ctx.moveTo(px + sway, bank - ph);
+            ctx.quadraticCurveTo(px + sway + Math.cos(a) * 30, bank - ph + Math.sin(a) * 30 - 6, px + sway + Math.cos(a) * 46, bank - ph + Math.sin(a) * 30 + 14);
+            ctx.stroke();
+          }
+        }
+        const water = ctx.createLinearGradient(0, bank, 0, river);
+        water.addColorStop(0, '#0c1a22'); water.addColorStop(1, '#06100f');
+        ctx.fillStyle = water; ctx.fillRect(0, bank + 4, bgW, river - bank - 4);
+        for (let i = 0; i < 14; i += 1) {
+          const ry = bank + 10 + i * ((river - bank - 14) / 14);
+          const w = mr * (2.2 - i * 0.08) * (0.7 + 0.3 * Math.sin(t * 2 + i));
+          ctx.fillStyle = `rgba(242,207,109,${0.28 - i * 0.015})`;
+          ctx.fillRect(mx - w / 2 + Math.sin(t * 1.5 + i * 1.7) * 6, ry, w, 2);
+        }
+        const bx = bgW * 0.38 + Math.sin(t * 0.2) * 20; const by = bank + (river - bank) * 0.45 + Math.sin(t * 1.3) * 2;
+        ctx.fillStyle = '#0b0805';
+        ctx.beginPath(); ctx.moveTo(bx - 48, by); ctx.quadraticCurveTo(bx, by + 14, bx + 52, by - 2); ctx.lineTo(bx + 40, by - 4); ctx.lineTo(bx - 40, by - 4); ctx.fill();
+        ctx.strokeStyle = '#0b0805'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(bx - 4, by - 4); ctx.lineTo(bx - 4, by - 70); ctx.stroke();
+        ctx.fillStyle = 'rgba(243,232,200,.85)';
+        ctx.beginPath(); ctx.moveTo(bx - 2, by - 72); ctx.lineTo(bx + 44, by - 10); ctx.lineTo(bx - 2, by - 12); ctx.fill();
+        ctx.fillStyle = '#0d0a07'; ctx.fillRect(0, river, bgW, bgH - river);
+        ctx.strokeStyle = 'rgba(168,121,27,.8)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, river + 3); ctx.lineTo(bgW, river + 3); ctx.moveTo(0, bgH - 4); ctx.lineTo(bgW, bgH - 4); ctx.stroke();
+        const fh = Math.min(40, (bgH - river) * 0.6); const fx = this.x * 1.0; const cell = fh * 1.3;
+        const ff = Math.floor(fx / cell);
+        ctx.strokeStyle = '#e3b341'; ctx.lineWidth = Math.max(1.5, fh / 16); ctx.lineCap = 'round';
+        for (let g = ff; g < ff + bgW / cell + 2; g += 1) glyph(g, g * cell - fx + cell / 2, river + (bgH - river + fh) / 2, fh);
+      },
+    },
+
+    // Walking a temple hall: carved columns come toward you out of torchlight.
+    temple: {
+      z: 0,
+      draw(dt, speed) {
+        this.z += dt * 0.00035 * speed;
+        if (this.z >= 1) { this.z -= 1; this.k = (this.k || 0) + 1; }
+        const t = performance.now() / 1000;
+        const cx = bgW / 2; const hz = bgH * 0.46;
+        ctx.fillStyle = '#060403'; ctx.fillRect(0, 0, bgW, bgH);
+        const floor = ctx.createLinearGradient(0, hz, 0, bgH);
+        floor.addColorStop(0, '#1a1209'); floor.addColorStop(1, '#4a3418');
+        ctx.fillStyle = floor; ctx.fillRect(0, hz, bgW, bgH - hz);
+        const glow = ctx.createRadialGradient(cx, hz, 4, cx, hz, bgH * (0.5 + 0.03 * Math.sin(t * 9) + 0.02 * Math.sin(t * 23)));
+        glow.addColorStop(0, 'rgba(242,170,70,.55)'); glow.addColorStop(1, 'rgba(242,170,70,0)');
+        ctx.fillStyle = glow; ctx.fillRect(0, 0, bgW, bgH);
+        ctx.strokeStyle = 'rgba(227,179,65,.12)'; ctx.lineWidth = 1;
+        for (let i = 0; i < 12; i += 1) {
+          const p = (i + this.z) / 12; const y = hz + (bgH - hz) * p * p;
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(bgW, y); ctx.stroke();
+        }
+        const N = 9;
+        for (let i = 0; i < N; i += 1) {
+          const p = (i + this.z) / N; const s = p * p;
+          if (s < 0.01) continue;
+          const spread = bgW * 0.06 + bgW * 0.75 * s;
+          const w = 6 + bgW * 0.16 * s; const top = hz - bgH * 1.1 * s; const bottom = hz + (bgH - hz) * s;
+          const id = i - (this.k || 0); // the same column keeps the same carvings as it walks toward you
+          [-1, 1].forEach((side) => {
+            const x = cx + side * spread - w / 2;
+            const shade = Math.round(22 + 78 * s);
+            ctx.fillStyle = `rgb(${shade + 30},${shade + 8},${Math.round(shade * 0.55)})`;
+            ctx.fillRect(x, top, w, bottom - top);
+            ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(side < 0 ? x : x + w * 0.7, top, w * 0.3, bottom - top);
+            ctx.fillStyle = `rgb(${shade + 50},${shade + 25},${Math.round(shade * 0.6)})`;
+            ctx.fillRect(x - w * 0.12, top + (bottom - top) * 0.04, w * 1.24, (bottom - top) * 0.04);
+            if (w > 24) {
+              ctx.strokeStyle = `rgba(227,179,65,${Math.min(0.55, s * 1.2)})`; ctx.lineWidth = Math.max(1, w / 28); ctx.lineCap = 'round';
+              const gh = w * 0.45; const rows = Math.floor((bottom - top) * 0.8 / (gh * 1.3));
+              for (let r = 0; r < rows; r += 1) glyph(id * 31 + r * 7 + side + 5, x + w / 2, top + (bottom - top) * 0.12 + (r + 1) * gh * 1.3, gh);
+            }
+          });
+        }
       },
     },
 
