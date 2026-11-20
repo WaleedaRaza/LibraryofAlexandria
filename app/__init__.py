@@ -44,3 +44,4 @@ def create_app() -> FastAPI:
 # Templates instance (shared across routes)
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent / "templates"))
 templates.env.globals["asset_version"] = settings.ASSET_VERSION
+templates.env.globals["name_ten_enabled"] = lambda: settings.NAME_TEN_ENABLED

@@ -77,6 +77,8 @@ class Settings:
     GCS_LIBRARY_BUCKET: Optional[str] = os.getenv("GCS_LIBRARY_BUCKET")
     PDF_SIGNED_URL_TTL: int = int(os.getenv("PDF_SIGNED_URL_TTL", "900"))
     SOURCE_FINDER_ENABLED: bool = os.getenv("SOURCE_FINDER_ENABLED", "true").lower() == "true"
+    # Name Ten stays dark until launch; /ten 404s and the nav link is hidden while false.
+    NAME_TEN_ENABLED: bool = os.getenv("NAME_TEN_ENABLED", "false").lower() == "true"
     
     # Legacy - kept for reference but no longer used
     # DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")

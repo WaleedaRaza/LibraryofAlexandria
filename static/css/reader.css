@@ -67,6 +67,9 @@
 .chat-messages span { display: block; margin-bottom: .2rem; color: var(--ink-faint); font-family: var(--font-ui); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; }
 .chat-form { margin-top: .7rem; display: grid; gap: .5rem; }
 .chat-form textarea { min-height: 3.8rem; }
+.chat-messages .add-to-note { display: block; min-height: 32px; margin-top: .5rem; padding: 0 .6rem; color: var(--gold); font-size: .68rem; }
+.chat-form .dictate { color: var(--ink-dim); }
+.chat-form .dictate[aria-pressed="true"] { color: var(--carnelian); border-color: var(--carnelian); }
 .delete-highlight { justify-self: start; padding: 0; color: var(--ink-faint); background: none; border: 0; font-family: var(--font-ui); font-size: .72rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .delete-highlight:hover { color: var(--danger); }
 

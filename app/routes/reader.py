@@ -11,7 +11,8 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Redirect
 from starlette.background import BackgroundTask
 
 from .. import templates
-from ..services.agent_service import AgentService
+from ..agents import passage_companion
+from ..agents.passage_companion import MAX_PAGE_TEXT, PassageContext
 from ..services.asset_service import AssetService
 from ..services.catalog_service import CatalogService
 from ..services.chat_service import ChatService
@@ -217,24 +218,40 @@ async def passage_chat(
         raise HTTPException(status_code=429, detail="Pause for a few minutes before asking again.")
     recent.append(now)
     _passage_chat_times[user["id"]] = recent
+    page_text = data.get("page_text") or ""
+    if not isinstance(page_text, str):
+        page_text = ""
     chat = ChatService()
+    history = chat.get_messages(highlight_id)
+    others = [
+        item for item in service.get_highlights(user["id"], book_id)
+        if item["id"] != highlight_id
+    ]
+    others.sort(key=lambda item: abs(int(item["page_number"]) - int(highlight["page_number"])))
+    board = [
+        book_row for book_row in service.get_saved_books(user["id"])
+        if book_row.get("reading_status") in {"reading", "read"} and book_row.get("id") != book_id
+    ]
+    context = PassageContext(
+        book_title=book["title"],
+        book_author=book.get("author") or "",
+        passage=highlight["selected_text"],
+        page_number=int(highlight["page_number"]),
+        page_text=page_text[:MAX_PAGE_TEXT],
+        note=highlight.get("note") or "",
+        other_passages=others,
+        board=board,
+        history=history,
+    )
     chat.add_message(highlight_id, "user", question)
     try:
         async with _passage_chat_slots:
-            response = await asyncio.to_thread(
-                AgentService().ask_text_companion,
-                book_title=book["title"],
-                chapter_title=f"Page {highlight['page_number']}",
-                selected_text=highlight["selected_text"],
-                question=question,
-                routing_context="\n".join(m["content"] for m in chat.get_messages(highlight_id)[-6:]),
-            )
+            explanation = await asyncio.to_thread(passage_companion.answer, context, question)
     except Exception as exc:
         logger.exception("Passage companion failed")
         raise HTTPException(
             status_code=503,
             detail="The companion could not answer just now. Your passage and note are safe.",
         ) from exc
-    explanation = response.explanation if response.is_valid else "I couldn't discuss that passage yet."
     assistant_message = chat.add_message(highlight_id, "assistant", explanation)
     return {"success": True, "message": assistant_message, "messages": chat.get_messages(highlight_id)}

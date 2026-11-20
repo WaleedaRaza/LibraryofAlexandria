@@ -1,0 +1,370 @@
+"""Name Ten: the play screen, book search for its slots, and play submission.
+
+Anyone can play. Before signing in a player is a random id the page keeps in
+localStorage (Firebase Hosting forwards only the session cookie, so a second
+cookie would never reach us); signing in claims those plays for the account.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+import re
+import secrets
+import time
+from urllib.parse import urlencode
+from collections import defaultdict
+from datetime import date, datetime, timedelta, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import HTMLResponse, JSONResponse, Response
+
+from .. import templates
+from ..config import settings
+from ..services import name_ten
+from ..services.name_ten import badges as badge_rules, card, judge, lookup, store
+from .auth import get_current_user_optional
+
+router = APIRouter()
+profiles = APIRouter()  # /u/{username}, mounted at the site root
+logger = logging.getLogger(__name__)
+
+ANON_ID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+PLAY_LIMIT = (30, 3600)       # plays per player per hour
+SEARCH_LIMIT = (120, 60)      # searches per visitor per minute
+_times: dict[str, list[float]] = defaultdict(list)
+_judge_slots = asyncio.Semaphore(4)
+JUDGE_TIMEOUT = 9.0
+
+
+def _require_enabled() -> None:
+    if not settings.NAME_TEN_ENABLED:
+        raise HTTPException(status_code=404, detail="Not found")
+
+
+def _allow(bucket: str, limit: tuple[int, int]) -> bool:
+    count, window = limit
+    now = time.monotonic()
+    recent = [moment for moment in _times[bucket] if now - moment < window]
+    if len(recent) >= count:
+        _times[bucket] = recent
+        return False
+    recent.append(now)
+    _times[bucket] = recent
+    return True
+
+
+def _visitor(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for", "")
+    return forwarded.split(",")[0].strip() or (request.client.host if request.client else "unknown")
+
+
+def _today() -> date:
+    """Daily games turn over at midnight in New York."""
+    try:
+        from zoneinfo import ZoneInfo
+
+        return datetime.now(ZoneInfo("America/New_York")).date()
+    except Exception:
+        return (datetime.now(timezone.utc) - timedelta(hours=5)).date()
+
+
+def _anon(value) -> str | None:
+    value = str(value or "").strip().lower()
+    return value if ANON_ID.match(value) else None
+
+
+@router.get("", response_class=HTMLResponse)
+async def play_page(request: Request, user=Depends(get_current_user_optional)):
+    _require_enabled()
+    daily = store.game_for(_today())
+    already = store.played(daily["id"], user["id"]) if daily and user else None
+    return templates.TemplateResponse("ten/play.html", {
+        "request": request,
+        "user": user,
+        "daily": daily,
+        "daily_done": bool(already),
+        "free_play": name_ten.FREE_PLAY,
+    })
+
+
+@router.get("/search", response_class=JSONResponse)
+async def search_books(request: Request, q: str = ""):
+    _require_enabled()
+    query = q.strip()[:120]
+    if len(query) < 2:
+        return {"results": []}
+    if not _allow(f"search:{_visitor(request)}", SEARCH_LIMIT):
+        raise HTTPException(status_code=429, detail="Slow down a little.")
+    return {"results": await lookup.search(query)}
+
+
+async def _resolve_items(raw_items) -> list[dict]:
+    if not isinstance(raw_items, list) or len(raw_items) != 10:
+        raise ValueError("Name ten books.")
+    picks = []
+    for raw in raw_items:
+        if not isinstance(raw, dict):
+            raise ValueError("Every slot needs a title.")
+        picks.append(name_ten.resolve(str(raw.get("title", ""))[:300], str(raw.get("author", ""))[:200]))
+    # Books not in the library: confirm them with Open Library, all at once, briefly.
+    outside = [index for index, item in enumerate(picks) if item["status"] != "library"]
+    answers = await asyncio.gather(*(lookup.confirm(picks[i]["title"], picks[i]["author"]) for i in outside),
+                                   return_exceptions=True)
+    popularity = []
+    for index, found in zip(outside, answers):
+        if not isinstance(found, dict):
+            continue
+        item = picks[index]
+        if not item["author"]:
+            item.update(work_key=found["work_key"], title=found["title"], author=found["author"])
+        item["status"] = "finder"
+        popularity.append({"work_key": item["work_key"], "title": item["title"], "author": item["author"],
+                           "prior_popularity": found.get("popularity")})
+    store.set_popularity(popularity)
+    return picks
+
+
+def _public_result(play: dict) -> dict:
+    facts = play["findings_json"]
+    return {
+        "play_id": play["id"],
+        "score": play["score"],
+        "early": facts.get("early", False),
+        "ranked_against": facts.get("ranked_against", 0),
+        "lists_before": facts.get("lists_before", 0),
+        "closest_shared": play["max_overlap"],
+        "rarest_pair": facts.get("rarest_pair"),
+        "most_common": facts.get("most_common"),
+        "missing_eleventh": facts.get("missing_eleventh"),
+        "verdict": play.get("verdict_json"),
+        "badges": play.get("badges_json") or [],
+        "items": [{key: item.get(key) for key in ("position", "title", "author", "status", "book_id")}
+                  for item in play["items"]],
+    }
+
+
+@router.post("/play", response_class=JSONResponse)
+async def submit(request: Request, user=Depends(get_current_user_optional)):
+    _require_enabled()
+    try:
+        payload = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Send the list as JSON.")
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=400, detail="Send the list as JSON.")
+    anon_id = None if user else _anon(payload.get("anon_id"))
+    if not user and not anon_id:
+        raise HTTPException(status_code=400, detail="Reload the page and try again.")
+    if not _allow(f"play:{user['id'] if user else anon_id}", PLAY_LIMIT) or \
+            not _allow(f"play-ip:{_visitor(request)}", (PLAY_LIMIT[0] * 3, PLAY_LIMIT[1])):
+        raise HTTPException(status_code=429, detail="That is a lot of lists for one hour. Come back in a bit.")
+    try:
+        game_id = int(payload.get("game_id", name_ten.FREE_PLAY))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="Unknown game.")
+    if game_id != name_ten.FREE_PLAY:
+        today = store.game_for(_today())
+        if not today or today["id"] != game_id:
+            raise HTTPException(status_code=409, detail="That daily game has closed. Today's is open.")
+    try:
+        items = await _resolve_items(payload.get("items"))
+        play = await asyncio.to_thread(
+            name_ten.submit_play, game_id, items, user_id=user["id"] if user else None, anon_id=anon_id
+        )
+    except store.AlreadyPlayed as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    play["badges_json"] = badge_rules.earned(play["findings_json"], play["items"])
+    play["verdict_json"] = await _judge(play)
+    try:
+        await asyncio.to_thread(store.save_verdict, play["id"], play["verdict_json"], play["badges_json"],
+                                user["id"] if user else None)
+    except Exception as exc:  # the score is saved; a lost verdict is not worth failing the play
+        logger.warning("Saving Name Ten verdict failed (%s)", type(exc).__name__)
+    return _public_result(play)
+
+
+async def _judge(play: dict) -> dict:
+    """The judge gets a few seconds while the page ponders; after that the plain verdict stands in."""
+    async with _judge_slots:
+        try:
+            return await asyncio.wait_for(asyncio.to_thread(judge.verdict, play, play["badges_json"]),
+                                          JUDGE_TIMEOUT)
+        except Exception as exc:
+            logger.info("Name Ten judge fell back (%s)", type(exc).__name__)
+            return judge.template(play, play["badges_json"])
+
+
+@router.post("/claim", response_class=JSONResponse)
+async def claim(request: Request, user=Depends(get_current_user_optional)):
+    """After signing in, the page hands over its anonymous id once."""
+    _require_enabled()
+    if not user:
+        raise HTTPException(status_code=401, detail="Sign in first.")
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+    anon_id = _anon(payload.get("anon_id") if isinstance(payload, dict) else None)
+    if not anon_id:
+        return {"claimed": 0}
+    return {"claimed": store.claim_anonymous(anon_id, user["id"])}
+
+
+# --- sharing ---------------------------------------------------------------
+
+SLUG = re.compile(r"^[A-Za-z0-9_-]{8,16}$")
+_cards: dict[tuple[str, str], bytes] = {}
+
+
+def _base_url(request: Request) -> str:
+    return (settings.PUBLIC_BASE_URL or str(request.base_url)).rstrip("/")
+
+
+def _owns(play: dict, user, anon_id: str | None) -> bool:
+    if user and play.get("user_id") == user["id"]:
+        return True
+    return bool(anon_id) and play.get("anon_id") == anon_id
+
+
+@router.post("/play/{play_id}/share", response_class=JSONResponse)
+async def share(play_id: str, request: Request, user=Depends(get_current_user_optional)):
+    """Make a result public at /ten/p/{slug}. Only the player can, and nothing is public until they do."""
+    _require_enabled()
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+    anon_id = _anon(payload.get("anon_id") if isinstance(payload, dict) else None)
+    play = await asyncio.to_thread(store.get_play, play_id[:64])
+    if not play or not _owns(play, user, anon_id):
+        raise HTTPException(status_code=404, detail="Not found")
+    slug = await asyncio.to_thread(store.share_slug, play["id"], secrets.token_urlsafe(8))
+    url = f"{_base_url(request)}/ten/p/{slug}"
+    verdict = play.get("verdict_json") or {}
+    text = f"{verdict.get('epithet') or 'My ten'}. My ten books scored {play['score']} on Name Ten. Name yours:"
+    return {
+        "url": url,
+        "image": f"{url}/card.png?size=tall",
+        "x_intent": "https://x.com/intent/post?" + urlencode({"text": text, "url": url}),
+    }
+
+
+def _public_play(slug: str) -> dict:
+    play = store.play_by_slug(slug) if SLUG.match(slug) else None
+    if not play:
+        raise HTTPException(status_code=404, detail="Not found")
+    return play
+
+
+@router.get("/p/{slug}", response_class=HTMLResponse)
+async def public_result(slug: str, request: Request, user=Depends(get_current_user_optional)):
+    _require_enabled()
+    play = await asyncio.to_thread(_public_play, slug)
+    verdict = play.get("verdict_json") or {}
+    url = f"{_base_url(request)}/ten/p/{slug}"
+    return templates.TemplateResponse("ten/public.html", {
+        "request": request,
+        "user": user,
+        "play": play,
+        "verdict": verdict,
+        "badges": play.get("badges_json") or [],
+        "score_line": card.score_line(play),
+        "page_url": url,
+        "card_url": f"{url}/card.png",
+        "items": sorted(play["items"], key=lambda item: item["position"]),
+    })
+
+
+@router.get("/p/{slug}/card.png")
+async def public_card(slug: str, size: str = "wide"):
+    _require_enabled()
+    size = size if size in card.SIZES else "wide"
+    png = _cards.get((slug, size))
+    if png is None:
+        play = await asyncio.to_thread(_public_play, slug)
+        png = await asyncio.to_thread(card.render, play, size)
+        if len(_cards) > 256:
+            _cards.pop(next(iter(_cards)))
+        _cards[(slug, size)] = png
+    return Response(png, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+
+
+# --- my ten ------------------------------------------------------------------
+
+PROOF_LABELS = {"declared": "named", "sampled": "opened here", "read": "read here"}
+
+
+def proof_states(user_id: str, items: list[dict]) -> list[dict]:
+    """How far the reader has gone with each book on these shelves: named, opened, or read."""
+    from ..services.user_service import UserService
+
+    service = UserService()
+    statuses = service.get_shelf_statuses(user_id)
+    marked = {row.get("book_id") for row in service.get_highlights(user_id)}
+    shaped = []
+    for item in items:
+        status = statuses.get(item.get("book_id"))
+        proof = "read" if status == "read" else "sampled" if status == "reading" or item.get("book_id") in marked \
+            else "declared"
+        shaped.append({**item, "proof_state": proof, "proof_label": PROOF_LABELS[proof]})
+    return shaped
+
+
+async def _owned_play(play_id: str, user) -> dict:
+    if not user:
+        raise HTTPException(status_code=401, detail="Sign in to keep your ten.")
+    play = await asyncio.to_thread(store.get_play, play_id[:64])
+    if not play or play.get("user_id") != user["id"]:
+        raise HTTPException(status_code=404, detail="Not found")
+    return play
+
+
+@router.post("/play/{play_id}/keep", response_class=JSONResponse)
+async def keep(play_id: str, user=Depends(get_current_user_optional)):
+    """Make this list the reader's ten. It shows on their public page at /u/{username}."""
+    _require_enabled()
+    play = await _owned_play(play_id, user)
+    await asyncio.to_thread(store.keep_ten, user["id"], play["items"])
+    return {"profile": f"/u/{user['username']}" if user.get("username") else "/account"}
+
+
+@router.post("/play/{play_id}/find", response_class=JSONResponse)
+async def find_missing(play_id: str, user=Depends(get_current_user_optional)):
+    """Send the books the library does not hold to the Finder as one run."""
+    _require_enabled()
+    from ..services.finder_job_service import FinderJobService
+
+    play = await _owned_play(play_id, user)
+    missing = [{"title": item["title"], "author": item.get("author") or ""}
+               for item in play["items"] if item.get("status") != "library"]
+    if not missing:
+        return {"job": None}
+    try:
+        job_id = await asyncio.to_thread(FinderJobService().create, user["id"], missing)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    return {"job": f"/library/find/{job_id}"}
+
+
+@profiles.get("/u/{username}", response_class=HTMLResponse)
+async def profile(username: str, request: Request, user=Depends(get_current_user_optional)):
+    """A reader's public page: their ten and the badges they have earned. Exists only once they keep a ten."""
+    _require_enabled()
+    reader = await asyncio.to_thread(store.user_by_username, username[:24])
+    ten = await asyncio.to_thread(store.get_ten, reader["id"]) if reader else []
+    if not reader or not ten:
+        raise HTTPException(status_code=404, detail="Not found")
+    counts = await asyncio.to_thread(store.badge_counts, reader["id"])
+    earned = [{"key": key, "name": name, "line": line, "count": counts[key]}
+              for key, (name, line) in badge_rules.BADGES.items() if counts.get(key)]
+    return templates.TemplateResponse("ten/profile.html", {
+        "request": request,
+        "user": user,
+        "reader": reader,
+        "ten": await asyncio.to_thread(proof_states, reader["id"], ten),
+        "badges": earned,
+        "is_self": bool(user and user["id"] == reader["id"]),
+    })

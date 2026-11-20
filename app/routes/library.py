@@ -348,6 +348,11 @@ async def my_library(request: Request, user=Depends(get_current_user_optional)):
         )
     ]
     shelf = header_counts(user)
+    continue_book = next(
+        (book for book in books
+         if book["reading_status"] == "reading" and book.get("availability") != "external_link"),
+        None,
+    )
     return templates.TemplateResponse(
         "my_library.html",
         {
@@ -355,6 +360,7 @@ async def my_library(request: Request, user=Depends(get_current_user_optional)):
             "user": user,
             "books": books,
             "columns": columns,
+            "continue_book": continue_book,
             "stats": service.get_stats(user["id"]),
             "shelf": shelf,
             "total_books": shelf["total_books"],
