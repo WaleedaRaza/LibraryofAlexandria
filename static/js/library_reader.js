@@ -161,6 +161,8 @@
       await pdfjsLib.renderTextLayer({ textContentSource: textContent, container: textLayer, viewport, textDivs: [] }).promise;
       state.page = number;
       pageInput.value = number;
+      const flowLink = document.getElementById('open-flow');
+      if (flowLink) flowLink.href = `/read/${encodeURIComponent(bookId)}/flow?page=${number}`;
       pageElement.hidden = false;
       status.hidden = true;
       document.getElementById('previous-page').disabled = number <= 1;
