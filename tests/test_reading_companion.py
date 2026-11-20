@@ -127,8 +127,9 @@ def test_memory_companion_sees_reading_board_and_earlier_discussion(client: Test
 
 def test_reading_board_shows_the_guide_to_new_readers(client: TestClient):
     _register(client)
+    client.cookies.set("lx_welcomed", "1")  # the first-run welcome has been seen
     board = client.get("/library/my")
     assert board.status_code == 200
-    assert "How to get the most out of LibXNDR" in board.text
-    assert "Talk to that passage" in board.text
-    assert 'class="use-guide" open' in board.text
+    assert "Your first steps" in board.text
+    assert "Talk to a passage" in board.text and "Keep a passage" in board.text
+    assert "0 of 6 done" in board.text

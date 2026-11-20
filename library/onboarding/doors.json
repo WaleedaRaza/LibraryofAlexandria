@@ -1,0 +1,53 @@
+{
+  "about": "First-run doors. Each door is a reason someone opens a library. Every book is an edition whose PDF has searchable text, and every question was checked against that text: the first passage found answers it without a model. Kept to public-domain or freely licensed editions where the collection has one.",
+  "doors": [
+    {"key": "live", "label": "How to live", "line": "Stoics, sages and the oldest advice on getting through a day.",
+     "books": [
+      {"id": "marcus-aurelius-meditations-105f3c56", "questions": ["How do I deal with anger?", "What should I do when I don't want to get out of bed in the morning?"]},
+      {"id": "enchiridion-epictetus-efc959a4", "questions": ["What is in my control and what is not?", "How should I react when someone insults me?"]},
+      {"id": "letters-from-a-stoic-seneca-v-1-29bc6a7c", "questions": ["Why is life short?", "Should I fear poverty?"]},
+      {"id": "dhammapada-a-translation-thanissaro-bhikkhu-c4577b76", "questions": ["How do I end hatred?", "What does it mean to guard the mind?"]},
+      {"id": "utilitarianism-john-stuart-mill-48e888e8", "questions": ["Are some pleasures better than others?"]}
+     ]},
+    {"key": "power", "label": "Power and the state", "line": "Who should rule, what they owe us, and what they get away with.",
+     "books": [
+      {"id": "the-prince-machiavelli-v-2-6c31ddd3", "questions": ["Is it better to be feared or loved?", "Should a ruler keep his promises?", "How much does luck matter?"]},
+      {"id": "on-liberty-john-stuart-mill-c4c2ab9b", "questions": ["Why should we allow opinions we think are false?"]},
+      {"id": "leviathan-thomas-hobbes-919fac0d", "questions": ["Why is the life of man solitary, poor, nasty, brutish and short?"]},
+      {"id": "the-communist-manifesto-karl-marx-friedrich-engels-429d6987", "questions": ["Do communists want to abolish private property?", "What is the history of class struggle?"]},
+      {"id": "the-art-of-war-sun-tzu-48a70911", "questions": ["What is the supreme excellence in war?", "Why does deception matter in war?"]}
+     ]},
+    {"key": "mind", "label": "Mind, morals and doubt", "line": "Belief, guilt, consciousness and the people who doubted all three.",
+     "books": [
+      {"id": "notes-from-underground-fyodor-dostoevsky-dbf3a591", "questions": ["Is consciousness a disease?", "Why would a man act against his own interest?"]},
+      {"id": "genealogy-of-morals-nietzsche-v-1-52b1e228", "questions": ["Where does guilt come from?", "What is slave morality?"]},
+      {"id": "beyond-good-and-evil-nietzsche-fe876d95", "questions": ["What is noble?", "What are the prejudices of philosophers?"]},
+      {"id": "the-varieties-of-religious-experience-william-james-27b1bda9", "questions": ["What do mystical experiences have in common?"]},
+      {"id": "problems-of-philosophy-bertrand-russell-11215dde", "questions": ["What is the value of philosophy?", "Does matter exist?"]},
+      {"id": "smith-a-moral-sentiments-p-adam-smith-44b510d4", "questions": ["Why do we admire the rich?", "Where does sympathy come from?"]}
+     ]},
+    {"key": "novels", "label": "The great novels", "line": "Murder, faith, obsession and the people inside them.",
+     "books": [
+      {"id": "crime-and-punishment-fyodor-dostoevsky-8f040fe5", "questions": ["What is Raskolnikov's theory of extraordinary men?", "What does Sonia read to him?"]},
+      {"id": "the-brothers-karamazov-dostoevsky-89da8635", "questions": ["Why can't Ivan accept the suffering of children?", "What does the Grand Inquisitor accuse Christ of?"]},
+      {"id": "moby-dick-herman-melville-9138c8ef", "questions": ["Why does Ahab hate the whale?"]},
+      {"id": "shelley-frankenstein-1818-mary-shelley-v-1-abae9f7b", "questions": ["What does the creature ask Victor for?", "Why does the creature turn against his maker?"]},
+      {"id": "the-metamorphosis-kafka-v-1-81b31072", "questions": ["Why is Gregor worried about his job?", "How does Gregor's family treat him?"]}
+     ]},
+    {"key": "sacred", "label": "God and the sacred", "line": "Confession, devotion and the search for what lasts.",
+     "books": [
+      {"id": "confessions-st-augustine-v-1-66024106", "questions": ["Why did Augustine steal the pears?"]},
+      {"id": "the-bhagavad-gita-guest-user-baa1e05d", "questions": ["Why should Arjuna fight?", "What is action without attachment?"]},
+      {"id": "dhammapada-a-translation-thanissaro-bhikkhu-c4577b76", "questions": ["How do I end hatred?"]},
+      {"id": "paradise-lost-john-milton-dup2-dup2-674e213a", "questions": ["Is it better to reign in hell?"]},
+      {"id": "the-varieties-of-religious-experience-william-james-27b1bda9", "questions": ["What do mystical experiences have in common?"]}
+     ]},
+    {"key": "ancients", "label": "The ancients", "line": "Where the arguments and the stories start.",
+     "books": [
+      {"id": "republic-plato-v-2-e3e53e75", "questions": ["What is the allegory of the cave about?", "Why should philosophers rule?", "Is the unjust man happier?"]},
+      {"id": "apology-plato-v-1-c253f15e", "questions": ["Why is Socrates the wisest man?", "Why doesn't Socrates fear death?"]},
+      {"id": "symposium-plato-v-2-10a5d695", "questions": ["What did Diotima teach Socrates?"]},
+      {"id": "the-odyssey-homer-55e92a81", "questions": ["What does Odysseus tell the Cyclops his name is?", "How does Penelope test the stranger with the bed?"]}
+     ]}
+  ]
+}

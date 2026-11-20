@@ -107,6 +107,35 @@
     }
   };
 
+  // Arriving from an answer (?page=N&find=…): light up the quoted words on that page, once.
+  const normal = (text) => (text || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ');
+  const found = { words: normal(shell.dataset.find).trim().split(' ').filter(Boolean), page: state.page, scrolled: false };
+  const lightFound = () => {
+    if (!found.words.length || state.page !== found.page) return;
+    const spans = [...textLayer.querySelectorAll('span')];
+    let joined = '';
+    const owner = [];
+    spans.forEach((span, index) => {
+      for (const ch of normal(span.textContent) + ' ') {
+        if (ch === ' ' && (joined === '' || joined.endsWith(' '))) continue;
+        joined += ch;
+        owner.push(index);
+      }
+    });
+    for (const size of [found.words.length, 6, 4]) {
+      const needle = found.words.slice(0, size).join(' ');
+      const at = needle ? joined.indexOf(needle) : -1;
+      if (at < 0) continue;
+      const hit = [...new Set(owner.slice(at, at + needle.length))];
+      hit.forEach((index) => spans[index].classList.add('found-passage'));
+      if (!found.scrolled && hit.length) {
+        found.scrolled = true;
+        spans[hit[0]].scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+      return;
+    }
+  };
+
   const renderPage = async (number) => {
     if (!state.pdf || state.rendering) return;
     state.rendering = true;
@@ -137,6 +166,7 @@
       document.getElementById('previous-page').disabled = number <= 1;
       document.getElementById('next-page').disabled = number >= state.pdf.numPages;
       applySavedHighlights();
+      lightFound();
       updateProgress();
     } catch (error) {
       status.hidden = false;

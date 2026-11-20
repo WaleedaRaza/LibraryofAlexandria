@@ -133,9 +133,10 @@ async def startup_event():
 # Routes
 # ---------------------------------------------------------------------------
 
-from .routes import pages, reader, library, auth, desk, contributions, account, review, finder, device_api, name_ten
+from .routes import pages, reader, library, auth, desk, contributions, account, review, finder, device_api, name_ten, onboarding
 
 app.include_router(pages.router)
+app.include_router(onboarding.router, tags=["first run"])
 app.include_router(reader.router, prefix="/read", tags=["reader"])
 app.include_router(library.router, prefix="/library", tags=["library"])
 app.include_router(contributions.router, prefix="/library", tags=["contributions"])

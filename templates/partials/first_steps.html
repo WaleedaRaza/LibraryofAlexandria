@@ -1,0 +1,25 @@
+{# Six first steps, each marked from what the reader has actually done. Hidden once all six are done. #}
+{% if first_steps and not first_steps.complete %}
+<section class="first-steps" aria-labelledby="first-steps-title">
+  <header class="first-steps-head">
+    <div>
+      <p class="eyebrow">{{ glyph('scroll', 14) }} Your first steps</p>
+      <h2 id="first-steps-title">{{ first_steps.done }} of {{ first_steps.total }} done{% if first_steps.next %}. Next: {{ first_steps.next.title|lower }}.{% endif %}</h2>
+    </div>
+    <div class="first-steps-meter" role="img" aria-label="{{ first_steps.done }} of {{ first_steps.total }} first steps done">
+      {% for step in first_steps.steps %}<i class="{{ 'on' if step.done }}"></i>{% endfor %}
+    </div>
+  </header>
+  <ol class="first-steps-list">
+    {% for step in first_steps.steps %}
+    <li class="{{ 'is-done' if step.done }}{{ ' is-next' if first_steps.next and step.key == first_steps.next.key }}">
+      <span class="first-steps-mark" aria-hidden="true">{{ '✓' if step.done else '0' ~ loop.index }}</span>
+      <div>
+        <h3>{{ step.title }}{% if step.done %}<span class="sr-only"> (done)</span>{% endif %}</h3>
+        {% if not step.done %}<p>{{ step.line }}</p><a href="{{ step.href }}">{{ step.action }} ↗</a>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}

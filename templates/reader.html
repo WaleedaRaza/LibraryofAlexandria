@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
 {% endblock %}
 {% block content %}
-<div class="reader-shell" data-book-id="{{ book.id }}" data-pdf-url="{{ pdf_url }}" data-start-page="{{ progress.page_number }}" data-authenticated="{{ 'true' if user else 'false' }}">
+<div class="reader-shell" data-book-id="{{ book.id }}" data-pdf-url="{{ pdf_url }}" data-start-page="{{ progress.page_number }}" data-find="{{ find or '' }}" data-authenticated="{{ 'true' if user else 'false' }}">
     <header class="reader-toolbar">
         <div class="reader-book"><a href="/library" aria-label="Back to the library">{{ glyph('pyramid', 18) }}</a><div><a href="/library/book/{{ book.id }}">{{ book.title }}</a><span>{{ book.author }}</span></div></div>
         <div class="page-controls">
